@@ -38,10 +38,10 @@ class EMAXGBoost(IStrategy):
     TRADE_HOUR_START = 13
     TRADE_HOUR_END = 17
 
-    # FreqAI confidence threshold — regressor output clusters at 0.35-0.45,
-    # so threshold must sit below the model's typical bullish prediction ceiling
-    LONG_THRESHOLD  = 0.40
-    SHORT_THRESHOLD = 0.40
+    # FreqAI confidence threshold — regressor base rate ~0.29-0.32;
+    # 0.35 passes above-average confidence signals only
+    LONG_THRESHOLD  = 0.35
+    SHORT_THRESHOLD = 0.35
 
     def feature_engineering_expand_all(
         self, dataframe: DataFrame, period: int,
@@ -220,19 +220,25 @@ class EMAXGBoost(IStrategy):
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         hour = pd.to_datetime(dataframe["date"]).dt.hour
 
-        # DEBUG: bare EMA cross only — no vol/trend/AI/hour filters
-        # Used to verify signals fire at all before re-adding gates
         ema_long = (
             (dataframe["ema5"] > dataframe["ema13"]) &
-            (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1))
+            (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1)) &
+            (dataframe["vol_ratio"] > 1.1) &
+            (dataframe["trend_bias"] == 1)
         )
 
-        dataframe.loc[ema_long, "enter_long"] = 1
+        # AI gate: regressor base rate ~0.29-0.32 for random candles;
+        # 0.35 passes above-average confidence signals only
+        ai_confident = dataframe["&-target_mean"] > self.LONG_THRESHOLD
+
+        in_window = (hour >= self.TRADE_HOUR_START) & (hour < self.TRADE_HOUR_END)
+
+        dataframe.loc[ema_long & ai_confident & in_window, "enter_long"] = 1
 
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Let ROI/stoploss handle all exits during debug run
+        # ROI handles TP (+0.5%), stoploss handles SL (-0.2%)
         return dataframe
 
     def confirm_trade_entry(

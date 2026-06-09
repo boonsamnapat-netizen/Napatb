@@ -119,7 +119,7 @@
   "internalize_positions": false,
   "position_adjustment_enable": false,
 
-  "stoploss": -0.015,
+  "stoploss": -0.002,
   "trailing_stop": false,
   "minimal_roi": {
     "0": 0.005
