@@ -220,6 +220,7 @@ class EMAXGBoost(IStrategy):
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         hour = pd.to_datetime(dataframe["date"]).dt.hour
 
+        # No AI gate — confirm how many trades vol/trend/hour filters allow
         ema_long = (
             (dataframe["ema5"] > dataframe["ema13"]) &
             (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1)) &
@@ -227,13 +228,9 @@ class EMAXGBoost(IStrategy):
             (dataframe["trend_bias"] == 1)
         )
 
-        # AI gate: regressor base rate ~0.29-0.32 for random candles;
-        # 0.35 passes above-average confidence signals only
-        ai_confident = dataframe["&-target_mean"] > self.LONG_THRESHOLD
-
         in_window = (hour >= self.TRADE_HOUR_START) & (hour < self.TRADE_HOUR_END)
 
-        dataframe.loc[ema_long & ai_confident & in_window, "enter_long"] = 1
+        dataframe.loc[ema_long & in_window, "enter_long"] = 1
 
         return dataframe
 
