@@ -50,8 +50,10 @@ class VWAPMomentumAI(IStrategy):
     TRADE_HOUR_START = 8
     TRADE_HOUR_END = 20
 
-    # AI gate: 0.0 to validate rule-based signal first
-    LONG_THRESHOLD = 0.0
+    # AI gate: model predicts P(TP before SL); base rate ~0.31 for mean reversion.
+    # 0.35 selects signals where model is above-average confident (~top 30% of signals).
+    # Was 0.0 (bypassed) during rule-based validation runs.
+    LONG_THRESHOLD = 0.35
 
     # ---- Session VWAP Helper -----------------------------------------------
 
