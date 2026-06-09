@@ -120,19 +120,31 @@ class FiboRetrace(IStrategy):
         dataframe = merge_informative_pair(
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
+        # Daily 200-SMA macro regime line (the real bull/bear divider)
+        infd = self.dp.get_pair_dataframe(metadata["pair"], "1d")
+        infd["sma200"] = ta.SMA(infd, timeperiod=200)
+        dataframe = merge_informative_pair(
+            dataframe, infd, self.timeframe, "1d", ffill=True
+        )
+        daily_bull = dataframe["close_1d"] > dataframe["sma200_1d"]
+
         itf = self.inf_timeframe
         close_col = f"close_{itf}"
         # Base trend + optional strength / macro-regime filters
         base_up    = dataframe[close_col] > dataframe[f"ema50_{itf}"]
         rising     = dataframe[f"ema50_rising_{itf}"] == 1
         above_200  = dataframe[close_col] > dataframe[f"ema200_{itf}"]
-        regime_up  = dataframe[f"ema200_rising_{itf}"] == 1   # macro bull (EMA200 sloping up)
+        regime_up  = dataframe[f"ema200_rising_{itf}"] == 1   # 4H EMA200 sloping up
         if self.TREND_MODE == "slope":
             trend = base_up & rising
         elif self.TREND_MODE == "ema200":
             trend = base_up & above_200
         elif self.TREND_MODE == "ema200slope":
-            trend = base_up & above_200 & regime_up          # macro regime gate
+            trend = base_up & above_200 & regime_up
+        elif self.TREND_MODE == "macro":
+            trend = base_up & daily_bull                      # daily 200-SMA gate
+        elif self.TREND_MODE == "macro200":
+            trend = base_up & above_200 & daily_bull
         elif self.TREND_MODE == "both":
             trend = base_up & rising & above_200 & regime_up
         else:  # 'base'
@@ -272,24 +284,23 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Regime gate vs OOS bear (Phase E.10) ----------------------------------
-# E.9: with NO macro gate the strategy lost -54% on 2021-2022 (overfit to the
-# 2023-24 bull). It's a long-only trend-rider -> must sit out bear markets.
-# Fix: gate entries on the 4H EMA200 macro regime. Test all on OOS 2021-2022;
-# a working gate should cut trades in 2022 and turn -54% toward flat.
-# All: ext 1.618, swing18, touch, stop0.786.
+# ---- Daily-200 macro gate vs OOS bear (Phase E.11) -------------------------
+# E.10: the 4H EMA200 gate (33 days) only cut -54% -> -39% on 2021-2022; too
+# short to be a macro filter. Use the DAILY 200-SMA -- the real bull/bear line.
+# BTC was below it almost all of 2022, so this should zero out bear trades.
+# All: ext 1.618, swing18, touch, stop0.786. Test on OOS 2021-2022.
 
 class FiboRecentTouch(FiboRetrace):
-    TREND_MODE = "base"          # control (no gate) -- expect ~-54%
+    TREND_MODE = "base"          # control (no gate) -- ~-54%
 
 
 class FiboTrendTouch(FiboRetrace):
-    TREND_MODE = "ema200"        # price > 4H EMA200
+    TREND_MODE = "macro"         # 4H base_up + daily close > 200-SMA
 
 
 class FiboTrendConfirm(FiboRetrace):
-    TREND_MODE = "ema200slope"   # price > EMA200 AND EMA200 rising (macro bull)
+    TREND_MODE = "macro200"      # + price > 4H EMA200
 
 
 class FiboRecentConfirm(FiboRetrace):
-    TREND_MODE = "both"          # EMA50 rising + price > EMA200 + EMA200 rising
+    TREND_MODE = "ema200slope"   # 4H-only gate (E.10 ref) for comparison
