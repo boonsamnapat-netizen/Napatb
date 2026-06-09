@@ -220,29 +220,19 @@ class EMAXGBoost(IStrategy):
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         hour = pd.to_datetime(dataframe["date"]).dt.hour
 
-        # EMA cross condition (original rule-based signal)
+        # DEBUG: bare EMA cross only — no vol/trend/AI/hour filters
+        # Used to verify signals fire at all before re-adding gates
         ema_long = (
             (dataframe["ema5"] > dataframe["ema13"]) &
-            (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1)) &
-            (dataframe["vol_ratio"] > 1.3) &
-            (dataframe["trend_bias"] == 1)
+            (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1))
         )
 
-        # FreqAI confidence gate
-        ai_confident = dataframe["&-target_mean"] > self.LONG_THRESHOLD
-
-        # Trading window gate
-        in_window = (hour >= self.TRADE_HOUR_START) & (hour < self.TRADE_HOUR_END)
-
-        dataframe.loc[
-            ema_long & ai_confident & in_window, "enter_long"
-        ] = 1
+        dataframe.loc[ema_long, "enter_long"] = 1
 
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # ROI and stoploss handle exits; AI exit only for very low confidence
-        dataframe.loc[dataframe["&-target_mean"] < 0.20, "exit_long"] = 1
+        # Let ROI/stoploss handle all exits during debug run
         return dataframe
 
     def confirm_trade_entry(
