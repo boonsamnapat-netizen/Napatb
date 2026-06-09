@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Freqtrade + FreqAI
         run: |
-          pip install "freqtrade[freqai]" xgboost scikit-learn --quiet
+          pip install "freqtrade[freqai]<2026.5" xgboost scikit-learn --quiet
 
       - name: Create Freqtrade user directory
         run: |
