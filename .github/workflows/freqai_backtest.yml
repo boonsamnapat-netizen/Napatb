@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       timerange:
-        description: 'Backtest timerange (e.g. 20230301-20250301)'
+        description: 'Backtest timerange (in-sample 20230301-20250301, OOS 20210101-20230101)'
         required: false
         default: '20230301-20250301'
 
