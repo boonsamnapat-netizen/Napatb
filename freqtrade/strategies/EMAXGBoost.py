@@ -91,7 +91,7 @@ class EMAXGBoost(IStrategy):
         dataframe["%-vol_ratio"] = dataframe["%-vol_ratio"].fillna(1.0)
 
         # Bollinger Band position
-        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2, nbdevdn=2)
+        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
         dataframe["%-bb_upper"] = upper
         dataframe["%-bb_lower"] = lower
         dataframe["%-bb_pos"] = (dataframe["close"] - lower) / (upper - lower + 1e-10)
@@ -139,7 +139,7 @@ class EMAXGBoost(IStrategy):
         dataframe["%-obv_slope"] = (obv - obv.shift(5)) / (obv.shift(5).abs() + 1e-10)
 
         # Bollinger bandwidth
-        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2, nbdevdn=2)
+        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
         dataframe["%-bb_width"] = (upper - lower) / (mid + 1e-10)
 
         return dataframe
