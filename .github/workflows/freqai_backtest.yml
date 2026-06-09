@@ -52,7 +52,6 @@ jobs:
             --strategy EMAXGBoost \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
-            --freqai-backtest-live-models \
             2>&1 | tee results/freqai_backtest_result.txt
 
       - name: Commit results
