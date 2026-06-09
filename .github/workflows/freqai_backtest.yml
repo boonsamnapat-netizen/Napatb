@@ -51,6 +51,7 @@ jobs:
             --userdir freqtrade/user_data \
             --strategy EMAXGBoost \
             --strategy-path freqtrade/strategies/ \
+            --freqaimodel XGBoostClassifier \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/freqai_backtest_result.txt
 
