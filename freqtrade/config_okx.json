@@ -107,7 +107,7 @@
     "listen_port": 8080,
     "verbosity": "error",
     "enable_openapi": false,
-    "jwt_secret_key": "change_this_secret",
+    "jwt_secret_key": "freqtrade_ema_xgb_scalper_secret_key_2024",
     "CORS_origins": [],
     "username": "freqtrader",
     "password": "change_this_password"
@@ -130,6 +130,10 @@
   "use_exit_signal": true,
   "exit_profit_only": false,
   "ignore_roi_if_entry_signal": false,
+
+  "pairlists": [
+    {"method": "StaticPairList"}
+  ],
 
   "verbosity": 1,
   "dataformat_ohlcv": "json",
