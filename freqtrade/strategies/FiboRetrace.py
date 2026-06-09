@@ -55,6 +55,9 @@ class FiboRetrace(IStrategy):
     USE_BREAKEVEN = False     # BE@1R hurt (cut winners); kept off
     BE_TRIGGER_R  = 1.0       # how many R of profit before SL -> breakeven
     TREND_MODE    = "base"    # 'base'|'slope'|'ema200'|'both' -- trend-strength filter
+    USE_TRAIL     = False     # trail SL below running peak to ride trends
+    TRAIL_PCT     = 0.08      # trail this far below peak high
+    TRAIL_ACT     = 0.03      # activate trailing after +3% profit
 
     # Fibonacci ratios
     FIB_382  = 0.382
@@ -229,6 +232,20 @@ class FiboRetrace(IStrategy):
             return -0.05  # fallback
 
         entry = trade.open_rate
+
+        # Trailing: once +TRAIL_ACT in profit, trail the stop TRAIL_PCT below
+        # the running peak high to ride extended trends (never below initial stop).
+        if self.USE_TRAIL and entry and current_rate >= entry * (1 + self.TRAIL_ACT):
+            try:
+                df, _ = self.dp.get_analyzed_dataframe(trade.pair, self.timeframe)
+                seg = df[df["date"] >= trade.open_date_utc]
+                peak = float(seg["high"].max()) if not seg.empty else current_rate
+            except Exception:
+                peak = current_rate
+            trail_stop = max(peak * (1 - self.TRAIL_PCT), stop)
+            ratio = (trail_stop / current_rate) - 1.0
+            return ratio if ratio < 0 else -0.0005
+
         # Break-even: once price has gained BE_TRIGGER_R * initial risk,
         # ratchet the stop up to entry (+fee buffer) so the trade can't turn red.
         if self.USE_BREAKEVEN and entry and entry > stop:
@@ -251,27 +268,29 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- TP-distance matrix (Phase E.5) ----------------------------------------
-# E.4: trend-strength filters did not lift WR (EMA200 even lowered it).
-# Remaining structural axis = take-profit distance. Far extension TP is only
-# reached 26% of the time. Closer TP -> more TP hits -> higher WR (lower R:R).
-# All: swing18, touch, stop0.786, base trend, no BE. Only FIB_EXT varies.
+# ---- Ride-the-trend matrix (Phase E.6) -------------------------------------
+# E.5: farther TP monotonically reduced losses (ext1.0 best at -10.9%).
+# Edge is in long trend continuation. Push extensions farther + test a
+# trailing stop that rides the peak. All: swing18, touch, stop0.786, base.
 
-# TP at swing high H (ext 0) -- closest, highest expected WR
+# TP H + 1.0*range  (E.5 best, control)
 class FiboRecentTouch(FiboRetrace):
-    FIB_EXT = 0.0
-
-
-# TP H + 0.236*range
-class FiboTrendTouch(FiboRetrace):
-    FIB_EXT = 0.236
-
-
-# TP H + 0.5*range
-class FiboTrendConfirm(FiboRetrace):
-    FIB_EXT = 0.5
-
-
-# TP H + 1.0*range -- farthest, highest R:R / lowest WR
-class FiboRecentConfirm(FiboRetrace):
     FIB_EXT = 1.0
+
+
+# TP H + 1.618*range
+class FiboTrendTouch(FiboRetrace):
+    FIB_EXT = 1.618
+
+
+# TP H + 2.618*range
+class FiboTrendConfirm(FiboRetrace):
+    FIB_EXT = 2.618
+
+
+# trailing stop, no practical TP -- ride the whole trend
+class FiboRecentConfirm(FiboRetrace):
+    FIB_EXT = 10.0
+    USE_TRAIL = True
+    TRAIL_PCT = 0.08
+    TRAIL_ACT = 0.03
