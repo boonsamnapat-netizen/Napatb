@@ -64,7 +64,7 @@ class FiboRetrace(IStrategy):
     FIB_50   = 0.500
     FIB_618  = 0.618
     FIB_STOP = 0.786       # SL just below this invalidation level
-    FIB_EXT  = 0.272       # extension beyond H for TP
+    FIB_EXT  = 1.618       # extension beyond H for TP (chosen production level)
 
     # ---- Pivot detection (no lookahead) -----------------------------------
 
@@ -115,22 +115,26 @@ class FiboRetrace(IStrategy):
         inf = self.dp.get_pair_dataframe(metadata["pair"], self.inf_timeframe)
         inf["ema50"]  = ta.EMA(inf, timeperiod=50)
         inf["ema200"] = ta.EMA(inf, timeperiod=200)
-        inf["ema50_rising"] = (inf["ema50"] > inf["ema50"].shift(1)).astype(int)
+        inf["ema50_rising"]  = (inf["ema50"]  > inf["ema50"].shift(1)).astype(int)
+        inf["ema200_rising"] = (inf["ema200"] > inf["ema200"].shift(3)).astype(int)
         dataframe = merge_informative_pair(
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
         itf = self.inf_timeframe
         close_col = f"close_{itf}"
-        # Base trend + optional strength filters
-        base_up   = dataframe[close_col] > dataframe[f"ema50_{itf}"]
-        rising    = dataframe[f"ema50_rising_{itf}"] == 1
-        above_200 = dataframe[close_col] > dataframe[f"ema200_{itf}"]
+        # Base trend + optional strength / macro-regime filters
+        base_up    = dataframe[close_col] > dataframe[f"ema50_{itf}"]
+        rising     = dataframe[f"ema50_rising_{itf}"] == 1
+        above_200  = dataframe[close_col] > dataframe[f"ema200_{itf}"]
+        regime_up  = dataframe[f"ema200_rising_{itf}"] == 1   # macro bull (EMA200 sloping up)
         if self.TREND_MODE == "slope":
             trend = base_up & rising
         elif self.TREND_MODE == "ema200":
             trend = base_up & above_200
+        elif self.TREND_MODE == "ema200slope":
+            trend = base_up & above_200 & regime_up          # macro regime gate
         elif self.TREND_MODE == "both":
-            trend = base_up & rising & above_200
+            trend = base_up & rising & above_200 & regime_up
         else:  # 'base'
             trend = base_up
         dataframe["trend_up"] = trend.astype(int)
@@ -268,24 +272,24 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- OUT-OF-SAMPLE validation (Phase E.9) ----------------------------------
-# In-sample (2023-03..2025-03) peak: profitable zone ext 1.5-1.8, peak 1.8 (+17.8%).
-# Now test the SAME extension zone on a fully out-of-sample window
-# (2021-01..2023-01: 2021 bull top + 2022 bear). If the 1.5-1.8 zone survives
-# (positive or only mildly negative through a bear), the edge is real, not
-# overfit to the 2023-24 trend regime.
+# ---- Regime gate vs OOS bear (Phase E.10) ----------------------------------
+# E.9: with NO macro gate the strategy lost -54% on 2021-2022 (overfit to the
+# 2023-24 bull). It's a long-only trend-rider -> must sit out bear markets.
+# Fix: gate entries on the 4H EMA200 macro regime. Test all on OOS 2021-2022;
+# a working gate should cut trades in 2022 and turn -54% toward flat.
+# All: ext 1.618, swing18, touch, stop0.786.
 
 class FiboRecentTouch(FiboRetrace):
-    FIB_EXT = 1.5
+    TREND_MODE = "base"          # control (no gate) -- expect ~-54%
 
 
 class FiboTrendTouch(FiboRetrace):
-    FIB_EXT = 1.618   # chosen production level (golden ratio, mid-plateau)
+    TREND_MODE = "ema200"        # price > 4H EMA200
 
 
 class FiboTrendConfirm(FiboRetrace):
-    FIB_EXT = 1.8
+    TREND_MODE = "ema200slope"   # price > EMA200 AND EMA200 rising (macro bull)
 
 
 class FiboRecentConfirm(FiboRetrace):
-    FIB_EXT = 2.0
+    TREND_MODE = "both"          # EMA50 rising + price > EMA200 + EMA200 rising
