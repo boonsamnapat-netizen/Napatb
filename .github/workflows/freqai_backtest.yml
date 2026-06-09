@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       timerange:
-        description: 'Backtest timerange (e.g. 20240901-20250301)'
+        description: 'Backtest timerange (e.g. 20230301-20250301)'
         required: false
-        default: '20240901-20250301'
+        default: '20230301-20250301'
 
 jobs:
   freqai-backtest:
@@ -33,13 +33,13 @@ jobs:
         run: |
           freqtrade create-userdir --userdir freqtrade/user_data
 
-      - name: Download OKX historical data
+      - name: Download OKX historical data (2 years + buffer)
         run: |
           freqtrade download-data \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --timerange 20240701-20250301 \
-            --timeframes 5m 15m \
+            --timerange 20230101-20250601 \
+            --timeframes 15m 1h \
             --data-format-ohlcv json \
             --pairs BTC/USDT ETH/USDT
 

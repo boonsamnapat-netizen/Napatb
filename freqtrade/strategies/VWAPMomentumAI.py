@@ -1,21 +1,26 @@
 """
-VWAPMomentumAI -- FreqAI XGBoost Mean Reversion Strategy
-Phase C.2: Flipped to mean reversion after momentum test
+VWAPMomentumAI -- FreqAI XGBoost Mean Reversion Strategy (15m)
+Phase D: Upgraded from 5m to 15m timeframe
 
-Phase C.1 result (30-min momentum): WR=22.5% (below 28% breakeven at R:R=3:1)
-Conclusion: 5m BTC/ETH mean-reverts -- positive 30m momentum reverts 77.5% of time.
+Why 15m:
+  - 5m fees (0.10% round-trip) = 12% of TP=0.8% -- fee drag kills edge
+  - 15m candles smoother: fewer false RSI/BB signals from microstructure noise
+  - Can set TP=1.5%, SL=0.75% -> R:R=2:1, breakeven WR=37% post-fees (achievable)
 
-New signal: Buy oversold pullbacks below session VWAP in ranging markets.
-  - RSI(14) < 32 (oversold)
-  - BB %B < 0.15 (near or below lower Bollinger Band)
-  - VWAP deviation < -0.2% (below 08:00 UTC session average)
-  - ADX(14) < 25 (ranging market -- mean reversion valid, NOT trending down)
-  - RSI > 18 (avoid catching falling knife in crash)
+Signal: Mean reversion -- buy oversold below session VWAP in ranging markets.
+  Phase C.2 on 5m showed WR=31.8% (mean-reversion tendency confirmed but fee-limited).
+  On 15m same signal should have higher WR (cleaner candles) and better fee ratio.
 
-R:R = 1.6:1 (TP 0.8% / SL 0.5%)
-  Fee-adjusted breakeven WR: ~42%
-  Inverse momentum WR (77.5%) suggests mean reversion edge likely > 42%
-Time window: 08:00-20:00 UTC (wider -- mean reversion works all liquid sessions)
+Entry conditions:
+  - RSI(14) < 32 AND > 18 (oversold, not crashing)
+  - BB %B < 0.15 (near or below lower Bollinger Band, 20-period 2sigma)
+  - VWAP deviation < -0.3% (below 08:00 UTC session VWAP)
+  - ADX(14) < 25 (ranging market -- mean reversion valid)
+
+R:R = 2:1 (TP 1.5% / SL 0.75%)
+  Fee-adjusted breakeven WR: ~37% (OKX 0.05% taker = 0.10% round-trip)
+  15m mean reversion WR target: 40-50%
+Time window: 08:00-20:00 UTC (all liquid sessions)
 """
 
 import numpy as np
@@ -29,11 +34,11 @@ from datetime import datetime
 class VWAPMomentumAI(IStrategy):
     INTERFACE_VERSION = 3
 
-    # R:R = 1.6:1 -> breakeven WR = 38.5% gross, ~42% net (0.10% OKX round-trip fees)
-    minimal_roi = {"0": 0.008}  # TP 0.8%
-    stoploss = -0.005            # SL 0.5%
+    # R:R = 2:1 -> breakeven WR = 33.3% gross, ~37% post-fees
+    minimal_roi = {"0": 0.015}   # TP 1.5%
+    stoploss = -0.0075            # SL 0.75% (~1x 15m ATR, clears noise floor)
     trailing_stop = False
-    timeframe = "5m"
+    timeframe = "15m"
 
     process_only_new_candles = True
     use_exit_signal = True
@@ -41,12 +46,11 @@ class VWAPMomentumAI(IStrategy):
     ignore_roi_if_entry_signal = False
     startup_candle_count = 200
 
-    # Wider window: mean reversion works across all liquid sessions
+    # All liquid sessions: London open through US close
     TRADE_HOUR_START = 8
     TRADE_HOUR_END = 20
 
-    # AI gate: model predicts P(TP before SL); base rate ~0.35-0.45 for mean reversion
-    # 0.0 = bypass gate to validate rule-based signal first
+    # AI gate: 0.0 to validate rule-based signal first
     LONG_THRESHOLD = 0.0
 
     # ---- Session VWAP Helper -----------------------------------------------
@@ -81,6 +85,7 @@ class VWAPMomentumAI(IStrategy):
         self, dataframe: DataFrame, period: int,
         metadata: dict, **kwargs
     ) -> DataFrame:
+        """Auto-expanded across timeframes (15m, 1h) and periods by FreqAI."""
         dataframe[f"%-rsi_{period}"] = ta.RSI(dataframe, timeperiod=period)
         dataframe[f"%-adx_{period}"] = ta.ADX(dataframe, timeperiod=period)
         dataframe[f"%-atr_{period}"] = ta.ATR(dataframe, timeperiod=period)
@@ -90,10 +95,10 @@ class VWAPMomentumAI(IStrategy):
     def feature_engineering_expand_basic(
         self, dataframe: DataFrame, metadata: dict, **kwargs
     ) -> DataFrame:
-        # Momentum features (as context/negative signal for reversion)
-        dataframe["%-momentum_30m"] = dataframe["close"].pct_change(6)
-        dataframe["%-momentum_15m"] = dataframe["close"].pct_change(3)
-        dataframe["%-momentum_5m"]  = dataframe["close"].pct_change(1)
+        # Momentum context
+        dataframe["%-momentum_4c"]  = dataframe["close"].pct_change(4)   # 1h on 15m
+        dataframe["%-momentum_12c"] = dataframe["close"].pct_change(12)  # 3h on 15m
+        dataframe["%-momentum_1c"]  = dataframe["close"].pct_change(1)
 
         # Volume
         vol_sma20 = dataframe["volume"].rolling(20).mean().replace(0, np.nan)
@@ -102,11 +107,11 @@ class VWAPMomentumAI(IStrategy):
         # Session VWAP deviation
         dataframe["%-vwap_dev"] = self._session_vwap_dev(dataframe)
 
-        # RSI (fast + standard)
+        # RSI
         dataframe["%-rsi_7"]  = ta.RSI(dataframe, timeperiod=7)
         dataframe["%-rsi_14"] = ta.RSI(dataframe, timeperiod=14)
 
-        # Bollinger Band %B and width (core mean reversion signal)
+        # Bollinger Band %B and width
         _bb = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
         upper  = _bb["upperband"]
         middle = _bb["middleband"]
@@ -114,10 +119,10 @@ class VWAPMomentumAI(IStrategy):
         dataframe["%-bb_pct_b"] = (dataframe["close"] - lower) / (upper - lower + 1e-10)
         dataframe["%-bb_width"] = (upper - lower) / (middle + 1e-10)
 
-        # ATR normalized (volatility regime)
+        # ATR normalized
         dataframe["%-atr_norm"] = ta.ATR(dataframe, timeperiod=14) / (dataframe["close"] + 1e-10)
 
-        # ADX (ranging vs trending regime gate)
+        # ADX
         dataframe["%-adx_14"] = ta.ADX(dataframe, timeperiod=14)
 
         # OBV rate of change
@@ -172,13 +177,12 @@ class VWAPMomentumAI(IStrategy):
 
     def set_freqai_targets(self, dataframe: DataFrame, metadata: dict, **kwargs) -> DataFrame:
         """
-        Label: 1.0 = TP (+0.8%) hit before SL (-0.5%) in next 12 candles (60 min)
+        Label: 1.0 = TP (+1.5%) hit before SL (-0.75%) in next 8 candles (2h on 15m)
                0.0 = SL hit first or neither
-        Matches minimal_roi and stoploss.
         """
-        tp_pct    = 0.008   # 0.8%, matches minimal_roi
-        sl_pct    = 0.005   # 0.5%, matches stoploss
-        lookahead = 12      # 60 minutes at 5m resolution
+        tp_pct    = 0.015    # 1.5%, matches minimal_roi
+        sl_pct    = 0.0075   # 0.75%, matches stoploss
+        lookahead = 8        # 2 hours at 15m resolution
 
         close  = dataframe["close"].values
         high   = dataframe["high"].values
@@ -228,17 +232,15 @@ class VWAPMomentumAI(IStrategy):
         hour = pd.to_datetime(dataframe["date"]).dt.hour
         in_window = (hour >= self.TRADE_HOUR_START) & (hour < self.TRADE_HOUR_END)
 
-        # FreqAI gate -- fallback to True if model not yet available
         if "&-target_mean" in dataframe.columns:
             ai_gate = dataframe["&-target_mean"] > self.LONG_THRESHOLD
         else:
             ai_gate = pd.Series(True, index=dataframe.index)
 
-        # Mean reversion signal: oversold + below VWAP + ranging market
-        oversold    = (dataframe["rsi_14"] < 32) & (dataframe["rsi_14"] > 18)
-        bb_low      = dataframe["bb_pct_b"] < 0.15
-        below_vwap  = dataframe["vwap_dev"] < -0.002
-        ranging     = dataframe["adx_14"] < 25
+        oversold   = (dataframe["rsi_14"] < 32) & (dataframe["rsi_14"] > 18)
+        bb_low     = dataframe["bb_pct_b"] < 0.15
+        below_vwap = dataframe["vwap_dev"] < -0.003
+        ranging    = dataframe["adx_14"] < 25
 
         entry = oversold & bb_low & below_vwap & ranging & in_window & ai_gate
         dataframe.loc[entry, "enter_long"] = 1
@@ -246,7 +248,6 @@ class VWAPMomentumAI(IStrategy):
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # ROI handles TP (+0.8%), stoploss handles SL (-0.5%)
         return dataframe
 
     def confirm_trade_entry(
