@@ -27,12 +27,17 @@ jobs:
 
       - name: Install Freqtrade + FreqAI
         run: |
-          pip install freqtrade[freqai] xgboost scikit-learn --quiet
+          pip install "freqtrade[freqai]" xgboost scikit-learn --quiet
+
+      - name: Create Freqtrade user directory
+        run: |
+          freqtrade create-userdir --userdir freqtrade/user_data
 
       - name: Download OKX historical data
         run: |
           freqtrade download-data \
             --config freqtrade/config_okx.json \
+            --userdir freqtrade/user_data \
             --timerange ${{ github.event.inputs.timerange }} \
             --timeframes 5m 15m \
             --data-format-ohlcv json \
@@ -40,8 +45,10 @@ jobs:
 
       - name: Run FreqAI backtest
         run: |
+          mkdir -p results
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
+            --userdir freqtrade/user_data \
             --strategy EMAXGBoost \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \

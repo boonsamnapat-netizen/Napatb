@@ -113,6 +113,7 @@
     "password": "change_this_password"
   },
 
+  "user_data_dir": "freqtrade/user_data",
   "bot_name": "EMA-XGB-Scalper",
   "initial_state": "running",
   "force_entry_enable": false,
