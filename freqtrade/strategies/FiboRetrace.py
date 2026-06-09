@@ -54,10 +54,11 @@ class FiboRetrace(IStrategy):
     ENTRY_MODE   = "confirm"  # 'confirm' | 'touch'
 
     # Fibonacci ratios
-    FIB_382 = 0.382
-    FIB_50  = 0.500
-    FIB_618 = 0.618
-    FIB_EXT = 0.272        # extension beyond H for TP
+    FIB_382  = 0.382
+    FIB_50   = 0.500
+    FIB_618  = 0.618
+    FIB_STOP = 0.786       # SL just below this invalidation level
+    FIB_EXT  = 0.272       # extension beyond H for TP
 
     # ---- Pivot detection (no lookahead) -----------------------------------
 
@@ -142,7 +143,9 @@ class FiboRetrace(IStrategy):
         dataframe["fib_50"]  = H - self.FIB_50  * rng
         dataframe["fib_618"] = H - self.FIB_618 * rng
         dataframe["fib_target"] = H + self.FIB_EXT * rng    # extension TP
-        dataframe["fib_stop"]   = L * 0.999                  # just below swing low
+        # SL just below the 0.786 invalidation level (tight, classic Fibo stop)
+        # -- not the full swing low, which made losses too wide (R:R ~1.4 -> 2.7).
+        dataframe["fib_stop"] = (H - self.FIB_STOP * rng) * 0.999
 
         return dataframe
 
