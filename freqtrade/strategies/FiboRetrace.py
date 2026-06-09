@@ -268,29 +268,22 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Ride-the-trend matrix (Phase E.6) -------------------------------------
-# E.5: farther TP monotonically reduced losses (ext1.0 best at -10.9%).
-# Edge is in long trend continuation. Push extensions farther + test a
-# trailing stop that rides the peak. All: swing18, touch, stop0.786, base.
+# ---- Robustness sweep around the winner (Phase E.7) ------------------------
+# E.6: ext 1.618 was PROFITABLE (+7.02%, WR 15.4%, DD 20%). ext 1.0/2.618 lost.
+# Sweep the neighbourhood to check the peak is a broad plateau (robust) and not
+# a single overfit point. All: swing18, touch, stop0.786, base trend, no BE.
 
-# TP H + 1.0*range  (E.5 best, control)
 class FiboRecentTouch(FiboRetrace):
-    FIB_EXT = 1.0
+    FIB_EXT = 1.382
 
 
-# TP H + 1.618*range
 class FiboTrendTouch(FiboRetrace):
-    FIB_EXT = 1.618
+    FIB_EXT = 1.5
 
 
-# TP H + 2.618*range
 class FiboTrendConfirm(FiboRetrace):
-    FIB_EXT = 2.618
+    FIB_EXT = 1.618   # E.6 winner, re-confirm
 
 
-# trailing stop, no practical TP -- ride the whole trend
 class FiboRecentConfirm(FiboRetrace):
-    FIB_EXT = 10.0
-    USE_TRAIL = True
-    TRAIL_PCT = 0.08
-    TRAIL_ACT = 0.03
+    FIB_EXT = 1.8
