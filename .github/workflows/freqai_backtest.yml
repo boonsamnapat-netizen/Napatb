@@ -1,0 +1,57 @@
+name: FreqAI Backtest (XGBoost + OKX)
+
+on:
+  workflow_dispatch:
+    inputs:
+      timerange:
+        description: 'Backtest timerange (e.g. 20240901-20250301)'
+        required: false
+        default: '20240901-20250301'
+
+jobs:
+  freqai-backtest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: claude/claude-code-cloud-github-hokzc8
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Freqtrade + FreqAI
+        run: |
+          pip install freqtrade[freqai] xgboost scikit-learn --quiet
+
+      - name: Download OKX historical data
+        run: |
+          freqtrade download-data \
+            --config freqtrade/config_okx.json \
+            --timerange ${{ github.event.inputs.timerange }} \
+            --timeframes 5m 15m \
+            --data-format-ohlcv json \
+            --pairs BTC/USDT ETH/USDT
+
+      - name: Run FreqAI backtest
+        run: |
+          freqtrade backtesting \
+            --config freqtrade/config_okx.json \
+            --strategy EMAXGBoost \
+            --strategy-path freqtrade/strategies/ \
+            --timerange ${{ github.event.inputs.timerange }} \
+            --freqai-backtest-live-models \
+            2>&1 | tee results/freqai_backtest_result.txt
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/freqai_backtest_result.txt
+          git diff --cached --quiet || git commit -m "freqai backtest result: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
