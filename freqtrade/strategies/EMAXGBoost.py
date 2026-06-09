@@ -91,7 +91,9 @@ class EMAXGBoost(IStrategy):
         dataframe["%-vol_ratio"] = dataframe["%-vol_ratio"].fillna(1.0)
 
         # Bollinger Band position
-        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
+        _bb = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
+        upper = _bb["upperband"]
+        lower = _bb["lowerband"]
         dataframe["%-bb_upper"] = upper
         dataframe["%-bb_lower"] = lower
         dataframe["%-bb_pos"] = (dataframe["close"] - lower) / (upper - lower + 1e-10)
@@ -125,8 +127,8 @@ class EMAXGBoost(IStrategy):
                                      (dataframe["high"] - dataframe["low"] + 1e-10)
 
         # MACD histogram (momentum confirmation)
-        macd, signal, hist = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
-        dataframe["%-macd_hist"] = hist
+        _macd = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
+        dataframe["%-macd_hist"] = _macd["macdhist"]
 
         # Rate of change (5 candles)
         dataframe["%-roc_5"] = dataframe["close"].pct_change(5)
@@ -139,8 +141,8 @@ class EMAXGBoost(IStrategy):
         dataframe["%-obv_slope"] = (obv - obv.shift(5)) / (obv.shift(5).abs() + 1e-10)
 
         # Bollinger bandwidth
-        upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
-        dataframe["%-bb_width"] = (upper - lower) / (mid + 1e-10)
+        _bb2 = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2.0, nbdevdn=2.0)
+        dataframe["%-bb_width"] = (_bb2["upperband"] - _bb2["lowerband"]) / (_bb2["middleband"] + 1e-10)
 
         return dataframe
 
