@@ -45,9 +45,10 @@ class VWAPMomentumAI(IStrategy):
     TRADE_HOUR_START = 13
     TRADE_HOUR_END = 17
 
-    # FreqAI regressor predicts P(TP before SL); XGBoost base rate ~0.28-0.32
-    # 0.40 = above-average confidence only
-    LONG_THRESHOLD = 0.40
+    # FreqAI regressor predicts P(TP before SL); XGBoost base rate ~0.28-0.32.
+    # Set to 0.0 to bypass AI gate and test pure rule-based signal first.
+    # Raise to ~0.33 once we confirm rule-based WR > 28% breakeven.
+    LONG_THRESHOLD = 0.0
 
     # ─── Session VWAP Helper ─────────────────────────────────────────────────
 
