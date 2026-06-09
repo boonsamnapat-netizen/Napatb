@@ -1,113 +1,185 @@
-2026-06-09 05:27:37,353 - freqtrade - INFO - freqtrade 2026.5.1
-2026-06-09 05:27:38,533 - freqtrade.configuration.load_config - INFO - Using config: freqtrade/config_okx.json ...
-2026-06-09 05:27:38,537 - freqtrade.loggers - INFO - Enabling colorized output.
-2026-06-09 05:27:38,538 - freqtrade.loggers - INFO - Logfile configured
-2026-06-09 05:27:38,538 - freqtrade.loggers - INFO - Verbosity set to 1
-2026-06-09 05:27:38,539 - freqtrade.configuration.configuration - INFO - Using additional Strategy lookup path: freqtrade/strategies/
-2026-06-09 05:27:38,540 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
-2026-06-09 05:27:38,540 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20240901-20250301 ...
-2026-06-09 05:27:38,541 - freqtrade.configuration.configuration - INFO - Using user-data directory: freqtrade/user_data ...
-2026-06-09 05:27:38,541 - freqtrade.configuration.configuration - INFO - Using data directory: freqtrade/user_data/data/okx ...
-2026-06-09 05:27:38,542 - freqtrade.configuration.configuration - INFO - Parameter --cache=day detected ...
-2026-06-09 05:27:38,543 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20240901-20250301
-2026-06-09 05:27:38,543 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
-2026-06-09 05:27:38,549 - freqtrade.exchange.check_exchange - INFO - Exchange "okx" is officially supported by the Freqtrade development team.
-2026-06-09 05:27:38,550 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
-2026-06-09 05:27:38,550 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
-2026-06-09 05:27:38,553 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
-2026-06-09 05:27:38,554 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
-2026-06-09 05:27:38,554 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.56
-2026-06-09 05:27:38,564 - freqtrade.exchange.exchange - INFO - Using Exchange "OKX"
-2026-06-09 05:27:38,564 - freqtrade.exchange.exchange - DEBUG - Performing scheduled market reload..
-2026-06-09 05:27:39,497 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange 'Okx'...
-2026-06-09 05:27:39,498 - freqtrade.resolvers.iresolver - DEBUG - Searching for IStrategy EMAXGBoost in '/home/runner/work/Napatb/Napatb/freqtrade/strategies'
-2026-06-09 05:27:39,508 - freqtrade.resolvers.iresolver - INFO - Using resolved strategy EMAXGBoost from '/home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py'...
-2026-06-09 05:27:39,508 - freqtrade.strategy.hyper - INFO - Found no parameter file.
-2026-06-09 05:27:39,509 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'minimal_roi' with value from the configuration: {'0': 0.005}.
-2026-06-09 05:27:39,509 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'timeframe' with value from the configuration: 5m.
-2026-06-09 05:27:39,510 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stoploss' with value from the configuration: -0.015.
-2026-06-09 05:27:39,510 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'trailing_stop' with value from the configuration: False.
-2026-06-09 05:27:39,511 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'process_only_new_candles' with value from the configuration: True.
-2026-06-09 05:27:39,511 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'order_types' with value from the configuration: {'entry': 'limit', 'exit': 'limit', 'emergency_exit': 
+2026-06-09 05:32:23,536 - freqtrade - INFO - freqtrade 2026.5.1
+2026-06-09 05:32:24,636 - freqtrade.configuration.load_config - INFO - Using config: freqtrade/config_okx.json ...
+2026-06-09 05:32:24,639 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-06-09 05:32:24,639 - freqtrade.loggers - INFO - Logfile configured
+2026-06-09 05:32:24,640 - freqtrade.loggers - INFO - Verbosity set to 1
+2026-06-09 05:32:24,640 - freqtrade.configuration.configuration - INFO - Using additional Strategy lookup path: freqtrade/strategies/
+2026-06-09 05:32:24,640 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-06-09 05:32:24,641 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20240901-20250301 ...
+2026-06-09 05:32:24,641 - freqtrade.configuration.configuration - INFO - Using user-data directory: freqtrade/user_data ...
+2026-06-09 05:32:24,642 - freqtrade.configuration.configuration - INFO - Using data directory: freqtrade/user_data/data/okx ...
+2026-06-09 05:32:24,642 - freqtrade.configuration.configuration - INFO - Parameter --cache=day detected ...
+2026-06-09 05:32:24,643 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20240901-20250301
+2026-06-09 05:32:24,643 - freqtrade.configuration.configuration - INFO - Using freqaimodel class name: XGBoostClassifier
+2026-06-09 05:32:24,643 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-06-09 05:32:24,649 - freqtrade.exchange.check_exchange - INFO - Exchange "okx" is officially supported by the Freqtrade development team.
+2026-06-09 05:32:24,650 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-06-09 05:32:24,650 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-06-09 05:32:24,653 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-06-09 05:32:24,653 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-06-09 05:32:24,654 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.56
+2026-06-09 05:32:24,664 - freqtrade.exchange.exchange - INFO - Using Exchange "OKX"
+2026-06-09 05:32:24,664 - freqtrade.exchange.exchange - DEBUG - Performing scheduled market reload..
+2026-06-09 05:32:25,763 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange 'Okx'...
+2026-06-09 05:32:25,764 - freqtrade.resolvers.iresolver - DEBUG - Searching for IStrategy EMAXGBoost in '/home/runner/work/Napatb/Napatb/freqtrade/strategies'
+2026-06-09 05:32:25,773 - freqtrade.resolvers.iresolver - INFO - Using resolved strategy EMAXGBoost from '/home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py'...
+2026-06-09 05:32:25,774 - freqtrade.strategy.hyper - INFO - Found no parameter file.
+2026-06-09 05:32:25,775 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'minimal_roi' with value from the configuration: {'0': 0.005}.
+2026-06-09 05:32:25,775 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'timeframe' with value from the configuration: 5m.
+2026-06-09 05:32:25,775 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stoploss' with value from the configuration: -0.015.
+2026-06-09 05:32:25,776 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'trailing_stop' with value from the configuration: False.
+2026-06-09 05:32:25,776 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'process_only_new_candles' with value from the configuration: True.
+2026-06-09 05:32:25,776 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'order_types' with value from the configuration: {'entry': 'limit', 'exit': 'limit', 'emergency_exit': 
 'market', 'force_exit': 'market', 'force_entry': 'market', 'stoploss': 'limit', 'stoploss_on_exchange': True, 'stoploss_on_exchange_interval': 60}.
-2026-06-09 05:27:39,512 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_currency' with value from the configuration: USDT.
-2026-06-09 05:27:39,512 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_amount' with value from the configuration: unlimited.
-2026-06-09 05:27:39,513 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'use_exit_signal' with value from the configuration: True.
-2026-06-09 05:27:39,513 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'exit_profit_only' with value from the configuration: False.
-2026-06-09 05:27:39,513 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'ignore_roi_if_entry_signal' with value from the configuration: False.
-2026-06-09 05:27:39,515 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'position_adjustment_enable' with value from the configuration: False.
-2026-06-09 05:27:39,515 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'max_open_trades' with value from the configuration: 2.
-2026-06-09 05:27:39,515 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using minimal_roi: {'0': 0.005}
-2026-06-09 05:27:39,516 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using timeframe: 5m
-2026-06-09 05:27:39,516 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stoploss: -0.015
-2026-06-09 05:27:39,517 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop: False
-2026-06-09 05:27:39,517 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop_positive_offset: 0.0
-2026-06-09 05:27:39,517 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_only_offset_is_reached: False
-2026-06-09 05:27:39,518 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_custom_stoploss: False
-2026-06-09 05:27:39,518 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using process_only_new_candles: True
-2026-06-09 05:27:39,519 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_types: {'entry': 'limit', 'exit': 'limit', 'emergency_exit': 'market', 'force_exit': 'market', 
+2026-06-09 05:32:25,777 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_currency' with value from the configuration: USDT.
+2026-06-09 05:32:25,777 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'stake_amount' with value from the configuration: unlimited.
+2026-06-09 05:32:25,778 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'use_exit_signal' with value from the configuration: True.
+2026-06-09 05:32:25,778 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'exit_profit_only' with value from the configuration: False.
+2026-06-09 05:32:25,778 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'ignore_roi_if_entry_signal' with value from the configuration: False.
+2026-06-09 05:32:25,779 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'position_adjustment_enable' with value from the configuration: False.
+2026-06-09 05:32:25,779 - freqtrade.resolvers.strategy_resolver - INFO - Override strategy 'max_open_trades' with value from the configuration: 2.
+2026-06-09 05:32:25,779 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using minimal_roi: {'0': 0.005}
+2026-06-09 05:32:25,780 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using timeframe: 5m
+2026-06-09 05:32:25,780 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stoploss: -0.015
+2026-06-09 05:32:25,780 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop: False
+2026-06-09 05:32:25,781 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_stop_positive_offset: 0.0
+2026-06-09 05:32:25,781 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using trailing_only_offset_is_reached: False
+2026-06-09 05:32:25,781 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_custom_stoploss: False
+2026-06-09 05:32:25,782 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using process_only_new_candles: True
+2026-06-09 05:32:25,782 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_types: {'entry': 'limit', 'exit': 'limit', 'emergency_exit': 'market', 'force_exit': 'market', 
 'force_entry': 'market', 'stoploss': 'limit', 'stoploss_on_exchange': True, 'stoploss_on_exchange_interval': 60}
-2026-06-09 05:27:39,519 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_time_in_force: {'entry': 'GTC', 'exit': 'GTC'}
-2026-06-09 05:27:39,520 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_currency: USDT
-2026-06-09 05:27:39,520 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_amount: unlimited
-2026-06-09 05:27:39,520 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using startup_candle_count: 100
-2026-06-09 05:27:39,521 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_exit_signal: True
-2026-06-09 05:27:39,521 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_only: False
-2026-06-09 05:27:39,522 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_roi_if_entry_signal: False
-2026-06-09 05:27:39,522 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_offset: 0.0
-2026-06-09 05:27:39,522 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using disable_dataframe_checks: False
-2026-06-09 05:27:39,523 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_buying_expired_candle_after: 0
-2026-06-09 05:27:39,523 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using position_adjustment_enable: False
-2026-06-09 05:27:39,523 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_entry_position_adjustment: -1
-2026-06-09 05:27:39,524 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_open_trades: 2
-2026-06-09 05:27:39,524 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
-2026-06-09 05:27:39,527 - freqtrade.resolvers.iresolver - DEBUG - Searching for IPairList StaticPairList in 
+2026-06-09 05:32:25,782 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using order_time_in_force: {'entry': 'GTC', 'exit': 'GTC'}
+2026-06-09 05:32:25,783 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_currency: USDT
+2026-06-09 05:32:25,783 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using stake_amount: unlimited
+2026-06-09 05:32:25,783 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using startup_candle_count: 100
+2026-06-09 05:32:25,784 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using use_exit_signal: True
+2026-06-09 05:32:25,784 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_only: False
+2026-06-09 05:32:25,784 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_roi_if_entry_signal: False
+2026-06-09 05:32:25,785 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using exit_profit_offset: 0.0
+2026-06-09 05:32:25,785 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using disable_dataframe_checks: False
+2026-06-09 05:32:25,785 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using ignore_buying_expired_candle_after: 0
+2026-06-09 05:32:25,786 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using position_adjustment_enable: False
+2026-06-09 05:32:25,786 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_entry_position_adjustment: -1
+2026-06-09 05:32:25,786 - freqtrade.resolvers.strategy_resolver - INFO - Strategy using max_open_trades: 2
+2026-06-09 05:32:25,787 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-06-09 05:32:25,789 - freqtrade.resolvers.iresolver - DEBUG - Searching for IPairList StaticPairList in 
 '/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist'
-2026-06-09 05:27:39,528 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/AgeFilter.py as it does not 
+2026-06-09 05:32:25,790 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/AgeFilter.py as it does not 
 contain class StaticPairList.
-2026-06-09 05:27:39,528 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/CrossMarketPairList.py as it 
+2026-06-09 05:32:25,790 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/CrossMarketPairList.py as it 
 does not contain class StaticPairList.
-2026-06-09 05:27:39,529 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/DelistFilter.py as it does 
+2026-06-09 05:32:25,791 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/DelistFilter.py as it does 
 not contain class StaticPairList.
-2026-06-09 05:27:39,530 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/FullTradesFilter.py as it 
+2026-06-09 05:32:25,792 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/FullTradesFilter.py as it 
 does not contain class StaticPairList.
-2026-06-09 05:27:39,530 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/IPairList.py as it does not 
+2026-06-09 05:32:25,792 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/IPairList.py as it does not 
 contain class StaticPairList.
-2026-06-09 05:27:39,531 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/MarketCapPairList.py as it 
+2026-06-09 05:32:25,793 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/MarketCapPairList.py as it 
 does not contain class StaticPairList.
-2026-06-09 05:27:39,532 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/OffsetFilter.py as it does 
+2026-06-09 05:32:25,793 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/OffsetFilter.py as it does 
 not contain class StaticPairList.
-2026-06-09 05:27:39,532 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PairInformationFilter.py as 
+2026-06-09 05:32:25,794 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PairInformationFilter.py as 
 it does not contain class StaticPairList.
-2026-06-09 05:27:39,533 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PercentChangePairList.py as 
+2026-06-09 05:32:25,794 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PercentChangePairList.py as 
 it does not contain class StaticPairList.
-2026-06-09 05:27:39,534 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PerformanceFilter.py as it 
+2026-06-09 05:32:25,795 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PerformanceFilter.py as it 
 does not contain class StaticPairList.
-2026-06-09 05:27:39,534 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PrecisionFilter.py as it does
+2026-06-09 05:32:25,796 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PrecisionFilter.py as it does
 not contain class StaticPairList.
-2026-06-09 05:27:39,535 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PriceFilter.py as it does not
+2026-06-09 05:32:25,796 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/PriceFilter.py as it does not
 contain class StaticPairList.
-2026-06-09 05:27:39,536 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/ProducerPairList.py as it 
+2026-06-09 05:32:25,797 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/ProducerPairList.py as it 
 does not contain class StaticPairList.
-2026-06-09 05:27:39,536 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/RemotePairList.py as it does 
+2026-06-09 05:32:25,797 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/RemotePairList.py as it does 
 not contain class StaticPairList.
-2026-06-09 05:27:39,537 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/ShuffleFilter.py as it does 
+2026-06-09 05:32:25,798 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/ShuffleFilter.py as it does 
 not contain class StaticPairList.
-2026-06-09 05:27:39,537 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/SpreadFilter.py as it does 
+2026-06-09 05:32:25,798 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/SpreadFilter.py as it does 
 not contain class StaticPairList.
-2026-06-09 05:27:39,538 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist StaticPairList from 
+2026-06-09 05:32:25,799 - freqtrade.resolvers.iresolver - INFO - Using resolved pairlist StaticPairList from 
 '/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/plugins/pairlist/StaticPairList.py'...
-2026-06-09 05:27:39,546 - freqtrade.plugins.pairlistmanager - DEBUG - Whitelist with 2 pairs: ['BTC/USDT', 'ETH/USDT']
-2026-06-09 05:27:39,547 - freqtrade.optimize.backtesting - INFO - Using fee 0.1500% - worst case fee from exchange (lowest tier).
-2026-06-09 05:27:39,548 - freqtrade.data.dataprovider - INFO - Increasing startup_candle_count for freqai on 5m to 8740
-2026-06-09 05:27:39,549 - freqtrade.data.history.history_utils - DEBUG - Using indicator startup period: 8740 ...
-2026-06-09 05:27:39,608 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT, spot, 5m, data starts at 2024-09-01 00:00:00
-2026-06-09 05:27:39,684 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT, spot, 5m, data starts at 2024-09-01 00:00:00
-2026-06-09 05:27:39,708 - freqtrade.optimize.backtesting - INFO - Loading data from 2024-09-01 00:00:00 up to 2025-03-01 00:00:00 (181 days).
-2026-06-09 05:27:39,708 - freqtrade.configuration.timerange - WARNING - Moving start-date by 8740 candles to account for startup time.
-2026-06-09 05:27:40,538 - freqtrade.optimize.backtesting - INFO - Dataload complete. Calculating indicators
-2026-06-09 05:27:40,540 - freqtrade.optimize.backtesting - INFO - Running backtesting for Strategy EMAXGBoost
-2026-06-09 05:27:41,510 - freqtrade - ERROR - No freqaimodel set. Please use `--freqaimodel` to specify the FreqaiModel class to use.
-
-2026-06-09 05:27:41,643 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-06-09 05:27:41,643 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-06-09 05:32:25,807 - freqtrade.plugins.pairlistmanager - DEBUG - Whitelist with 2 pairs: ['BTC/USDT', 'ETH/USDT']
+2026-06-09 05:32:25,807 - freqtrade.optimize.backtesting - INFO - Using fee 0.1500% - worst case fee from exchange (lowest tier).
+2026-06-09 05:32:25,808 - freqtrade.data.dataprovider - INFO - Increasing startup_candle_count for freqai on 5m to 8740
+2026-06-09 05:32:25,809 - freqtrade.data.history.history_utils - DEBUG - Using indicator startup period: 8740 ...
+2026-06-09 05:32:25,868 - freqtrade.data.history.datahandlers.idatahandler - WARNING - BTC/USDT, spot, 5m, data starts at 2024-09-01 00:00:00
+2026-06-09 05:32:25,944 - freqtrade.data.history.datahandlers.idatahandler - WARNING - ETH/USDT, spot, 5m, data starts at 2024-09-01 00:00:00
+2026-06-09 05:32:25,966 - freqtrade.optimize.backtesting - INFO - Loading data from 2024-09-01 00:00:00 up to 2025-03-01 00:00:00 (181 days).
+2026-06-09 05:32:25,967 - freqtrade.configuration.timerange - WARNING - Moving start-date by 8740 candles to account for startup time.
+2026-06-09 05:32:26,763 - freqtrade.optimize.backtesting - INFO - Dataload complete. Calculating indicators
+2026-06-09 05:32:26,765 - freqtrade.optimize.backtesting - INFO - Running backtesting for Strategy EMAXGBoost
+2026-06-09 05:32:27,702 - freqtrade.resolvers.iresolver - DEBUG - Searching for IFreqaiModel XGBoostClassifier in 'freqtrade/user_data/freqaimodels'
+2026-06-09 05:32:27,702 - freqtrade.resolvers.iresolver - DEBUG - Searching for IFreqaiModel XGBoostClassifier in 
+'/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models'
+2026-06-09 05:32:27,703 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/LightGBMClassifier.py
+as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,704 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/LightGBMClassifierMultiTarget.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,704 - freqtrade.resolvers.iresolver - DEBUG - Skipping /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/LightGBMRegressor.py 
+as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,705 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/LightGBMRegressorMultiTarget.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,706 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/PyTorchMLPClassifier.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,706 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/PyTorchMLPRegressor.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,707 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/PyTorchTransformerRegressor.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,707 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/ReinforcementLearner.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,708 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/ReinforcementLearner_multiproc.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,708 - freqtrade.resolvers.iresolver - DEBUG - Skipping 
+/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/SKLearnRandomForestClassifier.py as it does not contain class XGBoostClassifier.
+2026-06-09 05:32:27,726 - freqtrade.resolvers.iresolver - INFO - Using resolved freqaimodel XGBoostClassifier from 
+'/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/prediction_models/XGBoostClassifier.py'...
+2026-06-09 05:32:27,727 - freqtrade.freqai.data_drawer - INFO - Could not find existing datadrawer, starting from scratch
+2026-06-09 05:32:27,727 - freqtrade.freqai.data_drawer - INFO - Could not find existing historic_predictions, starting from scratch
+2026-06-09 05:32:27,728 - freqtrade.freqai.freqai_interface - INFO - Set fresh train queue from whitelist. Queue: ['BTC/USDT', 'ETH/USDT']
+2026-06-09 05:32:27,735 - freqtrade.strategy.interface - DEBUG - Populating indicators for pair BTC/USDT.
+2026-06-09 05:32:27,738 - freqtrade.freqai.freqai_interface - INFO - Training 91 timeranges
+2026-06-09 05:32:27,740 - freqtrade.freqai.freqai_interface - INFO - Training BTC/USDT, 1/2 pairs from 2024-08-02 00:00:00 to 2024-09-01 00:00:00, 1/91 trains
+2026-06-09 05:32:27,740 - freqtrade.freqai.data_kitchen - INFO - Could not find backtesting prediction file at 
+freqtrade/user_data/models/ema_xgb_v1/backtesting_predictions/cb_btc_1725148800_prediction.feather
+2026-06-09 05:32:27,746 - freqtrade.freqai.data_kitchen - DEBUG - Populating features for BTC/USDT 5m
+2026-06-09 05:32:27,793 - freqtrade - ERROR - Fatal exception!
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/main.py", line 52, in main
+    return_code = args["func"](args)
+                  ^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/commands/optimize_commands.py", line 61, in start_backtesting
+    backtesting.start()
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/optimize/backtesting.py", line 1859, in start
+    min_date, max_date = self.backtest_one_strategy(strat, data, timerange)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/optimize/backtesting.py", line 1769, in backtest_one_strategy
+    preprocessed = self.strategy.advise_all_indicators(data)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/strategy/interface.py", line 1750, in advise_all_indicators
+    res[pair] = self.advise_indicators(pair_data.copy(), {"pair": pair}).copy()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/strategy/interface.py", line 1812, in advise_indicators
+    dataframe = self.populate_indicators(dataframe, metadata)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py", line 202, in populate_indicators
+    dataframe = self.freqai.start(dataframe, metadata, self)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/freqai_interface.py", line 161, in start
+    dk = self.start_backtesting(dataframe, metadata, self.dk, strategy)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/freqai_interface.py", line 343, in start_backtesting
+    dataframe = self.dk.use_strategy_to_populate_indicators(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/data_kitchen.py", line 845, in use_strategy_to_populate_indicators
+    dataframe = self.populate_features(
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/freqtrade/freqai/data_kitchen.py", line 759, in populate_features
+    generic_df = strategy.feature_engineering_expand_basic(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py", line 94, in feature_engineering_expand_basic
+    upper, mid, lower = ta.BBANDS(dataframe, timeperiod=20, nbdevup=2, nbdevdn=2)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "talib/_abstract.pxi", line 461, in talib._ta_lib.Function.__call__
+  File "talib/_abstract.pxi", line 311, in talib._ta_lib.Function.set_function_args
+  File "talib/_abstract.pxi", line 530, in talib._ta_lib.Function.__check_opt_input_value
+TypeError: Invalid parameter value for nbdevup (expected float, got int)
