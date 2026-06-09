@@ -49,7 +49,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy EMAXGBoost \
+            --strategy VWAPMomentumAI \
             --strategy-path freqtrade/strategies/ \
             --freqaimodel XGBoostRegressor \
             --timerange ${{ github.event.inputs.timerange }} \
