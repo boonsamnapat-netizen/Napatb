@@ -1,4 +1,4 @@
-name: FreqAI Backtest (XGBoost + OKX)
+name: Backtest (Fibo Retrace + OKX)
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: '20230301-20250301'
 
 jobs:
-  freqai-backtest:
+  backtest:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,33 +25,32 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Freqtrade + FreqAI
+      - name: Install Freqtrade
         run: |
-          pip install "freqtrade[freqai]<2026.5" xgboost scikit-learn --quiet
+          pip install "freqtrade<2026.5" --quiet
 
       - name: Create Freqtrade user directory
         run: |
           freqtrade create-userdir --userdir freqtrade/user_data
 
-      - name: Download OKX historical data (2 years + buffer)
+      - name: Download OKX historical data (1h + 4h)
         run: |
           freqtrade download-data \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
             --timerange 20230101-20250601 \
-            --timeframes 15m 1h \
+            --timeframes 1h 4h \
             --data-format-ohlcv json \
             --pairs BTC/USDT ETH/USDT
 
-      - name: Run FreqAI backtest
+      - name: Run backtest (4 Fibo variants)
         run: |
           mkdir -p results
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy VWAPMomentumAI \
+            --strategy-list FiboRecentConfirm FiboRecentTouch FiboTrendConfirm FiboTrendTouch \
             --strategy-path freqtrade/strategies/ \
-            --freqaimodel XGBoostRegressor \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/freqai_backtest_result.txt
 
@@ -60,5 +59,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/freqai_backtest_result.txt
-          git diff --cached --quiet || git commit -m "freqai backtest result: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "backtest result: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
