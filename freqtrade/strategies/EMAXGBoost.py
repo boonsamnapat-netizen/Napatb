@@ -38,9 +38,10 @@ class EMAXGBoost(IStrategy):
     TRADE_HOUR_START = 13
     TRADE_HOUR_END = 17
 
-    # FreqAI confidence threshold
-    LONG_THRESHOLD  = 0.60
-    SHORT_THRESHOLD = 0.60  # for future short support
+    # FreqAI confidence threshold — regressor output clusters at 0.35-0.45,
+    # so threshold must sit below the model's typical bullish prediction ceiling
+    LONG_THRESHOLD  = 0.40
+    SHORT_THRESHOLD = 0.40
 
     def feature_engineering_expand_all(
         self, dataframe: DataFrame, period: int,
@@ -240,10 +241,8 @@ class EMAXGBoost(IStrategy):
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # Let ROI and stoploss handle exits; add AI-based early exit
-        low_confidence = dataframe["&-target_mean"] < 0.4
-
-        dataframe.loc[low_confidence, "exit_long"] = 1
+        # ROI and stoploss handle exits; AI exit only for very low confidence
+        dataframe.loc[dataframe["&-target_mean"] < 0.20, "exit_long"] = 1
         return dataframe
 
     def confirm_trade_entry(
