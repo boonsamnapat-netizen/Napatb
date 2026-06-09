@@ -251,26 +251,27 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Trend-strength matrix (Phase E.4) -------------------------------------
-# Base = E.2 best (swing18, touch, stop0.786, ext0.272, no BE), WR 26.3%,
-# breakeven 28.8% -- short 2.5 pts. Lever now = entry quality via 4H trend
-# strength. Trade only stronger uptrends so retracements bounce more often.
+# ---- TP-distance matrix (Phase E.5) ----------------------------------------
+# E.4: trend-strength filters did not lift WR (EMA200 even lowered it).
+# Remaining structural axis = take-profit distance. Far extension TP is only
+# reached 26% of the time. Closer TP -> more TP hits -> higher WR (lower R:R).
+# All: swing18, touch, stop0.786, base trend, no BE. Only FIB_EXT varies.
 
-# control = Phase E.2 (base trend filter only)
+# TP at swing high H (ext 0) -- closest, highest expected WR
 class FiboRecentTouch(FiboRetrace):
-    TREND_MODE = "base"
+    FIB_EXT = 0.0
 
 
-# + 4H EMA50 rising
+# TP H + 0.236*range
 class FiboTrendTouch(FiboRetrace):
-    TREND_MODE = "slope"
+    FIB_EXT = 0.236
 
 
-# + price above 4H EMA200
+# TP H + 0.5*range
 class FiboTrendConfirm(FiboRetrace):
-    TREND_MODE = "ema200"
+    FIB_EXT = 0.5
 
 
-# + both (rising EMA50 and above EMA200)
+# TP H + 1.0*range -- farthest, highest R:R / lowest WR
 class FiboRecentConfirm(FiboRetrace):
-    TREND_MODE = "both"
+    FIB_EXT = 1.0
