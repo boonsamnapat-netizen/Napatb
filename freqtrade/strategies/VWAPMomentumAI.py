@@ -50,10 +50,10 @@ class VWAPMomentumAI(IStrategy):
     TRADE_HOUR_START = 8
     TRADE_HOUR_END = 20
 
-    # AI gate: model predicts P(TP before SL); base rate ~0.31 for mean reversion.
-    # 0.35 selects signals where model is above-average confident (~top 30% of signals).
-    # Was 0.0 (bypassed) during rule-based validation runs.
-    LONG_THRESHOLD = 0.35
+    # AI gate: model base rate ~0.31 (= mean reversion WR).
+    # 0.32 = just above mean -- selects ~top 40% of signals by model confidence.
+    # 0.35 gave 0 trades (model range too narrow for that threshold).
+    LONG_THRESHOLD = 0.32
 
     # ---- Session VWAP Helper -----------------------------------------------
 
