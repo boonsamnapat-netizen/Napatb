@@ -268,22 +268,22 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Robustness sweep around the winner (Phase E.7) ------------------------
-# E.6: ext 1.618 was PROFITABLE (+7.02%, WR 15.4%, DD 20%). ext 1.0/2.618 lost.
-# Sweep the neighbourhood to check the peak is a broad plateau (robust) and not
-# a single overfit point. All: swing18, touch, stop0.786, base trend, no BE.
+# ---- Peak sweep 1.8-2.4 (Phase E.8) ----------------------------------------
+# E.7: profit kept rising 1.382->1.8 (+17.77%); E.6 had 2.618 losing (-20%).
+# True peak is between 1.8 and 2.618 -- locate it. Same 21 huge-trend winners
+# carry the result; farther TP books more per winner until trends fall short.
 
 class FiboRecentTouch(FiboRetrace):
-    FIB_EXT = 1.382
+    FIB_EXT = 1.8     # E.7 best, re-confirm
 
 
 class FiboTrendTouch(FiboRetrace):
-    FIB_EXT = 1.5
+    FIB_EXT = 2.0
 
 
 class FiboTrendConfirm(FiboRetrace):
-    FIB_EXT = 1.618   # E.6 winner, re-confirm
+    FIB_EXT = 2.2
 
 
 class FiboRecentConfirm(FiboRetrace):
-    FIB_EXT = 1.8
+    FIB_EXT = 2.4
