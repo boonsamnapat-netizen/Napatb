@@ -1,0 +1,60 @@
+======================================================================
+ AI TRADING BACKTEST — Phase 3.1 (Tuned v2)
+ Period : 2024-09-01  →  2025-03-01
+ Window : 13:00–17:00 UTC  |  Capital: $10,000
+ Fee    : 0.02% per side (Binance MAKER — limit orders)
+ Changes: EMA 5/13, Vol 1.3x, VWAP 0.6%, RSI<25/>75, TP→0.5%
+======================================================================
+
+[1/3] Loading market data...
+  ✓ OKX API reachable — fetching live data
+  BTC/USDT  5m  ... 52,128 candles
+  BTC/USDT  15m ... 17,376 candles
+  ETH/USDT  5m  ... 52,128 candles
+  ETH/USDT  15m ... 17,376 candles
+  SOL/USDT  5m  ... 52,128 candles
+  SOL/USDT  15m ... 17,376 candles
+
+[2/3] Running strategies...
+
+  BTC/USDT
+    A_EMA_Cross    → 129 signals fired
+    B_VWAP_Rev     → 745 signals fired
+    C_RSI_BB       → 70 signals fired
+
+  ETH/USDT
+    A_EMA_Cross    → 120 signals fired
+    B_VWAP_Rev     → 903 signals fired
+    C_RSI_BB       → 64 signals fired
+    D_BTC_Lead     → 598 signals fired
+
+  SOL/USDT
+    A_EMA_Cross    → 103 signals fired
+    B_VWAP_Rev     → 1033 signals fired
+    C_RSI_BB       → 51 signals fired
+    D_BTC_Lead     → 748 signals fired
+
+======================================================================
+[3/3] BACKTEST RESULTS
+======================================================================
+Pair         Strategy        Trades  WinRate   Return  ProfFact   AvgWin   AvgLoss
+----------------------------------------------------------------------
+BTC/USDT     A_EMA_Cross        129    39.5%   +4.84%      1.64  +0.501%   -0.200%
+BTC/USDT     B_VWAP_Rev         745    30.7%  -16.86%      1.11  +0.501%   -0.200%
+BTC/USDT     C_RSI_BB            70    21.4%   -8.66%      0.55  +0.501%   -0.250%
+ETH/USDT     A_EMA_Cross        120    45.0%   +9.43%      2.05  +0.501%   -0.200%
+ETH/USDT     B_VWAP_Rev         903    28.8%  -29.35%      1.01  +0.501%   -0.200%
+ETH/USDT     C_RSI_BB            64    42.2%   +1.70%      1.46  +0.501%   -0.250%
+ETH/USDT     D_BTC_Lead         598    31.1%  -28.76%      0.91  +0.501%   -0.250%
+SOL/USDT     A_EMA_Cross        103    33.0%   -0.92%      1.24  +0.501%   -0.200%
+SOL/USDT     B_VWAP_Rev        1033    28.8%  -32.99%      1.01  +0.501%   -0.200%
+SOL/USDT     C_RSI_BB            51    33.3%   -2.01%      1.00  +0.502%   -0.250%
+SOL/USDT     D_BTC_Lead         748    33.7%  -24.34%      1.02  +0.501%   -0.250%
+======================================================================
+
+★  STRATEGIES PASSING FILTER (Return>0, PF>1.2, WR>34%, Trades≥30)
+   ETH/USDT     A_EMA_Cross     WR=45.0%  Return=+9.43%  PF=2.05  Trades=120
+   BTC/USDT     A_EMA_Cross     WR=39.5%  Return=+4.84%  PF=1.64  Trades=129
+   ETH/USDT     C_RSI_BB        WR=42.2%  Return=+1.70%  PF=1.46  Trades=64
+
+Done.
