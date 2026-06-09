@@ -1,12 +1,12 @@
 """
-EMAXGBoost — FreqAI XGBoost Classifier wrapping EMA 5/13 Cross Strategy
+EMAXGBoost — FreqAI XGBoost Regressor wrapping EMA 5/13 Cross Strategy
 Phase B: ML upgrade from rule-based scalper
 
 Logic:
   - Feature engineering: EMA cross, volume, RSI, ATR, ADX, Bollinger, VWAP deviation, time
-  - Label: 1 = price hits TP(0.5%) before SL(0.2%) in next 20 candles
-           0 = price hits SL first or neither
-  - Entry: EMA signal fires AND XGBoost confidence > 0.6
+  - Label: 1.0 = price hits TP(0.5%) before SL(0.2%) in next 20 candles
+           0.0 = price hits SL first or neither
+  - Entry: EMA signal fires AND XGBoost predicted value > 0.6
   - TP/SL managed by ROI table and stoploss config
 """
 
@@ -170,9 +170,9 @@ class EMAXGBoost(IStrategy):
 
     def set_freqai_targets(self, dataframe: DataFrame, metadata: dict, **kwargs) -> DataFrame:
         """
-        Vectorized label: 1 = TP(+0.5%) hit before SL(-0.2%) in next 20 candles
-                          0 = SL hit first or neither
-        scale_pos_weight=2.5 in config compensates for class imbalance (~30% positive)
+        Vectorized label: 1.0 = TP(+0.5%) hit before SL(-0.2%) in next 20 candles
+                          0.0 = SL hit first or neither
+        Regressor learns to predict probability-like score (0-1).
         """
         tp_pct    = 0.005
         sl_pct    = 0.002
