@@ -87,8 +87,14 @@ def generate_synthetic_data(start, end, timeframe='5m'):
 def fetch_ohlcv(symbol, timeframe, start, end):
     """Try live Binance first; fall back to synthetic data if network blocked."""
     try:
-        exchange = ccxt.binance({'enableRateLimit': True, 'verify': False})
-        exchange.session.verify = False
+        # Try OKX first, fall back to Binance
+        for ex_id in ['okx', 'binance']:
+            try:
+                exchange = getattr(ccxt, ex_id)({'enableRateLimit': True})
+                exchange.fetch_ohlcv(symbol, timeframe, limit=3)
+                break
+            except Exception:
+                continue
         since = int(pd.Timestamp(start, tz='UTC').timestamp() * 1000)
         end_ts = int(pd.Timestamp(end, tz='UTC').timestamp() * 1000)
         rows = []
@@ -106,6 +112,23 @@ def fetch_ohlcv(symbol, timeframe, start, end):
         return df.astype(float), 'live'
     except Exception:
         return None, 'synthetic'
+
+# === CSV LOADER (for manual OKX data upload) ===
+def load_from_csv(pair, timeframe):
+    """
+    Load local CSV if available.
+    Expected format: timestamp,open,high,low,close,volume
+    File naming: data/OKX_BTC-USDT_5m.csv
+    Download from: OKX → Markets → [pair] → Historical Data
+    """
+    symbol_clean = pair.replace('/', '-')
+    path = f"data/OKX_{symbol_clean}_{timeframe}.csv"
+    if not __import__('os').path.exists(path):
+        return None
+    df = pd.read_csv(path, parse_dates=['timestamp'], index_col='timestamp')
+    if df.index.tz is None:
+        df.index = df.index.tz_localize('UTC')
+    return df[['open', 'high', 'low', 'close', 'volume']].astype(float)
 
 # === INDICATORS ===
 def ema(s, n):   return s.ewm(span=n, adjust=False).mean()
@@ -289,17 +312,36 @@ def main():
     # --- Fetch / generate data ---
     print("\n[1/3] Loading market data...")
 
-    def probe_live():
-        try:
-            ex = ccxt.binance({'enableRateLimit': True, 'verify': False})
-            ex.session.verify = False
-            result = ex.fetch_ohlcv('BTC/USDT', '5m', limit=5)
-            return bool(result and len(result) > 0)
-        except Exception:
-            return False
+    def make_exchange(ex_id):
+        ex = getattr(ccxt, ex_id)({'enableRateLimit': True})
+        return ex
 
-    if probe_live():
-        print("  ✓ Binance API reachable — fetching live data")
+    def probe_live():
+        for ex_id in ['okx', 'binance']:
+            try:
+                ex = make_exchange(ex_id)
+                result = ex.fetch_ohlcv('BTC/USDT', '5m', limit=5)
+                if result and len(result) > 0:
+                    return ex_id
+            except Exception:
+                continue
+        return None
+
+    # Priority: 1) local CSV  2) live API (OKX→Binance)  3) synthetic
+    csv_available = all(
+        load_from_csv(p, tf) is not None
+        for p in PAIRS for tf in ['5m', '15m']
+    )
+    live_ex = None if csv_available else probe_live()
+
+    if csv_available:
+        print("  ✓ Local CSV files found — loading OKX data from data/")
+        d5  = {p: load_from_csv(p, '5m')  for p in PAIRS}
+        d15 = {p: load_from_csv(p, '15m') for p in PAIRS}
+        for pair in PAIRS:
+            print(f"  {pair}  5m={len(d5[pair]):,}  15m={len(d15[pair]):,} candles")
+    elif live_ex:
+        print(f"  ✓ {live_ex.upper()} API reachable — fetching live data")
         d5, d15 = {}, {}
         for pair in PAIRS:
             print(f"  {pair}  5m  ...", end='', flush=True)
@@ -309,9 +351,10 @@ def main():
             df, _ = fetch_ohlcv(pair, '15m', START_DATE, END_DATE)
             d15[pair] = df; print(f" {len(df):,} candles")
     else:
-        print("  ⚠ Binance API blocked (cloud network policy)")
-        print("  → Using synthetic data (research-derived: vol/drift/correlation)")
-        print("  → Swap to live data: run on local machine with internet access\n")
+        print("  ⚠ No live API accessible (cloud network policy)")
+        print("  → Option A: run backtest.py on local machine")
+        print("  → Option B: upload CSV to data/ folder (see README below)")
+        print("  → Falling back to synthetic data for now\n")
         d5  = generate_synthetic_data(START_DATE, END_DATE, '5m')
         d15 = generate_synthetic_data(START_DATE, END_DATE, '15m')
         for pair in PAIRS:
