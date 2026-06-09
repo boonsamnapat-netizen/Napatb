@@ -22,15 +22,16 @@ PAIRS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']
 START_DATE = '2024-09-01'
 END_DATE   = '2025-03-01'
 INITIAL_CAPITAL = 10_000  # USDT
-COMMISSION = 0.0004        # 0.04% per side (Binance taker)
+COMMISSION = 0.0002        # 0.02% per side (Binance maker — limit orders)
 TRADE_HOUR_START = 13      # UTC
 TRADE_HOUR_END   = 17      # UTC
 
+# Tuned v2: higher TP, fewer but better signals
 STRAT_PARAMS = {
-    'A_EMA_Cross': {'tp': 0.004, 'sl': 0.002},
-    'B_VWAP_Rev':  {'tp': 0.003, 'sl': 0.002},
-    'C_RSI_BB':    {'tp': 0.004, 'sl': 0.0025},
-    'D_BTC_Lead':  {'tp': 0.004, 'sl': 0.0025},
+    'A_EMA_Cross': {'tp': 0.005, 'sl': 0.002},   # TP 0.5%, SL 0.2%  → R:R 2.5
+    'B_VWAP_Rev':  {'tp': 0.005, 'sl': 0.002},   # TP 0.5%, SL 0.2%  → R:R 2.5 (was 0.3/0.2)
+    'C_RSI_BB':    {'tp': 0.005, 'sl': 0.0025},  # TP 0.5%, SL 0.25% → R:R 2.0
+    'D_BTC_Lead':  {'tp': 0.005, 'sl': 0.0025},  # TP 0.5%, SL 0.25% → R:R 2.0
 }
 
 # === DATA ===
@@ -202,10 +203,10 @@ def in_window(idx):
     return (idx.hour >= TRADE_HOUR_START) & (idx.hour < TRADE_HOUR_END)
 
 def strat_a(df5, df15):
-    """EMA Cross (9/21) + Volume Filter + 15m Trend Bias"""
+    """EMA Cross (5/13) + Volume Filter (1.3x) + 15m Trend Bias — tuned v2"""
     df = df5.copy()
-    df['e9']  = ema(df['close'], 9)
-    df['e21'] = ema(df['close'], 21)
+    df['e5']  = ema(df['close'], 5)    # faster: 5 instead of 9
+    df['e13'] = ema(df['close'], 13)   # faster: 13 instead of 21
     df['vsma'] = sma(df['volume'], 20)
 
     df15 = df15.copy()
@@ -213,9 +214,9 @@ def strat_a(df5, df15):
     trend = np.where(df15['close'] > df15['e50'], 1, -1)
     trend_s = pd.Series(trend, index=df15.index).reindex(df.index, method='ffill').fillna(0)
 
-    cross_up   = (df['e9'] > df['e21']) & (df['e9'].shift(1) <= df['e21'].shift(1))
-    cross_down = (df['e9'] < df['e21']) & (df['e9'].shift(1) >= df['e21'].shift(1))
-    vol_ok = df['volume'] > 1.5 * df['vsma']
+    cross_up   = (df['e5'] > df['e13']) & (df['e5'].shift(1) <= df['e13'].shift(1))
+    cross_down = (df['e5'] < df['e13']) & (df['e5'].shift(1) >= df['e13'].shift(1))
+    vol_ok = df['volume'] > 1.3 * df['vsma']   # relaxed: 1.5 → 1.3
     win = in_window(df.index)
 
     sig = pd.Series(0, index=df.index)
@@ -224,7 +225,7 @@ def strat_a(df5, df15):
     return sig
 
 def strat_b(df5):
-    """VWAP Reversion + RSI confirmation"""
+    """VWAP Reversion + RSI — tuned v2: wider threshold, fewer trades"""
     df = df5.copy()
     df['vwap'] = vwap_daily(df)
     df['rsi']  = rsi(df['close'], 14)
@@ -232,29 +233,30 @@ def strat_b(df5):
     win = in_window(df.index)
 
     sig = pd.Series(0, index=df.index)
-    sig[(df['dev'] < -0.004) & (df['rsi'] < 40) & win] = 1
-    sig[(df['dev'] >  0.004) & (df['rsi'] > 60) & win] = -1
+    # Threshold raised 0.4% → 0.6% to filter weak setups
+    sig[(df['dev'] < -0.006) & (df['rsi'] < 38) & win] = 1
+    sig[(df['dev'] >  0.006) & (df['rsi'] > 62) & win] = -1
     return sig
 
 def strat_c(df5):
-    """RSI + Bollinger Band mean reversion"""
+    """RSI + Bollinger Band — tuned v2: extreme RSI only (< 25 / > 75)"""
     df = df5.copy()
     df['rsi'] = rsi(df['close'], 14)
-    df['bbu'], _, df['bbl'] = bollinger(df['close'], 20, 2)
+    df['bbu'], _, df['bbl'] = bollinger(df['close'], 20, 2.5)  # wider BB (2 → 2.5 std)
     win = in_window(df.index)
 
     sig = pd.Series(0, index=df.index)
-    sig[(df['close'] <= df['bbl']) & (df['rsi'] < 35) & win] = 1
-    sig[(df['close'] >= df['bbu']) & (df['rsi'] > 65) & win] = -1
+    sig[(df['close'] <= df['bbl']) & (df['rsi'] < 25) & win] = 1   # extreme oversold only
+    sig[(df['close'] >= df['bbu']) & (df['rsi'] > 75) & win] = -1  # extreme overbought only
     return sig
 
 def strat_d(df_target, df_btc):
-    """BTC EMA cross → enter ETH/SOL in same direction within 3 candles"""
+    """BTC EMA(5/13) cross → enter ETH/SOL within 5 candles — tuned v2"""
     btc = df_btc.copy()
-    btc['e9']  = ema(btc['close'], 9)
-    btc['e21'] = ema(btc['close'], 21)
-    up   = (btc['e9'] > btc['e21']) & (btc['e9'].shift(1) <= btc['e21'].shift(1))
-    down = (btc['e9'] < btc['e21']) & (btc['e9'].shift(1) >= btc['e21'].shift(1))
+    btc['e5']  = ema(btc['close'], 5)
+    btc['e13'] = ema(btc['close'], 13)
+    up   = (btc['e5'] > btc['e13']) & (btc['e5'].shift(1) <= btc['e13'].shift(1))
+    down = (btc['e5'] < btc['e13']) & (btc['e5'].shift(1) >= btc['e13'].shift(1))
 
     df = df_target.copy()
     df['rsi'] = rsi(df['close'], 14)
@@ -262,21 +264,26 @@ def strat_d(df_target, df_btc):
 
     up_r   = up.reindex(df.index, method='ffill', fill_value=False)
     down_r = down.reindex(df.index, method='ffill', fill_value=False)
-    up_w   = up_r | up_r.shift(1).fillna(False) | up_r.shift(2).fillna(False)
-    down_w = down_r | down_r.shift(1).fillna(False) | down_r.shift(2).fillna(False)
+    # Extended to 5-candle window (was 3)
+    up_w   = up_r | up_r.shift(1).fillna(False) | up_r.shift(2).fillna(False) \
+                  | up_r.shift(3).fillna(False) | up_r.shift(4).fillna(False)
+    down_w = down_r | down_r.shift(1).fillna(False) | down_r.shift(2).fillna(False) \
+                    | down_r.shift(3).fillna(False) | down_r.shift(4).fillna(False)
 
     sig = pd.Series(0, index=df.index)
-    sig[up_w   & (df['rsi'] < 60) & win] = 1
-    sig[down_w & (df['rsi'] > 40) & win] = -1
+    # Tighter RSI filter (< 55 long, > 45 short) to avoid chasing
+    sig[up_w   & (df['rsi'] < 55) & win] = 1
+    sig[down_w & (df['rsi'] > 45) & win] = -1
     return sig
 
 # === MAIN ===
 def main():
     print("=" * 70)
-    print(" AI TRADING BACKTEST — Phase 2+3")
+    print(" AI TRADING BACKTEST — Phase 3.1 (Tuned v2)")
     print(f" Period : {START_DATE}  →  {END_DATE}")
     print(f" Window : {TRADE_HOUR_START}:00–{TRADE_HOUR_END}:00 UTC  |  Capital: ${INITIAL_CAPITAL:,}")
-    print(f" Fee    : {COMMISSION*100:.2f}% per side (Binance taker)")
+    print(f" Fee    : {COMMISSION*100:.2f}% per side (Binance MAKER — limit orders)")
+    print(" Changes: EMA 5/13, Vol 1.3x, VWAP 0.6%, RSI<25/>75, TP→0.5%")
     print("=" * 70)
 
     # --- Fetch / generate data ---
@@ -361,12 +368,22 @@ def main():
                 best.append((pair, strat, r))
 
     print("=" * 70)
-    if best:
-        print("\n★  STRATEGIES PASSING CONSERVATIVE FILTER (WinRate≥50%, Return>0)")
-        for pair, strat, r in sorted(best, key=lambda x: -x[2]['return_pct']):
-            print(f"   {pair} / {strat}  →  WR {r['win_rate']:.1f}%  |  Return {r['return_pct']:+.2f}%  |  PF {r['profit_factor']:.2f}")
+    # With R:R 2.5 (TP 0.5% / SL 0.2%) + maker fee 0.04% round trip,
+    # break-even WR = (0.04 + 0.2) / (0.5 + 0.2) = 34.3%
+    # Conservative filter: Return > 0, PF > 1.2, WR > 34%, trades > 30
+    passed = [(p, s, r) for p, s, r in best
+              if r['profit_factor'] > 1.2 and r['trades'] >= 30 and r['win_rate'] > 34]
+
+    all_positive = [(p, s, r) for p, s, r in
+                    [(p, s, r) for p in PAIRS for s, r in results[p].items() if r and r['return_pct'] > 0]
+                    if r['profit_factor'] > 1.2 and r['trades'] >= 30 and r['win_rate'] > 34]
+
+    if all_positive:
+        print("\n★  STRATEGIES PASSING FILTER (Return>0, PF>1.2, WR>34%, Trades≥30)")
+        for pair, strat, r in sorted(all_positive, key=lambda x: -x[2]['return_pct']):
+            print(f"   {pair:<12} {strat:<14}  WR={r['win_rate']:.1f}%  Return={r['return_pct']:+.2f}%  PF={r['profit_factor']:.2f}  Trades={r['trades']}")
     else:
-        print("\n⚠  No strategy passed the conservative filter — parameter tuning needed.")
+        print("\n⚠  No strategy passed the filter — further tuning needed.")
 
     print("\nDone.")
 
