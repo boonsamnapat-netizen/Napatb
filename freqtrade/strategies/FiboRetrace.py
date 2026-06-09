@@ -268,22 +268,24 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Peak sweep 1.8-2.4 (Phase E.8) ----------------------------------------
-# E.7: profit kept rising 1.382->1.8 (+17.77%); E.6 had 2.618 losing (-20%).
-# True peak is between 1.8 and 2.618 -- locate it. Same 21 huge-trend winners
-# carry the result; farther TP books more per winner until trends fall short.
+# ---- OUT-OF-SAMPLE validation (Phase E.9) ----------------------------------
+# In-sample (2023-03..2025-03) peak: profitable zone ext 1.5-1.8, peak 1.8 (+17.8%).
+# Now test the SAME extension zone on a fully out-of-sample window
+# (2021-01..2023-01: 2021 bull top + 2022 bear). If the 1.5-1.8 zone survives
+# (positive or only mildly negative through a bear), the edge is real, not
+# overfit to the 2023-24 trend regime.
 
 class FiboRecentTouch(FiboRetrace):
-    FIB_EXT = 1.8     # E.7 best, re-confirm
+    FIB_EXT = 1.5
 
 
 class FiboTrendTouch(FiboRetrace):
-    FIB_EXT = 2.0
+    FIB_EXT = 1.618   # chosen production level (golden ratio, mid-plateau)
 
 
 class FiboTrendConfirm(FiboRetrace):
-    FIB_EXT = 2.2
+    FIB_EXT = 1.8
 
 
 class FiboRecentConfirm(FiboRetrace):
-    FIB_EXT = 2.4
+    FIB_EXT = 2.0

@@ -38,7 +38,7 @@ jobs:
           freqtrade download-data \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --timerange 20230101-20250601 \
+            --timerange 20201201-20250601 \
             --timeframes 1h 4h \
             --data-format-ohlcv json \
             --pairs BTC/USDT ETH/USDT
