@@ -122,7 +122,7 @@
   "stoploss": -0.005,
   "trailing_stop": false,
   "minimal_roi": {
-    "0": 0.015
+    "0": 0.008
   },
 
   "process_only_new_candles": true,
