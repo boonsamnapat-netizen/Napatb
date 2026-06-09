@@ -22,8 +22,8 @@ class EMAXGBoost(IStrategy):
     INTERFACE_VERSION = 3
 
     # --- ROI / Stoploss ---
-    minimal_roi = {"0": 0.005}          # TP 0.5%
-    stoploss = -0.002                    # SL 0.2%
+    minimal_roi = {"0": 0.010}          # TP 1.0% (above 5m noise floor)
+    stoploss = -0.005                    # SL 0.5% (~1× ATR for 5m BTC/ETH)
     trailing_stop = False
     timeframe = "5m"
     inf_timeframe = "15m"
@@ -175,8 +175,8 @@ class EMAXGBoost(IStrategy):
                           0.0 = SL hit first or neither
         Regressor learns to predict probability-like score (0-1).
         """
-        tp_pct    = 0.005
-        sl_pct    = 0.002
+        tp_pct    = 0.010   # match minimal_roi
+        sl_pct    = 0.005   # match stoploss
         lookahead = 20
 
         close  = dataframe["close"].values

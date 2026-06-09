@@ -119,10 +119,10 @@
   "internalize_positions": false,
   "position_adjustment_enable": false,
 
-  "stoploss": -0.002,
+  "stoploss": -0.005,
   "trailing_stop": false,
   "minimal_roi": {
-    "0": 0.005
+    "0": 0.010
   },
 
   "process_only_new_candles": true,
