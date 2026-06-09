@@ -46,14 +46,15 @@ class FiboRetrace(IStrategy):
     use_exit_signal = True
     exit_profit_only = False
     ignore_roi_if_entry_signal = False
-    startup_candle_count = 300
+    startup_candle_count = 900   # covers 4H EMA200 warmup
     can_short = False
 
     # --- Variant toggles (overridden by subclasses) ---
     SWING_WINDOW  = 18        # fractal half-width for pivot detection
     ENTRY_MODE    = "touch"   # 'confirm' | 'touch'
-    USE_BREAKEVEN = True      # move SL to entry once price reaches BE_TRIGGER_R
+    USE_BREAKEVEN = False     # BE@1R hurt (cut winners); kept off
     BE_TRIGGER_R  = 1.0       # how many R of profit before SL -> breakeven
+    TREND_MODE    = "base"    # 'base'|'slope'|'ema200'|'both' -- trend-strength filter
 
     # Fibonacci ratios
     FIB_382  = 0.382
@@ -109,13 +110,27 @@ class FiboRetrace(IStrategy):
 
         # 4H trend filter via informative pair
         inf = self.dp.get_pair_dataframe(metadata["pair"], self.inf_timeframe)
-        inf["ema50"] = ta.EMA(inf, timeperiod=50)
+        inf["ema50"]  = ta.EMA(inf, timeperiod=50)
+        inf["ema200"] = ta.EMA(inf, timeperiod=200)
+        inf["ema50_rising"] = (inf["ema50"] > inf["ema50"].shift(1)).astype(int)
         dataframe = merge_informative_pair(
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
-        ema_col = f"ema50_{self.inf_timeframe}"
-        close_col = f"close_{self.inf_timeframe}"
-        dataframe["trend_up"] = (dataframe[close_col] > dataframe[ema_col]).astype(int)
+        itf = self.inf_timeframe
+        close_col = f"close_{itf}"
+        # Base trend + optional strength filters
+        base_up   = dataframe[close_col] > dataframe[f"ema50_{itf}"]
+        rising    = dataframe[f"ema50_rising_{itf}"] == 1
+        above_200 = dataframe[close_col] > dataframe[f"ema200_{itf}"]
+        if self.TREND_MODE == "slope":
+            trend = base_up & rising
+        elif self.TREND_MODE == "ema200":
+            trend = base_up & above_200
+        elif self.TREND_MODE == "both":
+            trend = base_up & rising & above_200
+        else:  # 'base'
+            trend = base_up
+        dataframe["trend_up"] = trend.astype(int)
 
         # Pivot-based swings (confirmed, no lookahead)
         w = self.SWING_WINDOW
@@ -236,42 +251,26 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Break-even matrix (all swing=trend/18, entry=touch -- best base) ------
-# Phase E.3: E.1/E.2 showed every variant fell ~2.6 WR-points short of
-# breakeven. BE-at-1R converts upthen-reverse losers into scratches.
-# Reusing the 4 strategy-list names so the workflow stays unchanged.
+# ---- Trend-strength matrix (Phase E.4) -------------------------------------
+# Base = E.2 best (swing18, touch, stop0.786, ext0.272, no BE), WR 26.3%,
+# breakeven 28.8% -- short 2.5 pts. Lever now = entry quality via 4H trend
+# strength. Trade only stronger uptrends so retracements bounce more often.
 
-# stop 0.786, TP extension, BE@1R  (tight stop + breakeven -- main candidate)
-class FiboTrendTouch(FiboRetrace):
-    SWING_WINDOW = 18
-    ENTRY_MODE = "touch"
-    FIB_STOP = 0.786
-    FIB_EXT = 0.272
-    USE_BREAKEVEN = True
-
-
-# stop 0.886, TP extension, BE@1R  (slightly wider stop)
-class FiboTrendConfirm(FiboRetrace):
-    SWING_WINDOW = 18
-    ENTRY_MODE = "touch"
-    FIB_STOP = 0.886
-    FIB_EXT = 0.272
-    USE_BREAKEVEN = True
-
-
-# stop 0.786, TP at swing high (ext 0), BE@1R  (closer TP -> more TP hits)
-class FiboRecentConfirm(FiboRetrace):
-    SWING_WINDOW = 18
-    ENTRY_MODE = "touch"
-    FIB_STOP = 0.786
-    FIB_EXT = 0.0
-    USE_BREAKEVEN = True
-
-
-# stop 0.786, TP extension, NO BE  (control == Phase E.2 best)
+# control = Phase E.2 (base trend filter only)
 class FiboRecentTouch(FiboRetrace):
-    SWING_WINDOW = 18
-    ENTRY_MODE = "touch"
-    FIB_STOP = 0.786
-    FIB_EXT = 0.272
-    USE_BREAKEVEN = False
+    TREND_MODE = "base"
+
+
+# + 4H EMA50 rising
+class FiboTrendTouch(FiboRetrace):
+    TREND_MODE = "slope"
+
+
+# + price above 4H EMA200
+class FiboTrendConfirm(FiboRetrace):
+    TREND_MODE = "ema200"
+
+
+# + both (rising EMA50 and above EMA200)
+class FiboRecentConfirm(FiboRetrace):
+    TREND_MODE = "both"
