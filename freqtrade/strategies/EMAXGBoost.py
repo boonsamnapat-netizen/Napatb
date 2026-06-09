@@ -13,7 +13,6 @@ Logic:
 import numpy as np
 import pandas as pd
 from freqtrade.strategy import IStrategy, merge_informative_pair
-from freqai.base_models.FreqaiMultiOutputClassifier import FreqaiMultiOutputClassifier
 import talib.abstract as ta
 from pandas import DataFrame
 from datetime import datetime
