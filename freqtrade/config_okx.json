@@ -64,7 +64,7 @@
     "identifier": "vwap_mr_15m_v1",
     "wait_for_training_iteration_on_reload": true,
     "feature_parameters": {
-      "include_timeframes": ["15m", "1h"],
+      "include_timeframes": ["15m"],
       "include_corr_pairlist": ["BTC/USDT"],
       "label_period_candles": 20,
       "include_shifted_candles": 2,
