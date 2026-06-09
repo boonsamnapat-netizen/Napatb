@@ -50,8 +50,10 @@ class FiboRetrace(IStrategy):
     can_short = False
 
     # --- Variant toggles (overridden by subclasses) ---
-    SWING_WINDOW = 5       # fractal half-width for pivot detection
-    ENTRY_MODE   = "confirm"  # 'confirm' | 'touch'
+    SWING_WINDOW  = 18        # fractal half-width for pivot detection
+    ENTRY_MODE    = "touch"   # 'confirm' | 'touch'
+    USE_BREAKEVEN = True      # move SL to entry once price reaches BE_TRIGGER_R
+    BE_TRIGGER_R  = 1.0       # how many R of profit before SL -> breakeven
 
     # Fibonacci ratios
     FIB_382  = 0.382
@@ -210,6 +212,17 @@ class FiboRetrace(IStrategy):
         _, stop = self._trade_levels(trade)
         if stop is None or current_rate <= 0:
             return -0.05  # fallback
+
+        entry = trade.open_rate
+        # Break-even: once price has gained BE_TRIGGER_R * initial risk,
+        # ratchet the stop up to entry (+fee buffer) so the trade can't turn red.
+        if self.USE_BREAKEVEN and entry and entry > stop:
+            risk = entry - stop
+            if current_rate >= entry + self.BE_TRIGGER_R * risk:
+                be = entry * 1.002  # cover ~2x fee
+                ratio = (be / current_rate) - 1.0
+                return ratio if ratio < 0 else -0.0005
+
         ratio = (stop / current_rate) - 1.0   # fixed-price stop, relative to current
         if ratio >= 0:
             return -0.001
@@ -223,23 +236,42 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Four variants for --strategy-list comparison -------------------------
+# ---- Break-even matrix (all swing=trend/18, entry=touch -- best base) ------
+# Phase E.3: E.1/E.2 showed every variant fell ~2.6 WR-points short of
+# breakeven. BE-at-1R converts upthen-reverse losers into scratches.
+# Reusing the 4 strategy-list names so the workflow stays unchanged.
 
-class FiboRecentConfirm(FiboRetrace):
-    SWING_WINDOW = 5
-    ENTRY_MODE = "confirm"
-
-
-class FiboRecentTouch(FiboRetrace):
-    SWING_WINDOW = 5
-    ENTRY_MODE = "touch"
-
-
-class FiboTrendConfirm(FiboRetrace):
-    SWING_WINDOW = 18
-    ENTRY_MODE = "confirm"
-
-
+# stop 0.786, TP extension, BE@1R  (tight stop + breakeven -- main candidate)
 class FiboTrendTouch(FiboRetrace):
     SWING_WINDOW = 18
     ENTRY_MODE = "touch"
+    FIB_STOP = 0.786
+    FIB_EXT = 0.272
+    USE_BREAKEVEN = True
+
+
+# stop 0.886, TP extension, BE@1R  (slightly wider stop)
+class FiboTrendConfirm(FiboRetrace):
+    SWING_WINDOW = 18
+    ENTRY_MODE = "touch"
+    FIB_STOP = 0.886
+    FIB_EXT = 0.272
+    USE_BREAKEVEN = True
+
+
+# stop 0.786, TP at swing high (ext 0), BE@1R  (closer TP -> more TP hits)
+class FiboRecentConfirm(FiboRetrace):
+    SWING_WINDOW = 18
+    ENTRY_MODE = "touch"
+    FIB_STOP = 0.786
+    FIB_EXT = 0.0
+    USE_BREAKEVEN = True
+
+
+# stop 0.786, TP extension, NO BE  (control == Phase E.2 best)
+class FiboRecentTouch(FiboRetrace):
+    SWING_WINDOW = 18
+    ENTRY_MODE = "touch"
+    FIB_STOP = 0.786
+    FIB_EXT = 0.272
+    USE_BREAKEVEN = False
