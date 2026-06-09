@@ -1,0 +1,31 @@
+name: Fibo Alert Scanner (Hourly)
+
+on:
+  schedule:
+    - cron: '5 * * * *'   # 5 min past each hour (after 1H candle closes)
+  workflow_dispatch:       # manual trigger for testing
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: claude/claude-code-cloud-github-hokzc8
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r alert_bot/requirements.txt --quiet
+
+      - name: Run Fibo scanner
+        env:
+          TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PAIRS: "BTC/USDT,ETH/USDT"
+        run: python -m alert_bot.main
