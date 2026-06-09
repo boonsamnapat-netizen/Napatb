@@ -202,6 +202,17 @@ class EMAXGBoost(IStrategy):
     # ─── Indicator calculation (non-FreqAI) ───────────────────────────────
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe = self.freqai.start(dataframe, metadata, self)
+        # FreqAI strips %-prefixed columns; recompute for signal generation
+        dataframe["ema5"]  = ta.EMA(dataframe, timeperiod=5)
+        dataframe["ema13"] = ta.EMA(dataframe, timeperiod=13)
+        dataframe["ema50"] = ta.EMA(dataframe, timeperiod=50)
+        dataframe["vol_ratio"] = dataframe["volume"] / (
+            dataframe["volume"].rolling(20).mean().replace(0, np.nan)
+        )
+        dataframe["vol_ratio"] = dataframe["vol_ratio"].fillna(1.0)
+        dataframe["trend_bias"] = np.where(
+            dataframe["close"] > dataframe["ema50"], 1, -1
+        ).astype(float)
         return dataframe
 
     # ─── Entry signals ─────────────────────────────────────────────────────
@@ -210,10 +221,10 @@ class EMAXGBoost(IStrategy):
 
         # EMA cross condition (original rule-based signal)
         ema_long = (
-            (dataframe["%-ema5"] > dataframe["%-ema13"]) &
-            (dataframe["%-ema5"].shift(1) <= dataframe["%-ema13"].shift(1)) &
-            (dataframe["%-vol_ratio"] > 1.3) &
-            (dataframe["%-trend_bias"] == 1)
+            (dataframe["ema5"] > dataframe["ema13"]) &
+            (dataframe["ema5"].shift(1) <= dataframe["ema13"].shift(1)) &
+            (dataframe["vol_ratio"] > 1.3) &
+            (dataframe["trend_bias"] == 1)
         )
 
         # FreqAI confidence gate
