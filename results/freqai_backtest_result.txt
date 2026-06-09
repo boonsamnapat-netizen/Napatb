@@ -1,28 +1,32 @@
-2026-06-09 04:11:32,129 - freqtrade - INFO - freqtrade 2026.5.1
-2026-06-09 04:11:33,249 - freqtrade.configuration.load_config - INFO - Using config: freqtrade/config_okx.json ...
-2026-06-09 04:11:33,252 - freqtrade.loggers - INFO - Enabling colorized output.
-2026-06-09 04:11:33,252 - freqtrade.loggers - INFO - Logfile configured
-2026-06-09 04:11:33,253 - freqtrade.loggers - INFO - Verbosity set to 1
-2026-06-09 04:11:33,253 - freqtrade.configuration.configuration - INFO - Using additional Strategy lookup path: freqtrade/strategies/
-2026-06-09 04:11:33,254 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
-2026-06-09 04:11:33,254 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20240901-20250301 ...
-2026-06-09 04:11:33,255 - freqtrade.configuration.configuration - INFO - Using user-data directory: freqtrade/user_data ...
-2026-06-09 04:11:33,255 - freqtrade.configuration.configuration - INFO - Using data directory: freqtrade/user_data/data/okx ...
-2026-06-09 04:11:33,255 - freqtrade.configuration.configuration - INFO - Parameter --cache=day detected ...
-2026-06-09 04:11:33,256 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20240901-20250301
-2026-06-09 04:11:33,256 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
-2026-06-09 04:11:33,264 - freqtrade.exchange.check_exchange - INFO - Exchange "okx" is officially supported by the Freqtrade development team.
-2026-06-09 04:11:33,264 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
-2026-06-09 04:11:33,265 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
-2026-06-09 04:11:33,268 - freqtrade.configuration.config_validation - CRITICAL - Invalid configuration. Reason: 'change_this_secret' is too short
-
-Failed validating 'minLength' in schema['properties']['api_server']['properties']['jwt_secret_key']:
-    {'description': 'Secret key for JWT authentication.',
-     'type': 'string',
-     'default': 'somethingRandomSomethingRandom123',
-     'minLength': 32}
-
-On instance['api_server']['jwt_secret_key']:
-    'change_this_secret'
-2026-06-09 04:11:33,271 - freqtrade - ERROR - Configuration error: 'pairlists' is a required property
-Please make sure to review the documentation at https://www.freqtrade.io/en/stable.
+2026-06-09 05:04:01,877 - freqtrade - INFO - freqtrade 2026.5.1
+2026-06-09 05:04:02,883 - freqtrade.configuration.load_config - INFO - Using config: freqtrade/config_okx.json ...
+2026-06-09 05:04:02,885 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-06-09 05:04:02,885 - freqtrade.loggers - INFO - Logfile configured
+2026-06-09 05:04:02,886 - freqtrade.loggers - INFO - Verbosity set to 1
+2026-06-09 05:04:02,886 - freqtrade.configuration.configuration - INFO - Using additional Strategy lookup path: freqtrade/strategies/
+2026-06-09 05:04:02,887 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-06-09 05:04:02,887 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20240901-20250301 ...
+2026-06-09 05:04:02,888 - freqtrade.configuration.configuration - INFO - Using user-data directory: freqtrade/user_data ...
+2026-06-09 05:04:02,888 - freqtrade.configuration.configuration - INFO - Using data directory: freqtrade/user_data/data/okx ...
+2026-06-09 05:04:02,888 - freqtrade.configuration.configuration - INFO - Parameter --cache=day detected ...
+2026-06-09 05:04:02,889 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20240901-20250301
+2026-06-09 05:04:02,889 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-06-09 05:04:02,895 - freqtrade.exchange.check_exchange - INFO - Exchange "okx" is officially supported by the Freqtrade development team.
+2026-06-09 05:04:02,895 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-06-09 05:04:02,895 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-06-09 05:04:02,898 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-06-09 05:04:02,898 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-06-09 05:04:02,899 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.56
+2026-06-09 05:04:02,908 - freqtrade.exchange.exchange - INFO - Using Exchange "OKX"
+2026-06-09 05:04:02,908 - freqtrade.exchange.exchange - DEBUG - Performing scheduled market reload..
+2026-06-09 05:04:03,809 - freqtrade.resolvers.exchange_resolver - INFO - Using resolved exchange 'Okx'...
+2026-06-09 05:04:03,810 - freqtrade.resolvers.iresolver - DEBUG - Searching for IStrategy EMAXGBoost in '/home/runner/work/Napatb/Napatb/freqtrade/strategies'
+2026-06-09 05:04:03,813 - freqtrade.resolvers.iresolver - WARNING - Could not import /home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py due to 'No module named 'freqai''
+2026-06-09 05:04:03,813 - freqtrade.resolvers.iresolver - DEBUG - Searching for IStrategy EMAXGBoost in '/home/runner/work/Napatb/Napatb/freqtrade/strategies'
+2026-06-09 05:04:03,814 - freqtrade.resolvers.iresolver - WARNING - Could not import /home/runner/work/Napatb/Napatb/freqtrade/strategies/EMAXGBoost.py due to 'No module named 'freqai''
+2026-06-09 05:04:03,814 - freqtrade.resolvers.iresolver - DEBUG - Ignoring /home/runner/work/Napatb/Napatb/freqtrade/strategies/__pycache__
+2026-06-09 05:04:03,815 - freqtrade.resolvers.iresolver - DEBUG - Searching for IStrategy EMAXGBoost in 'freqtrade/user_data/strategies'
+2026-06-09 05:04:03,815 - freqtrade.resolvers.iresolver - DEBUG - Skipping /home/runner/work/Napatb/Napatb/freqtrade/user_data/strategies/sample_strategy.py as it does not contain class EMAXGBoost.
+2026-06-09 05:04:03,816 - freqtrade - ERROR - Impossible to load Strategy 'EMAXGBoost'. This class does not exist or contains Python code errors.
+2026-06-09 05:04:03,910 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-09 05:04:03,911 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
