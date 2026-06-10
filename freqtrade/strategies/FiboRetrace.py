@@ -1,29 +1,25 @@
 """
-FiboRetrace -- Rule-based Fibonacci Retracement Strategy (1H entry / 4H trend)
-Phase E: Pivot away from ML. Automate manual S/R + Fibo + RSI/MACD trading.
+FiboRetrace -- Fibonacci Retracement Strategy (1H / 4H trend, Long + Short)
+Phase F: Symmetric long/short -- profits in both bull and bear markets.
 
-Setup (long-only, spot):
-  1. 4H trend filter: only long when 4H close > 4H EMA50 (trade with the trend)
-  2. Detect last confirmed up-leg: swing low (L) -> swing high (H) on 1H
-     (pivots confirmed `swing_window` bars later -- NO lookahead)
-  3. Price retraces into the golden zone (0.5 - 0.618 of L->H)
-  4. Entry:
-       - 'touch'   = price enters golden zone (mechanical)
-       - 'confirm' = golden zone + RSI turning up + MACD histogram rising
-  5. TP = Fibonacci extension (H + 0.272 * range)  [custom_exit]
-     SL = just below swing low L                    [custom_stoploss]
+Long setup  (up-trend  + pullback):
+  SL → SH on 1H confirmed → price retraces to 50-61.8% golden zone → BUY
+  SL at 0.786, TP at SH + 1.618 * range (extension above SH)
 
-Swing modes:
-  - 'recent' (swing_window=5)  : local 1H swing -- frequent, smaller legs
-  - 'trend'  (swing_window=18) : larger leg aligned with the 4H trend -- rarer, bigger legs
+Short setup (down-trend + bounce):
+  SH → SL on 1H confirmed → price bounces to 50-61.8% from SL → SELL
+  SL at 0.786 above SL, TP at SL - 1.618 * range (extension below SL)
 
-Four variants backtested together via --strategy-list:
-  FiboRecentConfirm, FiboRecentTouch, FiboTrendConfirm, FiboTrendTouch
+R:R ~7:1 gross (wide TP, tight SL) → break-even WR ~12% gross, ~15% post-fee.
+In-sample WR target: >15%.
+
+Anti-lookahead: fractal pivot at bar i confirmed at bar i+SWING_WINDOW.
+At bar t, only pivots from bars ≤ t-w are visible.
 """
 
 import numpy as np
 import pandas as pd
-from freqtrade.strategy import IStrategy, merge_informative_pair
+from freqtrade.strategy import IStrategy, merge_informative_pair, stoploss_from_absolute
 import talib.abstract as ta
 from pandas import DataFrame
 from datetime import datetime
@@ -32,71 +28,65 @@ from datetime import datetime
 class FiboRetrace(IStrategy):
     INTERFACE_VERSION = 3
 
-    timeframe = "1h"
+    timeframe     = "1h"
     inf_timeframe = "4h"
 
-    # Exits are governed by custom_exit (Fibo extension) and
-    # custom_stoploss (below swing low). ROI disabled, hard stop as safety net.
-    minimal_roi = {"0": 100.0}
-    stoploss = -0.15
+    minimal_roi         = {"0": 100.0}   # custom_exit handles TP
+    stoploss            = -0.15          # safety net; custom_stoploss uses fib levels
     use_custom_stoploss = True
-    trailing_stop = False
+    trailing_stop       = False
 
-    process_only_new_candles = True
-    use_exit_signal = True
-    exit_profit_only = False
-    ignore_roi_if_entry_signal = False
-    startup_candle_count = 900   # covers 4H EMA200 warmup
-    can_short = False
+    process_only_new_candles  = True
+    use_exit_signal           = True
+    exit_profit_only          = False
+    ignore_roi_if_entry_signal= False
+    startup_candle_count      = 900      # covers 4H EMA200 (200 bars × 4h = 800h)
+    can_short                 = True
 
-    # --- Variant toggles (overridden by subclasses) ---
-    SWING_WINDOW  = 18        # fractal half-width for pivot detection
-    ENTRY_MODE    = "touch"   # 'confirm' | 'touch'
-    USE_BREAKEVEN = False     # BE@1R hurt (cut winners); kept off
-    BE_TRIGGER_R  = 1.0       # how many R of profit before SL -> breakeven
-    TREND_MODE    = "base"    # 'base'|'slope'|'ema200'|'both' -- trend-strength filter
-    USE_TRAIL     = False     # trail SL below running peak to ride trends
-    TRAIL_PCT     = 0.08      # trail this far below peak high
-    TRAIL_ACT     = 0.03      # activate trailing after +3% profit
+    # ---- Variant parameters ------------------------------------------------
+    SWING_WINDOW = 18        # fractal half-width in 1H bars
+    ENTRY_MODE   = "touch"   # "touch" = mechanical; "confirm" = RSI+MACD filter
+    TREND_MODE   = "base"    # see populate_indicators for modes
 
     # Fibonacci ratios
-    FIB_382  = 0.382
     FIB_50   = 0.500
     FIB_618  = 0.618
-    FIB_STOP = 0.786       # SL just below this invalidation level
-    FIB_EXT  = 1.618       # extension beyond H for TP (chosen production level)
+    FIB_786  = 0.786   # invalidation level (SL placement)
+    FIB_EXT  = 1.618   # extension TP (same ratio as the golden ratio leg)
 
-    # ---- Pivot detection (no lookahead) -----------------------------------
+    # ---- Pivot helpers (no lookahead) -------------------------------------
 
     @staticmethod
     def _fractal_pivots(high: np.ndarray, low: np.ndarray, w: int):
-        """Strict fractal pivots: high[i] is the sole max in [i-w, i+w]."""
-        n = len(high)
+        """Strict fractal pivot: sole max/min in [i-w, i+w] window."""
+        n  = len(high)
         ph = np.zeros(n, dtype=bool)
         pl = np.zeros(n, dtype=bool)
         for i in range(w, n - w):
             seg_h = high[i - w:i + w + 1]
-            seg_l = low[i - w:i + w + 1]
+            seg_l = low [i - w:i + w + 1]
             if high[i] == seg_h.max() and (seg_h == high[i]).sum() == 1:
                 ph[i] = True
-            if low[i] == seg_l.min() and (seg_l == low[i]).sum() == 1:
+            if low[i]  == seg_l.min() and (seg_l == low[i] ).sum() == 1:
                 pl[i] = True
         return ph, pl
 
     @staticmethod
     def _carry_confirmed(piv: np.ndarray, vals: np.ndarray, w: int):
-        """For each bar, the value/index of the last pivot CONFIRMED by that bar.
-        A pivot centered at j is only knowable at bar j+w (no future leak)."""
-        n = len(vals)
-        out_val = np.full(n, np.nan)
-        out_idx = np.full(n, np.nan)
+        """
+        At bar t, carry the value of the last pivot confirmed at or before t.
+        A pivot at index j is only visible from bar j+w onward (no lookahead).
+        """
+        n        = len(vals)
+        out_val  = np.full(n, np.nan)
+        out_idx  = np.full(n, np.nan)
         last_val = np.nan
         last_idx = np.nan
         for i in range(n):
             j = i - w
             if j >= 0 and piv[j]:
                 last_val = vals[j]
-                last_idx = j
+                last_idx = float(j)
             out_val[i] = last_val
             out_idx[i] = last_idx
         return out_val, out_idx
@@ -104,203 +94,232 @@ class FiboRetrace(IStrategy):
     # ---- Indicators --------------------------------------------------------
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        # 1H momentum indicators
-        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=14)
-        macd = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
-        dataframe["macd"]     = macd["macd"]
-        dataframe["macdsig"]  = macd["macdsignal"]
-        dataframe["macdhist"] = macd["macdhist"]
+        pair = metadata["pair"]
 
-        # 4H trend filter via informative pair
-        inf = self.dp.get_pair_dataframe(metadata["pair"], self.inf_timeframe)
-        inf["ema50"]  = ta.EMA(inf, timeperiod=50)
-        inf["ema200"] = ta.EMA(inf, timeperiod=200)
-        inf["ema50_rising"]  = (inf["ema50"]  > inf["ema50"].shift(1)).astype(int)
-        inf["ema200_rising"] = (inf["ema200"] > inf["ema200"].shift(3)).astype(int)
+        # 1H momentum (for 'confirm' mode entry filter)
+        dataframe["rsi"] = ta.RSI(dataframe, timeperiod=14)
+        _macd = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
+        dataframe["macdhist"] = _macd["macdhist"]
+
+        # ---- 4H trend -------------------------------------------------
+        inf4h = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        inf4h["ema50"]         = ta.EMA(inf4h, timeperiod=50)
+        inf4h["ema200"]        = ta.EMA(inf4h, timeperiod=200)
+        inf4h["ema200_rising"] = (inf4h["ema200"] > inf4h["ema200"].shift(3)).astype(int)
         dataframe = merge_informative_pair(
-            dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
+            dataframe, inf4h, self.timeframe, self.inf_timeframe, ffill=True
         )
-        # Daily 200-SMA macro regime line (the real bull/bear divider)
-        infd = self.dp.get_pair_dataframe(metadata["pair"], "1d")
+
+        # ---- Daily macro regime -------------------------------------------
+        infd = self.dp.get_pair_dataframe(pair, "1d")
         infd["sma200"] = ta.SMA(infd, timeperiod=200)
         dataframe = merge_informative_pair(
             dataframe, infd, self.timeframe, "1d", ffill=True
         )
-        daily_bull = dataframe["close_1d"] > dataframe["sma200_1d"]
 
-        itf = self.inf_timeframe
-        close_col = f"close_{itf}"
-        # Base trend + optional strength / macro-regime filters
-        base_up    = dataframe[close_col] > dataframe[f"ema50_{itf}"]
-        rising     = dataframe[f"ema50_rising_{itf}"] == 1
-        above_200  = dataframe[close_col] > dataframe[f"ema200_{itf}"]
-        regime_up  = dataframe[f"ema200_rising_{itf}"] == 1   # 4H EMA200 sloping up
+        # ---- Trend flags --------------------------------------------------
+        itf        = self.inf_timeframe
+        close_4h   = dataframe[f"close_{itf}"]
+        ema50_4h   = dataframe[f"ema50_{itf}"]
+        ema200_4h  = dataframe[f"ema200_{itf}"]
+        rising_4h  = dataframe[f"ema200_rising_{itf}"] == 1
+        close_1d   = dataframe["close_1d"]
+        sma200_1d  = dataframe["sma200_1d"]
+
+        base_up   = close_4h > ema50_4h
+        above_200 = close_4h > ema200_4h
+        bull_1d   = close_1d > sma200_1d
+
         if self.TREND_MODE == "slope":
-            trend = base_up & rising
+            trend_up   = base_up & rising_4h
+            trend_down = ~base_up & ~rising_4h
         elif self.TREND_MODE == "ema200":
-            trend = base_up & above_200
+            trend_up   = base_up & above_200
+            trend_down = ~base_up & ~above_200
         elif self.TREND_MODE == "ema200slope":
-            trend = base_up & above_200 & regime_up
+            trend_up   = base_up & above_200 & rising_4h
+            trend_down = ~base_up & ~above_200 & ~rising_4h
         elif self.TREND_MODE == "macro":
-            trend = base_up & daily_bull                      # daily 200-SMA gate
+            trend_up   = base_up & bull_1d
+            trend_down = ~base_up & ~bull_1d
         elif self.TREND_MODE == "macro200":
-            trend = base_up & above_200 & daily_bull
-        elif self.TREND_MODE == "both":
-            trend = base_up & rising & above_200 & regime_up
-        else:  # 'base'
-            trend = base_up
-        dataframe["trend_up"] = trend.astype(int)
+            trend_up   = base_up & above_200 & bull_1d
+            trend_down = ~base_up & ~above_200 & ~bull_1d
+        else:  # "base" -- just EMA50 side
+            trend_up   = base_up
+            trend_down = ~base_up
 
-        # Pivot-based swings (confirmed, no lookahead)
-        w = self.SWING_WINDOW
-        high = dataframe["high"].values
-        low  = dataframe["low"].values
-        ph, pl = self._fractal_pivots(high, low, w)
-        sh_val, sh_idx = self._carry_confirmed(ph, high, w)
-        sl_val, sl_idx = self._carry_confirmed(pl, low,  w)
+        dataframe["trend_up"]   = trend_up.fillna(False).astype(int)
+        dataframe["trend_down"] = trend_down.fillna(False).astype(int)
+
+        # ---- Fractal pivots (no lookahead) --------------------------------
+        w        = self.SWING_WINDOW
+        high_arr = dataframe["high"].values
+        low_arr  = dataframe["low"].values
+        ph, pl   = self._fractal_pivots(high_arr, low_arr, w)
+
+        sh_val, sh_idx = self._carry_confirmed(ph, high_arr, w)
+        sl_val, sl_idx = self._carry_confirmed(pl, low_arr,  w)
 
         dataframe["sh_val"] = sh_val
         dataframe["sl_val"] = sl_val
         dataframe["sh_idx"] = sh_idx
         dataframe["sl_idx"] = sl_idx
 
-        # Valid up-leg: most-recent swing high formed AFTER the swing low, H > L
+        # ---- Long Fibonacci (up-leg: SL → SH → pullback) ----------------
         up_leg = (
             ~np.isnan(sh_idx) & ~np.isnan(sl_idx) &
             (sh_idx > sl_idx) & (sh_val > sl_val)
         )
         dataframe["up_leg"] = up_leg.astype(int)
 
-        rng = np.where(up_leg, sh_val - sl_val, np.nan)
-        H = np.where(up_leg, sh_val, np.nan)
-        L = np.where(up_leg, sl_val, np.nan)
+        rng_u = np.where(up_leg, sh_val - sl_val, np.nan)
+        H_u   = np.where(up_leg, sh_val, np.nan)
+        L_u   = np.where(up_leg, sl_val, np.nan)
 
-        dataframe["fib_382"] = H - self.FIB_382 * rng
-        dataframe["fib_50"]  = H - self.FIB_50  * rng
-        dataframe["fib_618"] = H - self.FIB_618 * rng
-        dataframe["fib_target"] = H + self.FIB_EXT * rng    # extension TP
-        # SL just below the 0.786 invalidation level (tight, classic Fibo stop)
-        # -- not the full swing low, which made losses too wide (R:R ~1.4 -> 2.7).
-        dataframe["fib_stop"] = (H - self.FIB_STOP * rng) * 0.999
+        dataframe["fib_50"]     = H_u - self.FIB_50  * rng_u    # golden zone top
+        dataframe["fib_618"]    = H_u - self.FIB_618 * rng_u    # golden zone bottom
+        dataframe["fib_stop"]   = (H_u - self.FIB_786 * rng_u) * 0.999
+        dataframe["fib_target"] = H_u + self.FIB_EXT * rng_u    # extension TP
+
+        # ---- Short Fibonacci (down-leg: SH → SL → bounce) ---------------
+        down_leg = (
+            ~np.isnan(sl_idx) & ~np.isnan(sh_idx) &
+            (sl_idx > sh_idx) & (sl_val < sh_val)   # SL is more recent AND lower
+        )
+        dataframe["down_leg"] = down_leg.astype(int)
+
+        rng_d  = np.where(down_leg, sh_val - sl_val, np.nan)
+        L_d    = np.where(down_leg, sl_val, np.nan)
+
+        # Entry zone: price bounced from SL up to 50-61.8% of the down-leg range
+        dataframe["s_fib_50"]     = L_d + self.FIB_50  * rng_d   # zone bottom (50% from SL)
+        dataframe["s_fib_618"]    = L_d + self.FIB_618 * rng_d   # zone top    (61.8% from SL)
+        dataframe["s_fib_stop"]   = (L_d + self.FIB_786 * rng_d) * 1.001  # SL above 0.786
+        dataframe["s_fib_target"] = L_d - (self.FIB_EXT - 1.0) * rng_d   # ext below SL
 
         return dataframe
 
-    # ---- Entry -------------------------------------------------------------
+    # ---- Entry signals ----------------------------------------------------
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        in_zone = (
+        # --- Long entry ---
+        in_zone_long = (
             (dataframe["up_leg"] == 1) &
-            (dataframe["low"] <= dataframe["fib_50"]) &     # dipped into golden zone
-            (dataframe["close"] >= dataframe["fib_618"]) &  # still holding 0.618
-            (dataframe["close"] <= dataframe["fib_382"])    # not above zone
+            (dataframe["low"]   <= dataframe["fib_50"]) &   # dipped into zone
+            (dataframe["close"] >= dataframe["fib_618"]) &  # held above 0.618
+            (dataframe["close"] <= dataframe["fib_50"])     # close within zone
         )
         trend_up = dataframe["trend_up"] == 1
 
-        if self.ENTRY_MODE == "confirm":
-            confirm = (
-                (dataframe["rsi"] > dataframe["rsi"].shift(1)) &
-                (dataframe["macdhist"] > dataframe["macdhist"].shift(1))
-            )
-            entry = in_zone & trend_up & confirm
-        else:  # 'touch'
-            entry = in_zone & trend_up
+        # --- Short entry ---
+        in_zone_short = (
+            (dataframe["down_leg"] == 1) &
+            (dataframe["high"]  >= dataframe["s_fib_50"]) &   # touched zone from below
+            (dataframe["close"] <= dataframe["s_fib_618"]) &  # didn't break above
+            (dataframe["close"] >= dataframe["s_fib_50"])     # close within zone
+        )
+        trend_down = dataframe["trend_down"] == 1
 
-        dataframe.loc[entry, "enter_long"] = 1
+        if self.ENTRY_MODE == "confirm":
+            rsi_up   = dataframe["rsi"] > dataframe["rsi"].shift(1)
+            hist_up  = dataframe["macdhist"] > dataframe["macdhist"].shift(1)
+            rsi_down = dataframe["rsi"] < dataframe["rsi"].shift(1)
+            hist_down= dataframe["macdhist"] < dataframe["macdhist"].shift(1)
+
+            dataframe.loc[in_zone_long  & trend_up   & rsi_up   & hist_up,   "enter_long"]  = 1
+            dataframe.loc[in_zone_short & trend_down & rsi_down & hist_down, "enter_short"] = 1
+        else:
+            dataframe.loc[in_zone_long  & trend_up,   "enter_long"]  = 1
+            dataframe.loc[in_zone_short & trend_down, "enter_short"] = 1
+
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         return dataframe
 
-    # ---- Level-based exits (locked at entry) -------------------------------
+    # ---- Level-based exits (locked at entry bar) --------------------------
 
     def _trade_levels(self, trade):
-        """Return (target, stop) locked at entry candle; cached on the trade."""
+        """Return (target_price, stop_price) from the entry bar's Fib levels."""
+        # Try cache first (avoids re-scanning on every tick)
         try:
             t = trade.get_custom_data("fib_target")
             s = trade.get_custom_data("fib_stop")
             if t is not None and s is not None:
-                return t, s
+                return float(t), float(s)
         except Exception:
             pass
 
         df, _ = self.dp.get_analyzed_dataframe(trade.pair, self.timeframe)
         if df is None or df.empty:
             return None, None
+
+        # Use the last candle BEFORE trade open (= the signal bar)
         sig = df[df["date"] < trade.open_date_utc]
         if sig.empty:
             return None, None
-        row = sig.iloc[-1]
-        t = row.get("fib_target")
-        s = row.get("fib_stop")
+
+        row    = sig.iloc[-1]
+        t_col  = "s_fib_target" if trade.is_short else "fib_target"
+        s_col  = "s_fib_stop"   if trade.is_short else "fib_stop"
+        t      = row.get(t_col)
+        s      = row.get(s_col)
+
         if t is None or s is None or pd.isna(t) or pd.isna(s):
             return None, None
+
         try:
             trade.set_custom_data("fib_target", float(t))
-            trade.set_custom_data("fib_stop", float(s))
+            trade.set_custom_data("fib_stop",   float(s))
         except Exception:
             pass
+
         return float(t), float(s)
 
-    def custom_stoploss(self, pair, trade, current_time, current_rate,
-                        current_profit, **kwargs) -> float:
+    def custom_stoploss(self, pair, trade, current_time: datetime,
+                        current_rate: float, current_profit: float, **kwargs) -> float:
         _, stop = self._trade_levels(trade)
         if stop is None or current_rate <= 0:
-            return -0.05  # fallback
+            return -0.05
 
-        entry = trade.open_rate
+        # stoploss_from_absolute handles long vs short direction correctly
+        sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
+        # Clamp to safety net
+        return max(sl, -0.20)
 
-        # Trailing: once +TRAIL_ACT in profit, trail the stop TRAIL_PCT below
-        # the running peak high to ride extended trends (never below initial stop).
-        if self.USE_TRAIL and entry and current_rate >= entry * (1 + self.TRAIL_ACT):
-            try:
-                df, _ = self.dp.get_analyzed_dataframe(trade.pair, self.timeframe)
-                seg = df[df["date"] >= trade.open_date_utc]
-                peak = float(seg["high"].max()) if not seg.empty else current_rate
-            except Exception:
-                peak = current_rate
-            trail_stop = max(peak * (1 - self.TRAIL_PCT), stop)
-            ratio = (trail_stop / current_rate) - 1.0
-            return ratio if ratio < 0 else -0.0005
-
-        # Break-even: once price has gained BE_TRIGGER_R * initial risk,
-        # ratchet the stop up to entry (+fee buffer) so the trade can't turn red.
-        if self.USE_BREAKEVEN and entry and entry > stop:
-            risk = entry - stop
-            if current_rate >= entry + self.BE_TRIGGER_R * risk:
-                be = entry * 1.002  # cover ~2x fee
-                ratio = (be / current_rate) - 1.0
-                return ratio if ratio < 0 else -0.0005
-
-        ratio = (stop / current_rate) - 1.0   # fixed-price stop, relative to current
-        if ratio >= 0:
-            return -0.001
-        return max(ratio, -0.20)
-
-    def custom_exit(self, pair, trade, current_time, current_rate,
-                   current_profit, **kwargs):
+    def custom_exit(self, pair, trade, current_time: datetime,
+                    current_rate: float, current_profit: float, **kwargs):
         target, _ = self._trade_levels(trade)
-        if target is not None and current_rate >= target:
-            return "fib_target"
+        if target is None:
+            return None
+
+        if trade.is_short and current_rate <= target:
+            return "fib_target_short"
+        if not trade.is_short and current_rate >= target:
+            return "fib_target_long"
         return None
 
 
-# ---- Daily-200 macro gate vs OOS bear (Phase E.11) -------------------------
-# E.10: the 4H EMA200 gate (33 days) only cut -54% -> -39% on 2021-2022; too
-# short to be a macro filter. Use the DAILY 200-SMA -- the real bull/bear line.
-# BTC was below it almost all of 2022, so this should zero out bear trades.
-# All: ext 1.618, swing18, touch, stop0.786. Test on OOS 2021-2022.
+# ---- Backtest variants ----------------------------------------------------
+# Strategy-list sweep: trade frequency vs. regime strictness.
+# All use ext=1.618, swing=18, entry=touch, stop at 0.786.
 
-class FiboRecentTouch(FiboRetrace):
-    TREND_MODE = "base"          # control (no gate) -- ~-54%
-
-
-class FiboTrendTouch(FiboRetrace):
-    TREND_MODE = "macro"         # 4H base_up + daily close > 200-SMA
+class FiboBase(FiboRetrace):
+    """No regime filter — all 4H EMA50 crossings. Most trades, noisiest."""
+    TREND_MODE = "base"
 
 
-class FiboTrendConfirm(FiboRetrace):
-    TREND_MODE = "macro200"      # + price > 4H EMA200
+class FiboMacro(FiboRetrace):
+    """4H EMA50 + daily SMA200 gate. Core filter."""
+    TREND_MODE = "macro"
 
 
-class FiboRecentConfirm(FiboRetrace):
-    TREND_MODE = "ema200slope"   # 4H-only gate (E.10 ref) for comparison
+class FiboStrict(FiboRetrace):
+    """4H EMA50 + EMA200 + daily SMA200. Fewest trades, cleanest setups."""
+    TREND_MODE = "macro200"
+
+
+class FiboSlope(FiboRetrace):
+    """4H EMA50 + EMA200 + EMA200 slope. Mid-tier momentum gate."""
+    TREND_MODE = "ema200slope"

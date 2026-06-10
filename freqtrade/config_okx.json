@@ -1,6 +1,6 @@
 {
-  "trading_mode": "spot",
-  "margin_mode": "",
+  "trading_mode": "margin",
+  "margin_mode": "isolated",
   "max_open_trades": 2,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
@@ -50,7 +50,7 @@
     "stoploss_on_exchange": false
   },
 
-  "strategy": "FiboTrendConfirm",
+  "strategy": "FiboStrict",
   "strategy_path": "freqtrade/strategies/",
 
   "telegram": {

@@ -1,12 +1,16 @@
-name: Backtest (Fibo Retrace + OKX)
+name: Backtest — Fibo Long+Short (Phase F)
 
 on:
   workflow_dispatch:
     inputs:
       timerange:
-        description: 'Backtest timerange (in-sample 20230301-20250301, OOS 20210101-20230101)'
+        description: 'In-sample timerange'
         required: false
         default: '20230301-20250301'
+      run_oos:
+        description: 'Also run OOS 2021-2023?'
+        required: false
+        default: 'true'
 
 jobs:
   backtest:
@@ -33,7 +37,7 @@ jobs:
         run: |
           freqtrade create-userdir --userdir freqtrade/user_data
 
-      - name: Download OKX historical data (1h + 4h)
+      - name: Download OKX historical data
         run: |
           freqtrade download-data \
             --config freqtrade/config_okx.json \
@@ -43,21 +47,32 @@ jobs:
             --data-format-ohlcv json \
             --pairs BTC/USDT ETH/USDT
 
-      - name: Run backtest (4 Fibo variants)
+      - name: Run in-sample backtest — 4 variants (Long + Short)
         run: |
           mkdir -p results
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboRecentConfirm FiboRecentTouch FiboTrendConfirm FiboTrendTouch \
+            --strategy-list FiboBase FiboMacro FiboStrict FiboSlope \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
-            2>&1 | tee results/freqai_backtest_result.txt
+            2>&1 | tee results/fibo_insample.txt
+
+      - name: Run OOS backtest — 2021-2023 (bear market validation)
+        if: ${{ github.event.inputs.run_oos == 'true' }}
+        run: |
+          freqtrade backtesting \
+            --config freqtrade/config_okx.json \
+            --userdir freqtrade/user_data \
+            --strategy-list FiboBase FiboMacro FiboStrict FiboSlope \
+            --strategy-path freqtrade/strategies/ \
+            --timerange 20210101-20230101 \
+            2>&1 | tee results/fibo_oos.txt
 
       - name: Commit results
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/freqai_backtest_result.txt
-          git diff --cached --quiet || git commit -m "backtest result: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "fibo L+S backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
