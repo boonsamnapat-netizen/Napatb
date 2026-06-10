@@ -301,41 +301,45 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.4: confirm-mode ext sweep -----------------
-# F.3 result: FiboStrictConf14 IS +18.88% / OOS +21.1% / WR 20% / DD 18%
-#             FiboStrictConf   IS +27.36% / OOS  +6.1% / WR 16% / DD 21%
-# Pattern: shorter ext → higher WR → better OOS robustness
-# F.4 question: does ext=1.0 or 1.2 push OOS even higher?
-#               and does slope filter outperform macro200 at ext=1.4?
+# ---- Backtest variants — Phase F.5: swing-window sweep + multi-pair --------
+# F.4 result: FiboStrictConf14 (macro200, confirm, ext=1.4) is optimal
+#   IS +18.88% / OOS +21.1% / WR 20% / DD 18% — consistent across IS and OOS
+# F.5 question: does SWING_WINDOW affect signal quality?
+#   Smaller w → more frequent signals; larger w → rarer but higher-conviction
+#   Also adds SOL/USDT:USDT to validate strategy beyond BTC+ETH
 # Variants:
-#   FiboStrictConf14 — F.3 winner: macro200, confirm, ext=1.4  (control)
-#   FiboStrictConf12 — macro200, confirm, ext=1.2
-#   FiboStrictConf10 — macro200, confirm, ext=1.0
-#   FiboSlopeConf14  — slope trend, confirm, ext=1.4 (looser trend filter)
+#   FiboSC14w18 — control: w=18 (current winner)
+#   FiboSC14w12 — w=12 (faster pivots, more trades)
+#   FiboSC14w14 — w=14 (intermediate)
+#   FiboSC14w22 — w=22 (stricter pivots, higher conviction)
 
-class FiboStrictConf14(FiboRetrace):
-    """F.3 winner: macro200 + RSI/MACD confirm, ext=1.4."""
-    TREND_MODE  = "macro200"
-    ENTRY_MODE  = "confirm"
-    FIB_EXT     = 1.4
-
-
-class FiboStrictConf12(FiboRetrace):
-    """macro200 + RSI/MACD confirm, ext=1.2 (tighter TP, higher WR)."""
-    TREND_MODE  = "macro200"
-    ENTRY_MODE  = "confirm"
-    FIB_EXT     = 1.2
+class FiboSC14w18(FiboRetrace):
+    """Control: macro200 + confirm + ext=1.4 + w=18."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 18
 
 
-class FiboStrictConf10(FiboRetrace):
-    """macro200 + RSI/MACD confirm, ext=1.0 (TP at swing level)."""
-    TREND_MODE  = "macro200"
-    ENTRY_MODE  = "confirm"
-    FIB_EXT     = 1.0
+class FiboSC14w12(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=12 (faster pivots)."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 12
 
 
-class FiboSlopeConf14(FiboRetrace):
-    """slope trend (EMA200 slope) + RSI/MACD confirm, ext=1.4."""
-    TREND_MODE  = "slope"
-    ENTRY_MODE  = "confirm"
-    FIB_EXT     = 1.4
+class FiboSC14w14(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+
+
+class FiboSC14w22(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=22 (stricter/rarer pivots)."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 22
