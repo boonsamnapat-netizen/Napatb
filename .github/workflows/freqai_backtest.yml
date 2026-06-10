@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase F.3)
+name: Backtest — Fibo Long+Short (Phase F.4)
 
 on:
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboBase FiboStrict FiboStrictConf FiboStrictConf14 \
+            --strategy-list FiboStrictConf14 FiboStrictConf12 FiboStrictConf10 FiboSlopeConf14 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -64,7 +64,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboBase FiboStrict FiboStrictConf FiboStrictConf14 \
+            --strategy-list FiboStrictConf14 FiboStrictConf12 FiboStrictConf10 FiboSlopeConf14 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt

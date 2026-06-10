@@ -301,39 +301,41 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.3: RSI+MACD confirm filter sweep ----------
-# F.2 result: FiboStrict (macro200, ext=1.618) IS +11.67% / OOS -7.61%
-# F.3 question: does adding RSI+MACD momentum filter cut false signals enough
-#               to push OOS to breakeven?
+# ---- Backtest variants — Phase F.4: confirm-mode ext sweep -----------------
+# F.3 result: FiboStrictConf14 IS +18.88% / OOS +21.1% / WR 20% / DD 18%
+#             FiboStrictConf   IS +27.36% / OOS  +6.1% / WR 16% / DD 21%
+# Pattern: shorter ext → higher WR → better OOS robustness
+# F.4 question: does ext=1.0 or 1.2 push OOS even higher?
+#               and does slope filter outperform macro200 at ext=1.4?
 # Variants:
-#   FiboBase        — control: base trend, touch, ext=1.618
-#   FiboStrict      — F.2 winner: macro200, touch, ext=1.618
-#   FiboStrictConf  — macro200, confirm (RSI+MACD), ext=1.618
-#   FiboStrictConf14 — macro200, confirm, ext=1.4 (tighter TP, higher WR)
-
-class FiboBase(FiboRetrace):
-    """Control: no regime filter, touch mode, ext=1.618."""
-    TREND_MODE  = "base"
-    ENTRY_MODE  = "touch"
-    FIB_EXT     = 1.618
-
-
-class FiboStrict(FiboRetrace):
-    """F.2 winner: macro200, touch mode, ext=1.618."""
-    TREND_MODE  = "macro200"
-    ENTRY_MODE  = "touch"
-    FIB_EXT     = 1.618
-
-
-class FiboStrictConf(FiboRetrace):
-    """macro200 + RSI/MACD confirm filter, ext=1.618."""
-    TREND_MODE  = "macro200"
-    ENTRY_MODE  = "confirm"
-    FIB_EXT     = 1.618
-
+#   FiboStrictConf14 — F.3 winner: macro200, confirm, ext=1.4  (control)
+#   FiboStrictConf12 — macro200, confirm, ext=1.2
+#   FiboStrictConf10 — macro200, confirm, ext=1.0
+#   FiboSlopeConf14  — slope trend, confirm, ext=1.4 (looser trend filter)
 
 class FiboStrictConf14(FiboRetrace):
-    """macro200 + RSI/MACD confirm filter, ext=1.4 (higher WR target)."""
+    """F.3 winner: macro200 + RSI/MACD confirm, ext=1.4."""
     TREND_MODE  = "macro200"
+    ENTRY_MODE  = "confirm"
+    FIB_EXT     = 1.4
+
+
+class FiboStrictConf12(FiboRetrace):
+    """macro200 + RSI/MACD confirm, ext=1.2 (tighter TP, higher WR)."""
+    TREND_MODE  = "macro200"
+    ENTRY_MODE  = "confirm"
+    FIB_EXT     = 1.2
+
+
+class FiboStrictConf10(FiboRetrace):
+    """macro200 + RSI/MACD confirm, ext=1.0 (TP at swing level)."""
+    TREND_MODE  = "macro200"
+    ENTRY_MODE  = "confirm"
+    FIB_EXT     = 1.0
+
+
+class FiboSlopeConf14(FiboRetrace):
+    """slope trend (EMA200 slope) + RSI/MACD confirm, ext=1.4."""
+    TREND_MODE  = "slope"
     ENTRY_MODE  = "confirm"
     FIB_EXT     = 1.4
