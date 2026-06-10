@@ -48,7 +48,7 @@
     "stoploss": "market",
     "stoploss_on_exchange": false
   },
-  "strategy": "FiboSC14w14",
+  "strategy": "FiboF15r50",
   "strategy_path": "freqtrade/strategies/",
   "telegram": {
     "enabled": false,
