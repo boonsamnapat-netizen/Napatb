@@ -301,45 +301,45 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.5: swing-window sweep + multi-pair --------
-# F.4 result: FiboStrictConf14 (macro200, confirm, ext=1.4) is optimal
-#   IS +18.88% / OOS +21.1% / WR 20% / DD 18% — consistent across IS and OOS
-# F.5 question: does SWING_WINDOW affect signal quality?
-#   Smaller w → more frequent signals; larger w → rarer but higher-conviction
-#   Also adds SOL/USDT:USDT to validate strategy beyond BTC+ETH
+# ---- Backtest variants — Phase F.6: fine-tune swing window around w=14 -----
+# F.5 result: FiboSC14w14 (w=14) IS +34.48% / OOS +41.88% / WR 19.3% / DD 32%
+#   Trade count IS 147 vs OOS 145 — near-identical (robust signal, no overfitting)
+#   w=12: IS +15.18% / OOS +62.52% — high OOS but low IS suggests over-trading
+#   w=22: both negative — too restrictive
+# F.6 question: is w=13 or w=15 better than w=14?
 # Variants:
-#   FiboSC14w18 — control: w=18 (current winner)
-#   FiboSC14w12 — w=12 (faster pivots, more trades)
-#   FiboSC14w14 — w=14 (intermediate)
-#   FiboSC14w22 — w=22 (stricter pivots, higher conviction)
-
-class FiboSC14w18(FiboRetrace):
-    """Control: macro200 + confirm + ext=1.4 + w=18."""
-    TREND_MODE   = "macro200"
-    ENTRY_MODE   = "confirm"
-    FIB_EXT      = 1.4
-    SWING_WINDOW = 18
-
+#   FiboSC14w12 — w=12 (best OOS so far, control lower bound)
+#   FiboSC14w13 — w=13 (new, between w=12 and w=14)
+#   FiboSC14w14 — w=14 (F.5 winner, most consistent IS/OOS)
+#   FiboSC14w15 — w=15 (new, between w=14 and w=18)
 
 class FiboSC14w12(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=12 (faster pivots)."""
+    """macro200 + confirm + ext=1.4 + w=12."""
     TREND_MODE   = "macro200"
     ENTRY_MODE   = "confirm"
     FIB_EXT      = 1.4
     SWING_WINDOW = 12
 
 
+class FiboSC14w13(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=13."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 13
+
+
 class FiboSC14w14(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=14."""
+    """F.5 winner: macro200 + confirm + ext=1.4 + w=14."""
     TREND_MODE   = "macro200"
     ENTRY_MODE   = "confirm"
     FIB_EXT      = 1.4
     SWING_WINDOW = 14
 
 
-class FiboSC14w22(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=22 (stricter/rarer pivots)."""
+class FiboSC14w15(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=15."""
     TREND_MODE   = "macro200"
     ENTRY_MODE   = "confirm"
     FIB_EXT      = 1.4
-    SWING_WINDOW = 22
+    SWING_WINDOW = 15
