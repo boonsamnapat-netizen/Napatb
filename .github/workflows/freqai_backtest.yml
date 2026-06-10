@@ -33,6 +33,26 @@ jobs:
         run: |
           pip install "freqtrade<2026.5" --quiet
 
+      - name: Patch CCXT keysort (OKX returns None market IDs)
+        run: |
+          python3 << 'PYEOF'
+          import site, os
+          search = site.getsitepackages() + [site.getusersitepackages()]
+          for sp in search:
+              p = os.path.join(sp, 'ccxt/base/exchange.py')
+              if not os.path.exists(p):
+                  continue
+              txt = open(p).read()
+              old = 'return dict(sorted(dictionary.items()))'
+              new = 'return dict(sorted({k: v for k, v in dictionary.items() if k is not None}.items()))'
+              if old in txt:
+                  open(p, 'w').write(txt.replace(old, new, 1))
+                  print('Patched:', p)
+              else:
+                  print('Already patched or pattern not found:', p)
+              break
+          PYEOF
+
       - name: Create Freqtrade user directory
         run: |
           freqtrade create-userdir --userdir freqtrade/user_data
