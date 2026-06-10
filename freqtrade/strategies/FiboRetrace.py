@@ -23,6 +23,8 @@ from freqtrade.strategy import IStrategy, merge_informative_pair, stoploss_from_
 import talib.abstract as ta
 from pandas import DataFrame
 from datetime import datetime
+from itertools import takewhile
+from typing import Optional
 
 
 class FiboRetrace(IStrategy):
@@ -48,6 +50,17 @@ class FiboRetrace(IStrategy):
     ENTRY_MODE     = "touch"   # "touch" = mechanical; "confirm" = RSI+MACD filter
     TREND_MODE     = "base"    # see populate_indicators for modes
     BREAKEVEN_PCT  = None      # fraction of (entry→TP) range; None = disabled
+
+    # ---- Closed-loop adaptive parameters -----------------------------------
+    # After each closed trade the system reviews recent history and adjusts:
+    #   ≥ ADAPT_TIGHT consecutive losses → require stricter confirm (RSI>50, MACD>0)
+    #   ≥ ADAPT_STOP  consecutive losses → skip ALL new entries until a win resets
+    #   stake scales down 15% per consecutive loss (floor ADAPT_STAKE_FLOOR)
+    ADAPTIVE           = False  # disabled by default; subclasses opt in
+    ADAPT_LOOKBACK     = 15     # number of recent closed trades to review
+    ADAPT_TIGHT        = 3      # consecutive losses before tighter filter
+    ADAPT_STOP         = 6      # consecutive losses before pausing entirely
+    ADAPT_STAKE_FLOOR  = 0.25   # min stake fraction (e.g. 0.25 = 25% of normal)
 
     # Fibonacci ratios
     FIB_50   = 0.500
@@ -91,6 +104,119 @@ class FiboRetrace(IStrategy):
             out_val[i] = last_val
             out_idx[i] = last_idx
         return out_val, out_idx
+
+    # ---- Closed-loop helpers -----------------------------------------------
+
+    def _recent_stats(self, pair: Optional[str] = None):
+        """
+        Review the last ADAPT_LOOKBACK closed trades and return:
+          (consec_losses, long_wr, short_wr, pair_consec)
+        consec_losses  — consecutive losses across all pairs (most recent first)
+        long_wr        — win rate of long  trades in the lookback window
+        short_wr       — win rate of short trades in the lookback window
+        pair_consec    — consecutive losses for `pair` specifically (0 if pair=None)
+        """
+        from freqtrade.persistence import Trade
+
+        closed = sorted(
+            Trade.get_trades_proxy(is_open=False),
+            key=lambda t: t.close_date or datetime.min
+        )[-self.ADAPT_LOOKBACK:]
+
+        if not closed:
+            return 0, 1.0, 1.0, 0
+
+        # Global consecutive losses (all pairs, most recent first)
+        consec = 0
+        for t in reversed(closed):
+            if t.profit_ratio < 0:
+                consec += 1
+            else:
+                break
+
+        # Win rates by direction
+        longs  = [t for t in closed if not t.is_short]
+        shorts = [t for t in closed if t.is_short]
+        long_wr  = sum(1 for t in longs  if t.profit_ratio >= 0) / len(longs)  if longs  else 1.0
+        short_wr = sum(1 for t in shorts if t.profit_ratio >= 0) / len(shorts) if shorts else 1.0
+
+        # Per-pair consecutive losses
+        pair_consec = 0
+        if pair:
+            pair_closed = [t for t in closed if t.pair == pair]
+            for t in reversed(pair_closed):
+                if t.profit_ratio < 0:
+                    pair_consec += 1
+                else:
+                    break
+
+        return consec, long_wr, short_wr, pair_consec
+
+    def confirm_trade_entry(self, pair: str, order_type: str, amount: float,
+                            rate: float, time_in_force: str, entry_tag: Optional[str],
+                            side: str, **kwargs) -> bool:
+        """
+        Closed-loop gate: review recent performance before each new entry.
+        Returns False to veto the entry if the system is in a losing streak.
+        """
+        if not self.ADAPTIVE:
+            return True
+
+        consec, long_wr, short_wr, pair_consec = self._recent_stats(pair)
+
+        # Hard stop: too many consecutive losses globally → wait for a win
+        if consec >= self.ADAPT_STOP:
+            return False
+
+        # Directional pause: if this direction has been losing badly
+        dir_wr = long_wr if side == "long" else short_wr
+        if dir_wr < 0.05 and len([1]) > 3:   # <5% WR in this direction recently
+            return False
+
+        # Tight mode: require stronger RSI/MACD confirmation
+        if consec >= self.ADAPT_TIGHT or pair_consec >= self.ADAPT_TIGHT:
+            df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+            if df is None or df.empty:
+                return False
+
+            last = df.iloc[-1]
+            rsi      = last.get("rsi", 50)
+            macdhist = last.get("macdhist", 0)
+
+            if side == "long":
+                # Require RSI above midline AND MACD histogram positive
+                if rsi < 50 or macdhist <= 0:
+                    return False
+            else:  # short
+                if rsi > 50 or macdhist >= 0:
+                    return False
+
+        return True
+
+    def custom_stake_amount(self, current_time: datetime, current_rate: float,
+                            current_profit: float, proposed_stake: float,
+                            min_stake: Optional[float], max_stake: float,
+                            leverage: float, entry_tag: Optional[str],
+                            side: str, **kwargs) -> float:
+        """
+        Closed-loop stake sizing: reduce stake progressively during losing streaks.
+        Each consecutive loss cuts stake by 15% (floor = ADAPT_STAKE_FLOOR).
+        Resets to full stake after any winning trade.
+        """
+        if not self.ADAPTIVE:
+            return proposed_stake
+
+        consec, _, _, _ = self._recent_stats()
+
+        if consec == 0:
+            return proposed_stake
+
+        scale = max(self.ADAPT_STAKE_FLOOR, 1.0 - consec * 0.15)
+        adjusted = proposed_stake * scale
+
+        if min_stake is not None:
+            adjusted = max(adjusted, min_stake)
+        return min(adjusted, max_stake)
 
     # ---- Indicators --------------------------------------------------------
 
@@ -319,27 +445,65 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Production strategy — Phase F (final) ---------------------------------
-# Optimization path: F.1→F.2 (ext sweep) → F.3 (confirm filter) →
-#   F.4 (ext sweep w/ confirm) → F.5 (multi-pair, swing-window) →
-#   F.6 (w fine-tune) → F.7 (breakeven, no effect) → F.8 (SL sweep) →
-#   F.9 (3-period final validation)
+# ---- Phase F.10: closed-loop adaptive variants ------------------------------
+# F.9 base: FiboSC14w14 IS +34.48% / OOS1 +41.88% / DD 32%
+# F.10 goal: reduce DD by learning from consecutive losses
 #
-# FiboSC14w14 validated results (BTC+ETH+SOL):
-#   IS   2023-2025: +34.48%  WR 15.0%  147 trades  DD 29.65%
-#   OOS1 2021-2023: +41.88%  WR 19.3%  145 trades  DD 32.06%
-#   OOS2 2020-2021: -7.25%   WR 13.5%   37 trades  DD 17.88%
-#   (OOS2 low trade count due to macro200 filter suppressing entries
-#    during COVID crash — correct risk-avoidance behavior)
+# Mechanism (confirm_trade_entry + custom_stake_amount):
+#   ≥ ADAPT_TIGHT consecutive losses → require RSI>50 + MACD hist>0 at entry
+#   ≥ ADAPT_STOP  consecutive losses → skip entry entirely until next win
+#   stake: -15% per consecutive loss, floor at ADAPT_STAKE_FLOOR
+#
+# Variants:
+#   FiboSC14w14      — control: no adaptation
+#   FiboSC14w14a36   — tight at 3 losses, stop at 6 (moderate)
+#   FiboSC14w14a25   — tight at 2 losses, stop at 5 (aggressive)
+#   FiboSC14w14a48   — tight at 4 losses, stop at 8 (conservative)
 
 class FiboSC14w14(FiboRetrace):
-    """
-    Production strategy: Fibonacci retracement, Long+Short, 1H/4H/1D.
-    Pairs: BTC/USDT:USDT  ETH/USDT:USDT  SOL/USDT:USDT
-    Parameters proven across 3 independent time periods (2020-2025).
-    """
-    TREND_MODE   = "macro200"   # 4H EMA50 + 4H EMA200 + 1D SMA200
-    ENTRY_MODE   = "confirm"    # RSI rising + MACD hist rising at entry
-    FIB_EXT      = 1.4          # TP extension (vs 1.618 classical — higher WR)
-    SWING_WINDOW = 14           # fractal pivot half-width in 1H bars
-    FIB_SL       = 0.786        # stoploss at classical Fibonacci invalidation
+    """Control: no adaptation. F.9 baseline."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ADAPTIVE     = False
+
+
+class FiboSC14w14a36(FiboRetrace):
+    """Closed-loop: tight filter at 3 losses, pause at 6 losses."""
+    TREND_MODE         = "macro200"
+    ENTRY_MODE         = "confirm"
+    FIB_EXT            = 1.4
+    SWING_WINDOW       = 14
+    FIB_SL             = 0.786
+    ADAPTIVE           = True
+    ADAPT_TIGHT        = 3
+    ADAPT_STOP         = 6
+    ADAPT_STAKE_FLOOR  = 0.30
+
+
+class FiboSC14w14a25(FiboRetrace):
+    """Closed-loop: tight filter at 2 losses, pause at 5 losses (aggressive)."""
+    TREND_MODE         = "macro200"
+    ENTRY_MODE         = "confirm"
+    FIB_EXT            = 1.4
+    SWING_WINDOW       = 14
+    FIB_SL             = 0.786
+    ADAPTIVE           = True
+    ADAPT_TIGHT        = 2
+    ADAPT_STOP         = 5
+    ADAPT_STAKE_FLOOR  = 0.25
+
+
+class FiboSC14w14a48(FiboRetrace):
+    """Closed-loop: tight filter at 4 losses, pause at 8 losses (conservative)."""
+    TREND_MODE         = "macro200"
+    ENTRY_MODE         = "confirm"
+    FIB_EXT            = 1.4
+    SWING_WINDOW       = 14
+    FIB_SL             = 0.786
+    ADAPTIVE           = True
+    ADAPT_TIGHT        = 4
+    ADAPT_STOP         = 8
+    ADAPT_STAKE_FLOOR  = 0.30

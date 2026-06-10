@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase F.9 Final)
+name: Backtest — Fibo Long+Short (Phase F.10 Adaptive)
 
 on:
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy FiboSC14w14 \
+            --strategy-list FiboSC14w14 FiboSC14w14a36 FiboSC14w14a25 FiboSC14w14a48 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -64,25 +64,15 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy FiboSC14w14 \
+            --strategy-list FiboSC14w14 FiboSC14w14a36 FiboSC14w14a25 FiboSC14w14a48 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
-
-      - name: Run OOS2 backtest — 2020-2021 (COVID crash + bull run)
-        run: |
-          freqtrade backtesting \
-            --config freqtrade/config_okx.json \
-            --userdir freqtrade/user_data \
-            --strategy FiboSC14w14 \
-            --strategy-path freqtrade/strategies/ \
-            --timerange 20200101-20210101 \
-            2>&1 | tee results/fibo_oos2.txt
 
       - name: Commit results
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/fibo_insample.txt results/fibo_oos.txt results/fibo_oos2.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "F.9 final validation: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "F.10 adaptive backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
