@@ -1,0 +1,28 @@
+2026-06-10 00:11:24,140 - freqtrade - INFO - freqtrade 2026.4
+2026-06-10 00:11:25,290 - freqtrade.configuration.load_config - INFO - Using config: freqtrade/config_okx.json ...
+2026-06-10 00:11:25,293 - freqtrade.loggers - INFO - Enabling colorized output.
+2026-06-10 00:11:25,293 - freqtrade.loggers - INFO - Logfile configured
+2026-06-10 00:11:25,294 - freqtrade.loggers - INFO - Verbosity set to 1
+2026-06-10 00:11:25,294 - freqtrade.configuration.configuration - INFO - Using additional Strategy lookup path: freqtrade/strategies/
+2026-06-10 00:11:25,295 - freqtrade.configuration.configuration - INFO - Using max_open_trades: 2 ...
+2026-06-10 00:11:25,295 - freqtrade.configuration.configuration - INFO - Parameter --timerange detected: 20230301-20250301 ...
+2026-06-10 00:11:25,296 - freqtrade.configuration.configuration - INFO - Using user-data directory: freqtrade/user_data ...
+2026-06-10 00:11:25,297 - freqtrade.configuration.configuration - INFO - Using data directory: freqtrade/user_data/data/okx ...
+2026-06-10 00:11:25,297 - freqtrade.configuration.configuration - INFO - Using strategy list of 4 strategies
+2026-06-10 00:11:25,298 - freqtrade.configuration.configuration - INFO - Parameter --cache=day detected ...
+2026-06-10 00:11:25,298 - freqtrade.configuration.configuration - INFO - Filter trades by timerange: 20230301-20250301
+2026-06-10 00:11:25,299 - freqtrade.exchange.check_exchange - INFO - Checking exchange...
+2026-06-10 00:11:25,306 - freqtrade.exchange.check_exchange - INFO - Exchange "okx" is officially supported by the Freqtrade development team.
+2026-06-10 00:11:25,307 - freqtrade.configuration.configuration - INFO - Using pairlist from configuration.
+2026-06-10 00:11:25,307 - freqtrade.configuration.config_validation - INFO - Validating configuration ...
+2026-06-10 00:11:25,310 - freqtrade.commands.optimize_commands - INFO - Starting freqtrade in Backtesting mode
+2026-06-10 00:11:25,310 - freqtrade.exchange.exchange - INFO - Instance is running with dry_run enabled
+2026-06-10 00:11:25,311 - freqtrade.exchange.exchange - INFO - Using CCXT 4.5.56
+2026-06-10 00:11:25,311 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'margin'}}
+2026-06-10 00:11:25,317 - freqtrade.exchange.exchange - INFO - Applying additional ccxt config: {'options': {'defaultType': 'margin'}}
+2026-06-10 00:11:25,323 - freqtrade.exchange.exchange - INFO - Using Exchange "OKX"
+2026-06-10 00:11:25,323 - freqtrade.exchange.exchange - DEBUG - Performing scheduled market reload..
+2026-06-10 00:11:26,172 - freqtrade - ERROR - Configuration error: Freqtrade does not support 'isolated' 'margin' on OKX.
+Please make sure to review the documentation at https://www.freqtrade.io/en/stable.
+2026-06-10 00:11:26,264 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-10 00:11:26,264 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
