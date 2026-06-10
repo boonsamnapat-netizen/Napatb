@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase MR.3 Long-Only Bull Gate)
+name: Backtest — Fibo Long+Short (Phase F.16 Final Validation)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list MR3L MR3Ls5 MR3Lw MR3Ls5x72 \
+            --strategy-list FiboSC14w14sp15 FiboF15r50 FiboF15r60 FiboF15r75 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,15 +103,25 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list MR3L MR3Ls5 MR3Lw MR3Ls5x72 \
+            --strategy-list FiboSC14w14sp15 FiboF15r50 FiboF15r60 FiboF15r75 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
+
+      - name: Run holdout backtest — 2025-03 to 2025-06 (untouched data)
+        run: |
+          freqtrade backtesting \
+            --config freqtrade/config_okx.json \
+            --userdir freqtrade/user_data \
+            --strategy-list FiboSC14w14sp15 FiboF15r50 FiboF15r60 FiboF15r75 \
+            --strategy-path freqtrade/strategies/ \
+            --timerange 20250301-20250601 \
+            2>&1 | tee results/fibo_holdout.txt
 
       - name: Commit results
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "MR.3 long-only backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/fibo_insample.txt results/fibo_oos.txt results/fibo_holdout.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "F.16 final-validation backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
