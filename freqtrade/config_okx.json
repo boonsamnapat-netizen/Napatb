@@ -1,6 +1,6 @@
 {
-  "trading_mode": "margin",
-  "margin_mode": "cross",
+  "trading_mode": "futures",
+  "margin_mode": "isolated",
   "max_open_trades": 2,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
@@ -19,8 +19,8 @@
     "ccxt_config": {},
     "ccxt_async_config": {},
     "pair_whitelist": [
-      "BTC/USDT",
-      "ETH/USDT"
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT"
     ],
     "pair_blacklist": []
   },
