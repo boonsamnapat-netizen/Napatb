@@ -57,7 +57,7 @@ jobs:
             --data-format-ohlcv json \
             --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "SOL/USDT:USDT" \
           || { echo "OKX download failed — falling back to Binance..." && \
-               python3 -c "import json; cfg=json.load(open('freqtrade/config_okx.json')); cfg['exchange']['name']='binance'; cfg.pop('user_data_dir',None); json.dump(cfg,open('/tmp/cfg_binance_dl.json','w'))" && \
+               python3 -c "import json; cfg=json.load(open('freqtrade/config_okx.json')); cfg['exchange']['name']='binance'; json.dump(cfg,open('/tmp/cfg_binance_dl.json','w'))" && \
                freqtrade download-data \
                  --config /tmp/cfg_binance_dl.json \
                  --datadir freqtrade/user_data/data/okx \
