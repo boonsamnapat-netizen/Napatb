@@ -2,6 +2,8 @@
 Fibonacci retracement setup scanner.
 Replicates FiboRetrace.py logic but standalone (no Freqtrade dependency).
 Uses ccxt for public OKX market data — no API keys required.
+
+Universe: top N USDT pairs by 24H volume, stablecoins excluded.
 """
 
 import numpy as np
@@ -205,14 +207,61 @@ def scan_pair(exchange, pair: str) -> Optional[FiboSetup]:
     )
 
 
-def scan_all(pairs: list[str]) -> list[FiboSetup]:
+# Stablecoins and pegged tokens to exclude from the universe
+_STABLES = {
+    "USDC", "BUSD", "DAI", "TUSD", "USDE", "FDUSD", "USDP", "GUSD",
+    "FRAX", "LUSD", "SUSD", "CRVUSD", "PYUSD", "EURS", "EURT",
+}
+
+
+def get_top_pairs(exchange, n: int = 20) -> list[str]:
+    """
+    Return top N USDT spot pairs on OKX ranked by 24H quote volume.
+    Stablecoins are excluded. No API key required.
+    """
+    tickers = exchange.fetch_tickers()
+
+    rows = []
+    for symbol, t in tickers.items():
+        # Keep USDT spot pairs only (no futures like BTC/USDT:USDT)
+        if not symbol.endswith("/USDT") or ":" in symbol:
+            continue
+        base = symbol.split("/")[0]
+        if base in _STABLES:
+            continue
+        quote_vol = t.get("quoteVolume") or 0
+        if quote_vol > 0:
+            rows.append((symbol, quote_vol))
+
+    rows.sort(key=lambda x: x[1], reverse=True)
+    top = [r[0] for r in rows[:n]]
+    print(f"[scanner] Universe (top {n} by 24H vol): {top}")
+    return top
+
+
+def scan_all(pairs: list[str] | None = None, top_n: int = 20) -> list[FiboSetup]:
+    """
+    Scan for Fibonacci setups.
+    If pairs is None, dynamically fetch the top_n pairs by 24H volume.
+    Results are sorted by trend_score descending (strongest trend first).
+    """
     exchange = ccxt.okx({"enableRateLimit": True})
+
+    if pairs is None:
+        pairs = get_top_pairs(exchange, n=top_n)
+
     setups = []
     for pair in pairs:
         try:
             setup = scan_pair(exchange, pair)
             if setup:
                 setups.append(setup)
+                print(f"[scanner] ✅ {pair}: trend={setup.trend_score}/4  R:R={setup.rr_ratio:.1f}")
+            else:
+                print(f"[scanner]    {pair}: no setup")
         except Exception as e:
-            print(f"[scanner] {pair} error: {e}")
+            print(f"[scanner] ❌ {pair} error: {e}")
+
+    # Best setups first (highest trend score, then best R:R)
+    setups.sort(key=lambda s: (s.trend_score, s.rr_ratio), reverse=True)
     return setups

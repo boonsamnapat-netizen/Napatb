@@ -9,7 +9,10 @@ Usage:
 Env vars:
   TELEGRAM_TOKEN   - Telegram bot token (from @BotFather)
   TELEGRAM_CHAT_ID - Your chat/channel ID (get from @userinfobot)
-  PAIRS            - Comma-separated pairs to scan (default: BTC/USDT,ETH/USDT)
+  TOP_N            - How many top-volume pairs to scan (default: 20)
+  PAIRS            - Override with specific pairs, comma-separated
+                     e.g. "BTC/USDT,ETH/USDT,SOL/USDT"
+                     If set, TOP_N is ignored.
 """
 
 import os
@@ -18,18 +21,24 @@ from alert_bot.scanner import scan_all
 from alert_bot.telegram_alert import format_alert, send_telegram
 
 
-PAIRS = os.environ.get("PAIRS", "BTC/USDT,ETH/USDT").split(",")
-
-
 def main():
-    print(f"[main] Scanning {PAIRS}...")
-    setups = scan_all(PAIRS)
+    # Allow manual pair override; otherwise scan top N by volume
+    pairs_env = os.environ.get("PAIRS", "").strip()
+    top_n     = int(os.environ.get("TOP_N", "20"))
+
+    if pairs_env:
+        pairs = [p.strip() for p in pairs_env.split(",") if p.strip()]
+        print(f"[main] Scanning fixed list: {pairs}")
+        setups = scan_all(pairs=pairs)
+    else:
+        print(f"[main] Scanning top {top_n} OKX pairs by 24H volume...")
+        setups = scan_all(pairs=None, top_n=top_n)
 
     if not setups:
-        print("[main] No Fibonacci setups detected on current candle.")
+        print("[main] No Fibonacci setups on current candle.")
         return 0
 
-    print(f"[main] Found {len(setups)} setup(s)!")
+    print(f"\n[main] {len(setups)} setup(s) found — sending alerts...")
     for setup in setups:
         msg = format_alert(setup)
         print(f"\n{'='*60}")
@@ -41,5 +50,4 @@ def main():
 
 
 if __name__ == "__main__":
-    count = main()
-    sys.exit(0)
+    sys.exit(0 if main() >= 0 else 1)

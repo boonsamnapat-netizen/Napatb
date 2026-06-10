@@ -23,9 +23,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r alert_bot/requirements.txt --quiet
 
-      - name: Run Fibo scanner
+      - name: Run Fibo scanner (top 20 by 24H volume)
         env:
           TELEGRAM_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PAIRS: "BTC/USDT,ETH/USDT"
+          TOP_N: "20"
         run: python -m alert_bot.main
