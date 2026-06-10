@@ -1,7 +1,7 @@
 {
   "trading_mode": "futures",
   "margin_mode": "isolated",
-  "max_open_trades": 2,
+  "max_open_trades": 4,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
   "tradable_balance_ratio": 0.99,
@@ -20,7 +20,28 @@
     "pair_whitelist": [
       "BTC/USDT:USDT",
       "ETH/USDT:USDT",
-      "SOL/USDT:USDT"
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "DOGE/USDT:USDT",
+      "ADA/USDT:USDT",
+      "LINK/USDT:USDT",
+      "DOT/USDT:USDT",
+      "AVAX/USDT:USDT",
+      "LTC/USDT:USDT",
+      "BCH/USDT:USDT",
+      "UNI/USDT:USDT",
+      "ATOM/USDT:USDT",
+      "ETC/USDT:USDT",
+      "FIL/USDT:USDT",
+      "TRX/USDT:USDT",
+      "EOS/USDT:USDT",
+      "XLM/USDT:USDT",
+      "ALGO/USDT:USDT",
+      "AAVE/USDT:USDT",
+      "CRV/USDT:USDT",
+      "SAND/USDT:USDT",
+      "MANA/USDT:USDT",
+      "SUSHI/USDT:USDT"
     ],
     "pair_blacklist": []
   },
