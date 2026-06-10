@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase F.8)
+name: Backtest — Fibo Long+Short (Phase F.9 Final)
 
 on:
   workflow_dispatch:
@@ -47,32 +47,42 @@ jobs:
             --data-format-ohlcv json \
             --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "SOL/USDT:USDT"
 
-      - name: Run in-sample backtest
+      - name: Run in-sample backtest (2023-2025)
         run: |
           mkdir -p results
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboSC14w14 FiboSC14w14sl75 FiboSC14w14sl70 FiboSC14w14sl65 \
+            --strategy FiboSC14w14 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
 
-      - name: Run OOS backtest — 2021-2023 (bear market validation)
+      - name: Run OOS1 backtest — 2021-2023 (bear market)
         if: ${{ github.event.inputs.run_oos == 'true' }}
         run: |
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboSC14w14 FiboSC14w14sl75 FiboSC14w14sl70 FiboSC14w14sl65 \
+            --strategy FiboSC14w14 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
+
+      - name: Run OOS2 backtest — 2020-2021 (COVID crash + bull run)
+        run: |
+          freqtrade backtesting \
+            --config freqtrade/config_okx.json \
+            --userdir freqtrade/user_data \
+            --strategy FiboSC14w14 \
+            --strategy-path freqtrade/strategies/ \
+            --timerange 20200101-20210101 \
+            2>&1 | tee results/fibo_oos2.txt
 
       - name: Commit results
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "fibo L+S backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/fibo_insample.txt results/fibo_oos.txt results/fibo_oos2.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "F.9 final validation: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

@@ -51,7 +51,7 @@
     "stoploss_on_exchange": false
   },
 
-  "strategy": "FiboStrict",
+  "strategy": "FiboSC14w14",
   "strategy_path": "freqtrade/strategies/",
 
   "telegram": {
