@@ -148,6 +148,11 @@ class MeanRevert(IStrategy):
 
     def custom_stoploss(self, pair, trade, current_time: datetime,
                         current_rate: float, current_profit: float, **kwargs):
+        # SL_ATR=None → no per-trade stop; only the static config stoploss
+        # (-0.15 catastrophe net) applies. MR.1 showed ATR stops sell the
+        # exact bottom: stop-outs -396% vs +374% from trades left to revert.
+        if self.SL_ATR is None:
+            return None
         atr = self._entry_atr(trade)
         if atr is None or current_rate <= 0:
             return None
@@ -164,7 +169,7 @@ class MeanRevert(IStrategy):
                             min_stake: Optional[float], max_stake: float,
                             leverage: float, entry_tag: Optional[str],
                             side: str, **kwargs) -> float:
-        if self.RISK_PCT is None:
+        if self.RISK_PCT is None or self.SL_ATR is None:
             return proposed_stake
 
         df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
@@ -218,3 +223,36 @@ class MRfast(MeanRevert):
     """Tighter stop (2.0×ATR) and 24h time stop."""
     SL_ATR     = 2.0
     MAX_HOLD_H = 24
+
+
+# ---- MR.2: drop the per-trade stop (Connors rule: stops hurt MR) -------------
+# MR.1 autopsy: trades allowed to revert won +374% at 91% WR; the 2.5×ATR
+# stop sold the exact bottom 703 times for -396%. Risk control moves to the
+# time stop + the static -15% catastrophe net + (later) position sizing.
+#
+#   MR2ns   — no stop, 48h time stop
+#   MR2ns72 — no stop, 72h time stop (more room to revert)
+#   MR2w5   — wide 5×ATR stop (middle ground control)
+#   MR2s5   — no stop + stricter entries RSI(2) <5 / >95 (deeper stretch only)
+
+class MR2ns(MeanRevert):
+    """No per-trade stop; 48h time stop."""
+    SL_ATR = None
+
+
+class MR2ns72(MeanRevert):
+    """No per-trade stop; 72h time stop."""
+    SL_ATR     = None
+    MAX_HOLD_H = 72
+
+
+class MR2w5(MeanRevert):
+    """Very wide 5×ATR stop; 48h time stop."""
+    SL_ATR = 5.0
+
+
+class MR2s5(MeanRevert):
+    """No stop + deeper stretch required: RSI(2) < 5 / > 95."""
+    SL_ATR = None
+    RSI_OS = 5
+    RSI_OB = 95
