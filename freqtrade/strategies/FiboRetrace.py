@@ -62,6 +62,12 @@ class FiboRetrace(IStrategy):
     ADAPT_STOP         = 6      # consecutive losses before pausing entirely
     ADAPT_STAKE_FLOOR  = 0.25   # min stake fraction (e.g. 0.25 = 25% of normal)
 
+    # ---- ATR volatility filter (works in backtesting, no Trade API needed) -
+    # High ATR = market panic/chaos = Fibonacci setups get stop-hunted
+    # When ATR > ATR_MA * ATR_MULT → skip all entries (low_vol gate)
+    ATR_FILTER  = False   # disabled by default
+    ATR_MULT    = 1.5     # ATR threshold multiplier (e.g. 1.5 = 50% above average)
+
     # Fibonacci ratios
     FIB_50   = 0.500
     FIB_618  = 0.618
@@ -228,6 +234,14 @@ class FiboRetrace(IStrategy):
         _macd = ta.MACD(dataframe, fastperiod=12, slowperiod=26, signalperiod=9)
         dataframe["macdhist"] = _macd["macdhist"]
 
+        # ATR volatility regime (for ATR_FILTER mode)
+        dataframe["atr14"]    = ta.ATR(dataframe, timeperiod=14)
+        dataframe["atr_ma50"] = dataframe["atr14"].rolling(50).mean()
+        # low_vol = True when current ATR is within normal range (not panic/chaos)
+        dataframe["low_vol"]  = (
+            dataframe["atr14"] < dataframe["atr_ma50"] * self.ATR_MULT
+        ).astype(int)
+
         # ---- 4H trend -------------------------------------------------
         inf4h = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
         inf4h["ema50"]         = ta.EMA(inf4h, timeperiod=50)
@@ -348,17 +362,22 @@ class FiboRetrace(IStrategy):
         )
         trend_down = dataframe["trend_down"] == 1
 
+        # ATR volatility gate: skip entries when market is in panic/chaos regime
+        low_vol = (dataframe["low_vol"] == 1) if self.ATR_FILTER else pd.Series(
+            True, index=dataframe.index
+        )
+
         if self.ENTRY_MODE == "confirm":
             rsi_up   = dataframe["rsi"] > dataframe["rsi"].shift(1)
             hist_up  = dataframe["macdhist"] > dataframe["macdhist"].shift(1)
             rsi_down = dataframe["rsi"] < dataframe["rsi"].shift(1)
             hist_down= dataframe["macdhist"] < dataframe["macdhist"].shift(1)
 
-            dataframe.loc[in_zone_long  & trend_up   & rsi_up   & hist_up,   "enter_long"]  = 1
-            dataframe.loc[in_zone_short & trend_down & rsi_down & hist_down, "enter_short"] = 1
+            dataframe.loc[in_zone_long  & trend_up   & rsi_up   & hist_up   & low_vol, "enter_long"]  = 1
+            dataframe.loc[in_zone_short & trend_down & rsi_down & hist_down & low_vol, "enter_short"] = 1
         else:
-            dataframe.loc[in_zone_long  & trend_up,   "enter_long"]  = 1
-            dataframe.loc[in_zone_short & trend_down, "enter_short"] = 1
+            dataframe.loc[in_zone_long  & trend_up   & low_vol, "enter_long"]  = 1
+            dataframe.loc[in_zone_short & trend_down & low_vol, "enter_short"] = 1
 
         return dataframe
 
@@ -445,65 +464,58 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Phase F.10: closed-loop adaptive variants ------------------------------
-# F.9 base: FiboSC14w14 IS +34.48% / OOS1 +41.88% / DD 32%
-# F.10 goal: reduce DD by learning from consecutive losses
+# ---- Phase F.11: ATR volatility filter (closed-loop via market structure) ---
+# F.10 finding: confirm_trade_entry Trade API doesn't update in backtesting.
+# Root cause of consecutive losses: high ATR periods (panic/whipsaw) → stop hunts.
+# ATR filter computes directly from OHLCV — guaranteed to work in backtesting.
 #
-# Mechanism (confirm_trade_entry + custom_stake_amount):
-#   ≥ ADAPT_TIGHT consecutive losses → require RSI>50 + MACD hist>0 at entry
-#   ≥ ADAPT_STOP  consecutive losses → skip entry entirely until next win
-#   stake: -15% per consecutive loss, floor at ADAPT_STAKE_FLOOR
+# When ATR(14) > ATR_MA(50) × ATR_MULT → market is chaotic → skip entries.
+# This breaks the consecutive-loss cycle at the source, not the symptom.
 #
 # Variants:
-#   FiboSC14w14      — control: no adaptation
-#   FiboSC14w14a36   — tight at 3 losses, stop at 6 (moderate)
-#   FiboSC14w14a25   — tight at 2 losses, stop at 5 (aggressive)
-#   FiboSC14w14a48   — tight at 4 losses, stop at 8 (conservative)
+#   FiboSC14w14       — control: no filter (F.9 baseline)
+#   FiboSC14w14v15    — ATR_MULT=1.5 (skip when ATR > 150% of average)
+#   FiboSC14w14v12    — ATR_MULT=1.2 (tighter: skip when ATR > 120% of average)
+#   FiboSC14w14v20    — ATR_MULT=2.0 (looser: only skip extreme panic)
 
 class FiboSC14w14(FiboRetrace):
-    """Control: no adaptation. F.9 baseline."""
+    """Control: no ATR filter. F.9 baseline."""
     TREND_MODE   = "macro200"
     ENTRY_MODE   = "confirm"
     FIB_EXT      = 1.4
     SWING_WINDOW = 14
     FIB_SL       = 0.786
-    ADAPTIVE     = False
+    ATR_FILTER   = False
 
 
-class FiboSC14w14a36(FiboRetrace):
-    """Closed-loop: tight filter at 3 losses, pause at 6 losses."""
-    TREND_MODE         = "macro200"
-    ENTRY_MODE         = "confirm"
-    FIB_EXT            = 1.4
-    SWING_WINDOW       = 14
-    FIB_SL             = 0.786
-    ADAPTIVE           = True
-    ADAPT_TIGHT        = 3
-    ADAPT_STOP         = 6
-    ADAPT_STAKE_FLOOR  = 0.30
+class FiboSC14w14v15(FiboRetrace):
+    """ATR filter: skip entries when ATR > 1.5× 50-bar average."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ATR_FILTER   = True
+    ATR_MULT     = 1.5
 
 
-class FiboSC14w14a25(FiboRetrace):
-    """Closed-loop: tight filter at 2 losses, pause at 5 losses (aggressive)."""
-    TREND_MODE         = "macro200"
-    ENTRY_MODE         = "confirm"
-    FIB_EXT            = 1.4
-    SWING_WINDOW       = 14
-    FIB_SL             = 0.786
-    ADAPTIVE           = True
-    ADAPT_TIGHT        = 2
-    ADAPT_STOP         = 5
-    ADAPT_STAKE_FLOOR  = 0.25
+class FiboSC14w14v12(FiboRetrace):
+    """ATR filter: skip entries when ATR > 1.2× 50-bar average (tighter)."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ATR_FILTER   = True
+    ATR_MULT     = 1.2
 
 
-class FiboSC14w14a48(FiboRetrace):
-    """Closed-loop: tight filter at 4 losses, pause at 8 losses (conservative)."""
-    TREND_MODE         = "macro200"
-    ENTRY_MODE         = "confirm"
-    FIB_EXT            = 1.4
-    SWING_WINDOW       = 14
-    FIB_SL             = 0.786
-    ADAPTIVE           = True
-    ADAPT_TIGHT        = 4
-    ADAPT_STOP         = 8
-    ADAPT_STAKE_FLOOR  = 0.30
+class FiboSC14w14v20(FiboRetrace):
+    """ATR filter: skip entries when ATR > 2.0× 50-bar average (looser)."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ATR_FILTER   = True
+    ATR_MULT     = 2.0
