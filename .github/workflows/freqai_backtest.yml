@@ -86,7 +86,7 @@ jobs:
                  --data-format-ohlcv json \
                  --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "BNB/USDT:USDT" "SOL/USDT:USDT" "XRP/USDT:USDT" "DOGE/USDT:USDT" "ADA/USDT:USDT" "MATIC/USDT:USDT" "LINK/USDT:USDT" "DOT/USDT:USDT" "AVAX/USDT:USDT" "LTC/USDT:USDT" "BCH/USDT:USDT" "UNI/USDT:USDT" "ATOM/USDT:USDT" "ETC/USDT:USDT" "FIL/USDT:USDT" "TRX/USDT:USDT" "EOS/USDT:USDT" "XLM/USDT:USDT" "ALGO/USDT:USDT" "AAVE/USDT:USDT" "CRV/USDT:USDT" "SAND/USDT:USDT" "MANA/USDT:USDT" "SUSHI/USDT:USDT" "NEAR/USDT:USDT" "FTM/USDT:USDT" "AXS/USDT:USDT" "SNX/USDT:USDT" "COMP/USDT:USDT"; }
 
-      - name: Run in-sample backtest (5 years: 2020-2025)
+      - name: Run in-sample backtest — 5yr 2020-2025
         run: |
           mkdir -p results
           freqtrade backtesting \
