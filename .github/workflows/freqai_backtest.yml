@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase MR.2 No-Stop MR)
+name: Backtest — Fibo Long+Short (Phase MR.3 Long-Only Bull Gate)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list MR2ns MR2ns72 MR2w5 MR2s5 \
+            --strategy-list MR3L MR3Ls5 MR3Lw MR3Ls5x72 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list MR2ns MR2ns72 MR2w5 MR2s5 \
+            --strategy-list MR3L MR3Ls5 MR3Lw MR3Ls5x72 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
@@ -113,5 +113,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "MR.2 no-stop backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "MR.3 long-only backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

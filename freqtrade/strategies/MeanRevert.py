@@ -57,6 +57,11 @@ class MeanRevert(IStrategy):
     # Equal-risk sizing (proven in F.13/F.14); None = unlimited stake
     RISK_PCT = None
 
+    # MR.3: bear markets killed MR.2 OOS (-71%, shorts squeezed, dips that
+    # keep falling). Long-only + a second macro gate sits out bear years.
+    LONG_ONLY     = False
+    USE_1D_FILTER = False   # additionally require 1D close > SMA200
+
     # ---- Indicators ----------------------------------------------------------
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -82,6 +87,17 @@ class MeanRevert(IStrategy):
         itf = self.inf_timeframe
         up   = dataframe[f"close_{itf}"] > dataframe[f"ema200_{itf}"]
         down = ~up
+
+        if self.USE_1D_FILTER:
+            infd = self.dp.get_pair_dataframe(pair, "1d")
+            infd["sma200"] = ta.SMA(infd, timeperiod=200)
+            dataframe = merge_informative_pair(
+                dataframe, infd, self.timeframe, "1d", ffill=True
+            )
+            bull_1d = dataframe["close_1d"] > dataframe["sma200_1d"]
+            up   = up & bull_1d
+            down = down & ~bull_1d
+
         if not self.TREND_FILTER:
             up = down = pd.Series(True, index=dataframe.index)
         dataframe["trend_up"]   = up.fillna(False).astype(int)
@@ -102,13 +118,14 @@ class MeanRevert(IStrategy):
             "enter_long",
         ] = 1
 
-        dataframe.loc[
-            live
-            & (dataframe["trend_down"] == 1)
-            & (dataframe["close"] > dataframe["bb_upper"])
-            & (dataframe["rsi_fast"] > self.RSI_OB),
-            "enter_short",
-        ] = 1
+        if not self.LONG_ONLY:
+            dataframe.loc[
+                live
+                & (dataframe["trend_down"] == 1)
+                & (dataframe["close"] > dataframe["bb_upper"])
+                & (dataframe["rsi_fast"] > self.RSI_OB),
+                "enter_short",
+            ] = 1
 
         return dataframe
 
@@ -256,3 +273,37 @@ class MR2s5(MeanRevert):
     SL_ATR = None
     RSI_OS = 5
     RSI_OB = 95
+
+
+# ---- MR.3: long-only + dual macro gate ----------------------------------------
+# MR.2 verdict: no-stop MR works in bulls (IS +25%) and dies in bears
+# (OOS -53..-71%) — shorts get squeezed, dips keep falling. MR.3 only buys
+# dips when BOTH 4H>EMA200 and 1D>SMA200 agree it's a real bull; bear years
+# are sat out flat (0% beats -71%).
+#
+#   MR3L     — long-only, dual gate, RSI(2)<10, no stop, 48h
+#   MR3Ls5   — long-only, dual gate, RSI(2)<5 (best MR.2 entry)
+#   MR3Lw    — long-only, 4H gate only (measures the 1D gate's value)
+#   MR3Ls5x72— long-only, dual gate, RSI(2)<5, 72h time stop
+
+class MR3L(MeanRevert):
+    """Long-only, dual macro gate, no per-trade stop."""
+    SL_ATR        = None
+    LONG_ONLY     = True
+    USE_1D_FILTER = True
+
+
+class MR3Ls5(MR3L):
+    """+ deeper stretch: RSI(2) < 5."""
+    RSI_OS = 5
+
+
+class MR3Lw(MeanRevert):
+    """Long-only, 4H gate only (no 1D filter) — control."""
+    SL_ATR    = None
+    LONG_ONLY = True
+
+
+class MR3Ls5x72(MR3Ls5):
+    """+ 72h time stop."""
+    MAX_HOLD_H = 72
