@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase F.12 Split TP)
+name: Backtest — Fibo Long+Short (Phase F.13 DD Reduction)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboSC14w14 FiboSC14w14v15 FiboSC14w14sp FiboSC14w14sp15 \
+            --strategy-list FiboSC14w14sp15 FiboF13be FiboF13r75 FiboF13full \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboSC14w14 FiboSC14w14v15 FiboSC14w14sp FiboSC14w14sp15 \
+            --strategy-list FiboSC14w14sp15 FiboF13be FiboF13r75 FiboF13full \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
@@ -113,5 +113,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/fibo_insample.txt results/fibo_oos.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "F.12 split-TP backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "F.13 dd-reduction backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

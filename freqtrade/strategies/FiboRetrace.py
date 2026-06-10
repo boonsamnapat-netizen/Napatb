@@ -22,7 +22,7 @@ import pandas as pd
 from freqtrade.strategy import IStrategy, merge_informative_pair, stoploss_from_absolute
 import talib.abstract as ta
 from pandas import DataFrame
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import takewhile
 from typing import Optional
 
@@ -77,6 +77,18 @@ class FiboRetrace(IStrategy):
 
     position_adjustment_enable = False  # must be True in split variants
 
+    # ---- F.13: structural DD reduction --------------------------------------
+    # BE_AFTER_TP1: once TP1 partial close fires, move SL on the remainder to
+    # entry — the trade can no longer turn negative (locks in TP1 profit).
+    # RISK_PCT: equal-risk position sizing. Stake is computed so a stop-out
+    # loses exactly RISK_PCT of total equity, regardless of SL distance.
+    # PAIRLOCK_LOSSES: after N consecutive stop-outs on a pair, lock that pair
+    # for PAIRLOCK_DAYS days. PairLocks work in backtesting (unlike Trade API).
+    BE_AFTER_TP1    = False
+    RISK_PCT        = None    # e.g. 0.0075 = risk 0.75% of equity per trade
+    PAIRLOCK_LOSSES = None    # e.g. 3 = lock pair after 3 consecutive losses
+    PAIRLOCK_DAYS   = 3
+
     # Fibonacci ratios
     FIB_50   = 0.500
     FIB_618  = 0.618
@@ -88,6 +100,7 @@ class FiboRetrace(IStrategy):
         # Config overrides class-level position_adjustment_enable; restore for split variants.
         if self.SPLIT_TP:
             self.position_adjustment_enable = True
+        self._loss_streak: dict = {}   # per-pair consecutive stop-out counter
 
     # ---- Pivot helpers (no lookahead) -------------------------------------
 
@@ -214,30 +227,72 @@ class FiboRetrace(IStrategy):
 
         return True
 
-    def custom_stake_amount(self, current_time: datetime, current_rate: float,
-                            current_profit: float, proposed_stake: float,
+    def custom_stake_amount(self, pair: str, current_time: datetime,
+                            current_rate: float, proposed_stake: float,
                             min_stake: Optional[float], max_stake: float,
                             leverage: float, entry_tag: Optional[str],
                             side: str, **kwargs) -> float:
         """
-        Closed-loop stake sizing: reduce stake progressively during losing streaks.
-        Each consecutive loss cuts stake by 15% (floor = ADAPT_STAKE_FLOOR).
-        Resets to full stake after any winning trade.
+        F.13 equal-risk sizing: when RISK_PCT is set, size the stake so that a
+        stop-out at the fib SL loses exactly RISK_PCT of total equity.
+          stake = equity * RISK_PCT / sl_distance
+        Tight SL → bigger stake; wide SL → smaller stake. Every loss costs the
+        same fraction of the account, which caps streak damage mathematically.
         """
-        if not self.ADAPTIVE:
-            return proposed_stake
+        stake = proposed_stake
 
-        consec, _, _, _ = self._recent_stats()
+        if self.RISK_PCT is not None:
+            df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+            if df is not None and not df.empty:
+                sig = df[df["date"] < current_time]
+                if not sig.empty:
+                    s_col = "s_fib_stop" if side == "short" else "fib_stop"
+                    stop  = sig.iloc[-1].get(s_col)
+                    if stop is not None and not pd.isna(stop) and current_rate > 0:
+                        sl_dist = abs(current_rate - float(stop)) / current_rate
+                        if sl_dist > 0.001:
+                            try:
+                                equity = self.wallets.get_total_stake_amount()
+                            except Exception:
+                                equity = proposed_stake
+                            stake = equity * self.RISK_PCT / sl_dist
 
-        if consec == 0:
-            return proposed_stake
-
-        scale = max(self.ADAPT_STAKE_FLOOR, 1.0 - consec * 0.15)
-        adjusted = proposed_stake * scale
+        # Legacy adaptive scaling (off by default; Trade API is a no-op in backtests)
+        if self.ADAPTIVE:
+            consec, _, _, _ = self._recent_stats()
+            if consec > 0:
+                stake *= max(self.ADAPT_STAKE_FLOOR, 1.0 - consec * 0.15)
 
         if min_stake is not None:
-            adjusted = max(adjusted, min_stake)
-        return min(adjusted, max_stake)
+            stake = max(stake, min_stake)
+        return min(stake, max_stake)
+
+    def confirm_trade_exit(self, pair: str, trade, order_type: str, amount: float,
+                           rate: float, time_in_force: str, exit_reason: str,
+                           current_time: datetime, **kwargs) -> bool:
+        """
+        F.13 pair cooldown: track consecutive stop-outs per pair in instance
+        state (works in backtesting, unlike Trade.get_trades_proxy). After
+        PAIRLOCK_LOSSES consecutive losses, lock the pair for PAIRLOCK_DAYS.
+        """
+        if self.PAIRLOCK_LOSSES:
+            try:
+                profit = trade.calc_profit_ratio(rate)
+            except Exception:
+                profit = 0.0
+            if profit < 0:
+                streak = self._loss_streak.get(pair, 0) + 1
+                self._loss_streak[pair] = streak
+                if streak >= self.PAIRLOCK_LOSSES:
+                    self.lock_pair(
+                        pair,
+                        until=current_time + timedelta(days=self.PAIRLOCK_DAYS),
+                        reason="loss_streak_cooldown",
+                    )
+                    self._loss_streak[pair] = 0
+            else:
+                self._loss_streak[pair] = 0
+        return True
 
     # ---- Split TP partial close -------------------------------------------
 
@@ -507,6 +562,20 @@ class FiboRetrace(IStrategy):
                 sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
                 return max(be_sl, sl)
 
+        # F.13: after TP1 partial close, promote stop to breakeven — the
+        # remaining half can no longer turn the trade negative.
+        if self.BE_AFTER_TP1 and self.SPLIT_TP:
+            tp1_hit = False
+            try:
+                tp1_hit = bool(trade.get_custom_data("tp1_hit", default=False))
+            except Exception:
+                pass
+            if tp1_hit:
+                be_price = trade.open_rate * (1.001 if trade.is_short else 0.999)
+                be_sl = stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
+                sl    = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
+                return max(be_sl, sl)
+
         sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
         return max(sl, -0.20)
 
@@ -619,3 +688,35 @@ class FiboSC14w14sp15(FiboRetrace):
     SPLIT_TP     = True
     PARTIAL_CLOSE_PCT = 0.5
     position_adjustment_enable = True
+
+
+# ---- Phase F.13: structural DD reduction (target DD < 12%) -------------------
+# F.12 result: split TP raised WR (19→25% OOS) and cut OOS DD to 28%, but DD is
+# still dominated by (a) post-TP1 give-backs, (b) stake size >> risk budget,
+# (c) 16-loss streaks. Three fixes, layered on the best F.12 variant (sp15):
+#
+#   1. BE_AFTER_TP1  — once TP1 fires, SL moves to entry: trade can't turn red.
+#   2. RISK_PCT      — equal-risk sizing: every stop-out costs the same % of
+#                      equity. 16-loss streak × 0.75% ≈ 12% DD by construction.
+#   3. PAIRLOCK      — 3 consecutive stop-outs on a pair → 3-day cooldown.
+#
+# Variants:
+#   FiboSC14w14sp15 — F.12 best (control)
+#   FiboF13be       — sp15 + breakeven after TP1
+#   FiboF13r75      — F13be + equal-risk sizing 0.75%/trade
+#   FiboF13full     — F13r75 + pairlock(3 losses → 3 days)
+
+class FiboF13be(FiboSC14w14sp15):
+    """F.13a: split TP + ATR + breakeven-after-TP1."""
+    BE_AFTER_TP1 = True
+
+
+class FiboF13r75(FiboF13be):
+    """F.13b: + equal-risk position sizing, 0.75% of equity per trade."""
+    RISK_PCT = 0.0075
+
+
+class FiboF13full(FiboF13r75):
+    """F.13c: + pair cooldown after 3 consecutive stop-outs."""
+    PAIRLOCK_LOSSES = 3
+    PAIRLOCK_DAYS   = 3
