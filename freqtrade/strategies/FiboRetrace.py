@@ -744,3 +744,34 @@ class FiboF14r60(FiboF13be):
 class FiboF14r100(FiboF13be):
     """F.14: breakeven-after-TP1 + equal-risk 1.00% per trade."""
     RISK_PCT = 0.010
+
+
+# ---- Phase F.15: diversification + risk curve (no breakeven) -----------------
+# F.14b verdict: BE-after-TP1 fires correctly but costs more than it saves —
+# the big TP2 runners often dip below entry before continuing (IS profit
+# 28.4→18.5%). BE permanently dropped.
+#
+# Profit lever that doesn't raise DD: more opportunities. Whitelist grows to
+# 6 pairs (BTC/ETH/SOL/XRP/DOGE/ADA), max_open_trades 2→4. Equal-risk sizing
+# keeps every stop-out at a fixed % of equity, so DD stays bounded while
+# trade count (and compounding) roughly doubles.
+#
+# Variants (all split TP + ATR×1.5, NO breakeven):
+#   FiboSC14w14sp15 — unlimited stake (control)
+#   FiboF15r50      — 0.50%/trade
+#   FiboF15r60      — 0.60%/trade
+#   FiboF15r75      — 0.75%/trade
+
+class FiboF15r50(FiboSC14w14sp15):
+    """F.15: equal-risk 0.50% per trade, no breakeven."""
+    RISK_PCT = 0.005
+
+
+class FiboF15r60(FiboSC14w14sp15):
+    """F.15: equal-risk 0.60% per trade, no breakeven."""
+    RISK_PCT = 0.006
+
+
+class FiboF15r75(FiboSC14w14sp15):
+    """F.15: equal-risk 0.75% per trade, no breakeven."""
+    RISK_PCT = 0.0075
