@@ -37,7 +37,15 @@ jobs:
         run: |
           freqtrade create-userdir --userdir freqtrade/user_data
 
+      - name: Cache OHLCV data
+        id: cache-ohlcv
+        uses: actions/cache@v4
+        with:
+          path: freqtrade/user_data/data/okx
+          key: okx-ohlcv-btc-eth-sol-20200101-20250601-v1
+
       - name: Download OKX historical data
+        if: steps.cache-ohlcv.outputs.cache-hit != 'true'
         run: |
           freqtrade download-data \
             --config freqtrade/config_okx.json \
