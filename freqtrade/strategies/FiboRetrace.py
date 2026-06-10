@@ -542,10 +542,22 @@ class FiboRetrace(IStrategy):
         return float(t), float(s)
 
     def custom_stoploss(self, pair, trade, current_time: datetime,
-                        current_rate: float, current_profit: float, **kwargs) -> float:
+                        current_rate: float, current_profit: float, **kwargs):
+        # NOTE on convention: stoploss_from_absolute returns a POSITIVE
+        # distance from current_rate — SMALLER value = TIGHTER stop.
+        # F.14b root cause: max(be_sl, sl) always picked the WIDER fib stop,
+        # so no breakeven variant (F.7, F.13, F.14) ever fired. Return the
+        # breakeven distance directly; freqtrade core never widens an
+        # existing stop, so no comparison is needed.
         target, stop = self._trade_levels(trade)
         if stop is None or current_rate <= 0:
-            return -0.05
+            return None   # keep current stop
+
+        # F.13: after TP1 partial close, promote stop to breakeven — the
+        # remaining half can no longer turn the trade negative.
+        if self.BE_AFTER_TP1 and self.SPLIT_TP and trade.nr_of_successful_exits > 0:
+            be_price = trade.open_rate * (1.001 if trade.is_short else 0.999)
+            return stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
 
         # Breakeven promotion: once price has moved BREAKEVEN_PCT of the way to TP,
         # shift stop to entry (with 0.1% buffer to avoid fee-induced stops).
@@ -561,25 +573,9 @@ class FiboRetrace(IStrategy):
                 be_price     = entry * 0.999         # breakeven with buffer (long)
 
             if total_move > 0 and current_move / total_move >= self.BREAKEVEN_PCT:
-                be_sl = stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
-                # Only tighten — never widen the stop
-                sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
-                return max(be_sl, sl)
+                return stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
 
-        # F.13: after TP1 partial close, promote stop to breakeven — the
-        # remaining half can no longer turn the trade negative.
-        # F.14 fix: detect TP1 via nr_of_successful_exits (real trade state);
-        # custom_data writes were not visible here in backtesting.
-        if self.BE_AFTER_TP1 and self.SPLIT_TP:
-            tp1_hit = trade.nr_of_successful_exits > 0
-            if tp1_hit:
-                be_price = trade.open_rate * (1.001 if trade.is_short else 0.999)
-                be_sl = stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
-                sl    = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
-                return max(be_sl, sl)
-
-        sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
-        return max(sl, -0.20)
+        return stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
 
     def custom_exit(self, pair, trade, current_time: datetime,
                     current_rate: float, current_profit: float, **kwargs):
