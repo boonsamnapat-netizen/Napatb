@@ -1,6 +1,6 @@
 {
   "trading_mode": "margin",
-  "margin_mode": "isolated",
+  "margin_mode": "cross",
   "max_open_trades": 2,
   "stake_currency": "USDT",
   "stake_amount": "unlimited",
