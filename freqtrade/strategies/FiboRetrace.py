@@ -52,7 +52,7 @@ class FiboRetrace(IStrategy):
     # Fibonacci ratios
     FIB_50   = 0.500
     FIB_618  = 0.618
-    FIB_786  = 0.786   # invalidation level (SL placement)
+    FIB_SL   = 0.786   # stoploss placement (tunable); 0.786 = classical invalidation
     FIB_EXT  = 1.618   # extension TP (same ratio as the golden ratio leg)
 
     # ---- Pivot helpers (no lookahead) -------------------------------------
@@ -180,7 +180,7 @@ class FiboRetrace(IStrategy):
 
         dataframe["fib_50"]     = H_u - self.FIB_50  * rng_u    # golden zone top
         dataframe["fib_618"]    = H_u - self.FIB_618 * rng_u    # golden zone bottom
-        dataframe["fib_stop"]   = (H_u - self.FIB_786 * rng_u) * 0.999
+        dataframe["fib_stop"]   = (H_u - self.FIB_SL * rng_u) * 0.999
         dataframe["fib_target"] = H_u + self.FIB_EXT * rng_u    # extension TP
 
         # ---- Short Fibonacci (down-leg: SH → SL → bounce) ---------------
@@ -196,7 +196,7 @@ class FiboRetrace(IStrategy):
         # Entry zone: price bounced from SL up to 50-61.8% of the down-leg range
         dataframe["s_fib_50"]     = L_d + self.FIB_50  * rng_d   # zone bottom (50% from SL)
         dataframe["s_fib_618"]    = L_d + self.FIB_618 * rng_d   # zone top    (61.8% from SL)
-        dataframe["s_fib_stop"]   = (L_d + self.FIB_786 * rng_d) * 1.001  # SL above 0.786
+        dataframe["s_fib_stop"]   = (L_d + self.FIB_SL * rng_d) * 1.001  # SL above 0.786
         dataframe["s_fib_target"] = L_d - (self.FIB_EXT - 1.0) * rng_d   # ext below SL
 
         return dataframe
@@ -319,49 +319,50 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.7: breakeven stop sweep ------------------
-# F.6 result: FiboSC14w14 (w=14) IS +34.48% / OOS +41.88% / WR 19.3% / DD 32%
-#   IS 147 trades vs OOS 145 — excellent consistency, no overfitting
-# F.7 goal: reduce OOS DD (32%) via breakeven stop without hurting WR
-#   BREAKEVEN_PCT = fraction of (entry→TP) distance at which stop moves to entry
-#   e.g. 0.30 = once price is 30% of the way to TP, stop moves to breakeven
+# ---- Backtest variants — Phase F.8: SL level sweep -------------------------
+# F.7 result: breakeven stop had zero effect — trades never partially progress
+#   and reverse; they go directly to TP or stop at initial fib level.
+# F.6 winner: FiboSC14w14 (macro200, confirm, ext=1.4, w=14) OOS +41.88% / DD 32%
+# F.8 goal: reduce OOS DD (32%) by tightening the fib SL level (FIB_SL)
+#   Tighter SL → smaller loss per trade → lower DD; tradeoff: more valid setups
+#   stopped out early (WR may drop slightly).
 # Variants:
-#   FiboSC14w14     — control: no breakeven stop
-#   FiboSC14w14be20 — breakeven at 20% of move to TP
-#   FiboSC14w14be30 — breakeven at 30% of move to TP
-#   FiboSC14w14be50 — breakeven at 50% of move to TP
+#   FiboSC14w14      — control: FIB_SL=0.786 (classical invalidation)
+#   FiboSC14w14sl75  — FIB_SL=0.75
+#   FiboSC14w14sl70  — FIB_SL=0.70
+#   FiboSC14w14sl65  — FIB_SL=0.65
 
 class FiboSC14w14(FiboRetrace):
-    """F.6 winner: macro200 + confirm + ext=1.4 + w=14. No breakeven stop."""
-    TREND_MODE    = "macro200"
-    ENTRY_MODE    = "confirm"
-    FIB_EXT       = 1.4
-    SWING_WINDOW  = 14
-    BREAKEVEN_PCT = None
+    """F.6/F.7 winner: macro200 + confirm + ext=1.4 + w=14 + SL at 0.786."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
 
 
-class FiboSC14w14be20(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 20% progress."""
-    TREND_MODE    = "macro200"
-    ENTRY_MODE    = "confirm"
-    FIB_EXT       = 1.4
-    SWING_WINDOW  = 14
-    BREAKEVEN_PCT = 0.20
+class FiboSC14w14sl75(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + SL at 0.75."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.75
 
 
-class FiboSC14w14be30(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 30% progress."""
-    TREND_MODE    = "macro200"
-    ENTRY_MODE    = "confirm"
-    FIB_EXT       = 1.4
-    SWING_WINDOW  = 14
-    BREAKEVEN_PCT = 0.30
+class FiboSC14w14sl70(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + SL at 0.70."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.70
 
 
-class FiboSC14w14be50(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 50% progress."""
-    TREND_MODE    = "macro200"
-    ENTRY_MODE    = "confirm"
-    FIB_EXT       = 1.4
-    SWING_WINDOW  = 14
-    BREAKEVEN_PCT = 0.50
+class FiboSC14w14sl65(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + SL at 0.65."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    SWING_WINDOW = 14
+    FIB_SL       = 0.65
