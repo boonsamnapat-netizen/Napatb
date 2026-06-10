@@ -77,7 +77,7 @@
   "initial_state": "running",
   "force_entry_enable": false,
   "internalize_positions": false,
-  "position_adjustment_enable": false,
+  "position_adjustment_enable": true,
 
   "stoploss": -0.15,
   "trailing_stop": false,
