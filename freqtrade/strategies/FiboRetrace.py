@@ -301,30 +301,39 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.2: ext sweep (best TREND_MODE=macro200) ---
-# F.1 result: FiboStrict (macro200, ext=1.618) IS +11.67% / OOS -7.61%
-# Question: does ext=1.8 (Phase E best) improve OOS with short side?
-# Question: does ext=1.0 (shorter TP, higher WR) survive OOS better?
+# ---- Backtest variants — Phase F.3: RSI+MACD confirm filter sweep ----------
+# F.2 result: FiboStrict (macro200, ext=1.618) IS +11.67% / OOS -7.61%
+# F.3 question: does adding RSI+MACD momentum filter cut false signals enough
+#               to push OOS to breakeven?
+# Variants:
+#   FiboBase        — control: base trend, touch, ext=1.618
+#   FiboStrict      — F.2 winner: macro200, touch, ext=1.618
+#   FiboStrictConf  — macro200, confirm (RSI+MACD), ext=1.618
+#   FiboStrictConf14 — macro200, confirm, ext=1.4 (tighter TP, higher WR)
 
 class FiboBase(FiboRetrace):
-    """Control: no regime filter, ext=1.618."""
-    TREND_MODE = "base"
-    FIB_EXT = 1.618
+    """Control: no regime filter, touch mode, ext=1.618."""
+    TREND_MODE  = "base"
+    ENTRY_MODE  = "touch"
+    FIB_EXT     = 1.618
 
 
 class FiboStrict(FiboRetrace):
-    """Phase F.1 winner: macro200, ext=1.618."""
-    TREND_MODE = "macro200"
-    FIB_EXT = 1.618
+    """F.2 winner: macro200, touch mode, ext=1.618."""
+    TREND_MODE  = "macro200"
+    ENTRY_MODE  = "touch"
+    FIB_EXT     = 1.618
 
 
-class FiboStrict18(FiboRetrace):
-    """macro200, ext=1.8 — Phase E in-sample winner, now with shorts."""
-    TREND_MODE = "macro200"
-    FIB_EXT = 1.8
+class FiboStrictConf(FiboRetrace):
+    """macro200 + RSI/MACD confirm filter, ext=1.618."""
+    TREND_MODE  = "macro200"
+    ENTRY_MODE  = "confirm"
+    FIB_EXT     = 1.618
 
 
-class FiboStrict10(FiboRetrace):
-    """macro200, ext=1.0 — TP at swing high/low, higher WR expected."""
-    TREND_MODE = "macro200"
-    FIB_EXT = 1.0
+class FiboStrictConf14(FiboRetrace):
+    """macro200 + RSI/MACD confirm filter, ext=1.4 (higher WR target)."""
+    TREND_MODE  = "macro200"
+    ENTRY_MODE  = "confirm"
+    FIB_EXT     = 1.4
