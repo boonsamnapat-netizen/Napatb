@@ -83,6 +83,12 @@ class FiboRetrace(IStrategy):
     FIB_SL   = 0.786   # stoploss placement (tunable); 0.786 = classical invalidation
     FIB_EXT  = 1.618   # extension TP (same ratio as the golden ratio leg)
 
+    def __init__(self, config: dict) -> None:
+        super().__init__(config)
+        # Config overrides class-level position_adjustment_enable; restore for split variants.
+        if self.SPLIT_TP:
+            self.position_adjustment_enable = True
+
     # ---- Pivot helpers (no lookahead) -------------------------------------
 
     @staticmethod
