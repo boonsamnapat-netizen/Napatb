@@ -68,6 +68,15 @@ class FiboRetrace(IStrategy):
     ATR_FILTER  = False   # disabled by default
     ATR_MULT    = 1.5     # ATR threshold multiplier (e.g. 1.5 = 50% above average)
 
+    # ---- Split TP (F.12): partial close at TP1, remainder at TP2 ----------
+    # TP1 (FIB_EXT_PARTIAL) is easier to hit → higher effective WR → less DD
+    # TP2 (FIB_EXT) is the original full target → keeps upside on big moves
+    SPLIT_TP          = False  # disabled by default; True in split variants
+    FIB_EXT_PARTIAL   = 1.0   # TP1 extension level (1.0 = swing range above SH)
+    PARTIAL_CLOSE_PCT = 0.5   # fraction of position to close at TP1
+
+    position_adjustment_enable = False  # must be True in split variants
+
     # Fibonacci ratios
     FIB_50   = 0.500
     FIB_618  = 0.618
@@ -224,6 +233,48 @@ class FiboRetrace(IStrategy):
             adjusted = max(adjusted, min_stake)
         return min(adjusted, max_stake)
 
+    # ---- Split TP partial close -------------------------------------------
+
+    def adjust_trade_position(self, trade, current_time: datetime,
+                              current_rate: float, current_profit: float,
+                              min_stake: Optional[float], max_stake: float,
+                              current_entry_rate: float, current_exit_rate: float,
+                              current_entry_profit: float, current_exit_profit: float,
+                              **kwargs) -> Optional[float]:
+        """
+        Close PARTIAL_CLOSE_PCT of the position when price reaches TP1 (FIB_EXT_PARTIAL).
+        The remaining position is exited by custom_exit at TP2 (FIB_EXT).
+        Only active when SPLIT_TP = True.
+        """
+        if not self.SPLIT_TP:
+            return None
+        if trade.get_custom_data("tp1_hit", default=False):
+            return None
+
+        df, _ = self.dp.get_analyzed_dataframe(trade.pair, self.timeframe)
+        if df is None or df.empty:
+            return None
+        sig = df[df["date"] < trade.open_date_utc]
+        if sig.empty:
+            return None
+
+        t1_col  = "s_fib_target1" if trade.is_short else "fib_target1"
+        target1 = sig.iloc[-1].get(t1_col)
+        if target1 is None or pd.isna(float(target1)):
+            return None
+        target1 = float(target1)
+
+        hit = (trade.is_short     and current_rate <= target1) or \
+              (not trade.is_short and current_rate >= target1)
+        if not hit:
+            return None
+
+        trade.set_custom_data("tp1_hit", True)
+        close_amount = trade.stake_amount * self.PARTIAL_CLOSE_PCT
+        if min_stake and close_amount < min_stake:
+            return None
+        return -close_amount
+
     # ---- Indicators --------------------------------------------------------
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -321,7 +372,8 @@ class FiboRetrace(IStrategy):
         dataframe["fib_50"]     = H_u - self.FIB_50  * rng_u    # golden zone top
         dataframe["fib_618"]    = H_u - self.FIB_618 * rng_u    # golden zone bottom
         dataframe["fib_stop"]   = (H_u - self.FIB_SL * rng_u) * 0.999
-        dataframe["fib_target"] = H_u + self.FIB_EXT * rng_u    # extension TP
+        dataframe["fib_target"]  = H_u + self.FIB_EXT         * rng_u  # TP2 (full)
+        dataframe["fib_target1"] = H_u + self.FIB_EXT_PARTIAL * rng_u  # TP1 (partial)
 
         # ---- Short Fibonacci (down-leg: SH → SL → bounce) ---------------
         down_leg = (
@@ -336,8 +388,9 @@ class FiboRetrace(IStrategy):
         # Entry zone: price bounced from SL up to 50-61.8% of the down-leg range
         dataframe["s_fib_50"]     = L_d + self.FIB_50  * rng_d   # zone bottom (50% from SL)
         dataframe["s_fib_618"]    = L_d + self.FIB_618 * rng_d   # zone top    (61.8% from SL)
-        dataframe["s_fib_stop"]   = (L_d + self.FIB_SL * rng_d) * 1.001  # SL above 0.786
-        dataframe["s_fib_target"] = L_d - (self.FIB_EXT - 1.0) * rng_d   # ext below SL
+        dataframe["s_fib_stop"]    = (L_d + self.FIB_SL * rng_d) * 1.001            # SL above 0.786
+        dataframe["s_fib_target"]  = L_d - (self.FIB_EXT         - 1.0) * rng_d   # TP2 (full)
+        dataframe["s_fib_target1"] = L_d - (self.FIB_EXT_PARTIAL - 1.0) * rng_d   # TP1 (partial)
 
         return dataframe
 
@@ -519,3 +572,44 @@ class FiboSC14w14v20(FiboRetrace):
     FIB_SL       = 0.786
     ATR_FILTER   = True
     ATR_MULT     = 2.0
+
+
+# ---- Phase F.12: Split TP (partial close at TP1=1.0×, remainder at TP2=1.4×) ---
+# Root cause of high DD: low WR (~17%) means 5-6 consecutive losses are common.
+# Split TP: close 50% at 1.0× extension (easier hit → higher partial WR ~35-40%).
+# Remaining 50% still targets 1.4× — keeps the R:R upside on big moves.
+# Expected effect: WR_effective rises → consecutive loss streaks shorten → DD falls.
+#
+# F.12 control: FiboSC14w14 (unchanged, for comparison)
+#
+# Variants:
+#   FiboSC14w14sp   — split TP only (no ATR filter)
+#   FiboSC14w14sp15 — split TP + ATR×1.5 filter (combine best improvements)
+
+class FiboSC14w14sp(FiboRetrace):
+    """F.12: Split TP — 50% closed at 1.0× extension, remaining 50% at 1.4×."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    FIB_EXT_PARTIAL   = 1.0
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ATR_FILTER   = False
+    SPLIT_TP     = True
+    PARTIAL_CLOSE_PCT = 0.5
+    position_adjustment_enable = True
+
+
+class FiboSC14w14sp15(FiboRetrace):
+    """F.12: Split TP + ATR×1.5 filter (combines F.11v15 + F.12 split TP)."""
+    TREND_MODE   = "macro200"
+    ENTRY_MODE   = "confirm"
+    FIB_EXT      = 1.4
+    FIB_EXT_PARTIAL   = 1.0
+    SWING_WINDOW = 14
+    FIB_SL       = 0.786
+    ATR_FILTER   = True
+    ATR_MULT     = 1.5
+    SPLIT_TP     = True
+    PARTIAL_CLOSE_PCT = 0.5
+    position_adjustment_enable = True
