@@ -20,10 +20,12 @@
     "pair_whitelist": [
       "BTC/USDT:USDT",
       "ETH/USDT:USDT",
+      "BNB/USDT:USDT",
       "SOL/USDT:USDT",
       "XRP/USDT:USDT",
       "DOGE/USDT:USDT",
       "ADA/USDT:USDT",
+      "MATIC/USDT:USDT",
       "LINK/USDT:USDT",
       "DOT/USDT:USDT",
       "AVAX/USDT:USDT",
@@ -41,7 +43,12 @@
       "CRV/USDT:USDT",
       "SAND/USDT:USDT",
       "MANA/USDT:USDT",
-      "SUSHI/USDT:USDT"
+      "SUSHI/USDT:USDT",
+      "NEAR/USDT:USDT",
+      "FTM/USDT:USDT",
+      "AXS/USDT:USDT",
+      "SNX/USDT:USDT",
+      "COMP/USDT:USDT"
     ],
     "pair_blacklist": []
   },
