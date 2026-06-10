@@ -111,6 +111,8 @@ class ConfluenceBase(IStrategy):
         inf["dc_entry_low"]  = inf["low"].rolling(self.DC_ENTRY).min().shift(1)
         inf["dc_exit_high"]  = inf["high"].rolling(self.DC_EXIT).max().shift(1)
         inf["dc_exit_low"]   = inf["low"].rolling(self.DC_EXIT).min().shift(1)
+        # ATR SMA for volatility-expansion regime gate (C.3)
+        inf["atr14_sma20"]   = inf["atr14"].rolling(20).mean()
         dataframe = merge_informative_pair(
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
@@ -405,3 +407,92 @@ class DC55adx(DonchianBreak):
     DC_ENTRY = 55
     DC_EXIT  = 20
     ADX_MIN  = 22
+
+
+# ---- C.3: Regime filters — fix holdout chop bleed on DC55 --------------------
+# All C.2 variants bled 11-15% in Holdout (Mar-Jun 2025 choppy/corrective).
+# Root cause: entries during broken trending regime (price below EMA50_1d even
+# though golden cross still held) and during low-volatility consolidation chop.
+# C.3 tests two regime gates layered onto the best C.2 variant (DC55):
+#   EMA  — coin 1D close > EMA50_1d  (price above medium-term trend)
+#   ATR  — 4H ATR > SMA20(ATR,4H)    (volatility expansion = real breakout)
+#   combo— both gates together        (most conservative)
+
+class DC55ema(DC55):
+    """
+    DC55 + require 1D close > EMA50(1D) at entry.
+    Blocks entries during corrective pullbacks where golden cross still active
+    but price has already broken below its medium-term MA.
+    """
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live    = dataframe["volume"] > 0
+        vol_ok  = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        dataframe.loc[
+            live & vol_ok & bull_1d
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+class DC55atr(DC55):
+    """
+    DC55 + ATR(4H) > SMA20(ATR,4H) at entry.
+    Requires volatility expansion before entering: breakouts on expanding ATR
+    are genuine momentum moves; breakouts on contracting ATR are choppy fakes.
+    """
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = dataframe["ema50_1d"] > dataframe["ema200_1d"]
+        bear_1d    = dataframe["ema50_1d"] < dataframe["ema200_1d"]
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+class DC55combo(DC55):
+    """
+    DC55 + 1D close > EMA50(1D) AND ATR expansion — both regime gates together.
+    Most conservative: fewer trades but highest probability of trending environment.
+    """
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe

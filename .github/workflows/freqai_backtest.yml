@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase C.2 Donchian Refinement)
+name: Backtest — Fibo Long+Short (Phase C.3 Regime Filter)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
+            --strategy-list DC55 DC55ema DC55atr DC55combo \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
+            --strategy-list DC55 DC55ema DC55atr DC55combo \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
@@ -113,7 +113,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
+            --strategy-list DC55 DC55ema DC55atr DC55combo \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
             2>&1 | tee results/fibo_holdout.txt
