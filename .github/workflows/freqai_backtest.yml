@@ -1,4 +1,4 @@
-name: Backtest — Fibo Long+Short (Phase C.1 Confluence Head-to-Head)
+name: Backtest — Fibo Long+Short (Phase C.2 Donchian Refinement)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list HolyGrail TripleScreen DonchianBreak \
+            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list HolyGrail TripleScreen DonchianBreak \
+            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
@@ -113,7 +113,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list HolyGrail TripleScreen DonchianBreak \
+            --strategy-list DonchianBreak DCadx22 DC55 DC55adx \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
             2>&1 | tee results/fibo_holdout.txt
@@ -123,5 +123,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/fibo_insample.txt results/fibo_oos.txt results/fibo_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.1 confluence backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.2 donchian backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

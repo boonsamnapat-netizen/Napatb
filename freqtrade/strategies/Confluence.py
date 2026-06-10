@@ -51,6 +51,8 @@ class ConfluenceBase(IStrategy):
     TP2_R    = 3.0      # close remainder here
     TP1_PCT  = 0.5
     RISK_PCT = 0.005    # equal-risk sizing: each stop-out = 0.5% of equity
+    DC_ENTRY = 20       # Donchian entry channel (4H bars)
+    DC_EXIT  = 10       # Donchian exit channel (4H bars)
 
     # ---- anti-lookahead fractal pivots (proven in FiboRetrace) ---------------
 
@@ -105,10 +107,10 @@ class ConfluenceBase(IStrategy):
         inf["hist_rising"]  = (inf["macdhist"] > inf["macdhist"].shift(1)).astype(int)
         inf["hist_falling"] = (inf["macdhist"] < inf["macdhist"].shift(1)).astype(int)
         # Donchian on COMPLETED bars only (shift(1) = no lookahead)
-        inf["dc20_high"] = inf["high"].rolling(20).max().shift(1)
-        inf["dc20_low"]  = inf["low"].rolling(20).min().shift(1)
-        inf["dc10_high"] = inf["high"].rolling(10).max().shift(1)
-        inf["dc10_low"]  = inf["low"].rolling(10).min().shift(1)
+        inf["dc_entry_high"] = inf["high"].rolling(self.DC_ENTRY).max().shift(1)
+        inf["dc_entry_low"]  = inf["low"].rolling(self.DC_ENTRY).min().shift(1)
+        inf["dc_exit_high"]  = inf["high"].rolling(self.DC_EXIT).max().shift(1)
+        inf["dc_exit_low"]   = inf["low"].rolling(self.DC_EXIT).min().shift(1)
         dataframe = merge_informative_pair(
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
@@ -348,6 +350,7 @@ class DonchianBreak(ConfluenceBase):
     TP1_R   = None     # no split TP — channel exit rides the trend
     TP2_R   = None
     REL_VOL = 1.5
+    ADX_MIN = None     # optional chop filter: require ADX(4H) above this
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         return self._base_indicators(dataframe, metadata)
@@ -358,21 +361,47 @@ class DonchianBreak(ConfluenceBase):
         vol_ok  = dataframe["rel_vol"] >= self.REL_VOL
         bull_1d = dataframe["ema50_1d"] > dataframe["ema200_1d"]
         bear_1d = dataframe["ema50_1d"] < dataframe["ema200_1d"]
+        adx_ok  = (dataframe[f"adx_{itf}"] > self.ADX_MIN) if self.ADX_MIN \
+                  else pd.Series(True, index=dataframe.index)
 
         dataframe.loc[
-            live & vol_ok & bull_1d
-            & (dataframe["close"] > dataframe[f"dc20_high_{itf}"]),
+            live & vol_ok & bull_1d & adx_ok
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
             "enter_long",
         ] = 1
         dataframe.loc[
-            live & vol_ok & bear_1d
-            & (dataframe["close"] < dataframe[f"dc20_low_{itf}"]),
+            live & vol_ok & bear_1d & adx_ok
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
             "enter_short",
         ] = 1
         return dataframe
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         itf = self.inf_timeframe
-        dataframe.loc[dataframe["close"] < dataframe[f"dc10_low_{itf}"],  "exit_long"]  = 1
-        dataframe.loc[dataframe["close"] > dataframe[f"dc10_high_{itf}"], "exit_short"] = 1
+        dataframe.loc[dataframe["close"] < dataframe[f"dc_exit_low_{itf}"],  "exit_long"]  = 1
+        dataframe.loc[dataframe["close"] > dataframe[f"dc_exit_high_{itf}"], "exit_short"] = 1
         return dataframe
+
+
+# ---- C.2: Donchian refinement — kill the chop bleed ---------------------------
+# C.1: DonchianBreak is the alpha engine (IS +61%, OOS bear +149%) but bleeds
+# in chop (holdout -15%, the documented Turtle failure mode). Standard
+# mitigations under test: ADX trend-strength gate and the slower Turtle
+# System-2 channel (55-entry / 20-exit) that ignores minor range breaks.
+
+class DCadx22(DonchianBreak):
+    """20/10 channel + ADX(4H) > 22 chop gate."""
+    ADX_MIN = 22
+
+
+class DC55(DonchianBreak):
+    """Turtle System 2: 55-bar entry / 20-bar exit, no ADX gate."""
+    DC_ENTRY = 55
+    DC_EXIT  = 20
+
+
+class DC55adx(DonchianBreak):
+    """55/20 channel + ADX(4H) > 22 — both mitigations combined."""
+    DC_ENTRY = 55
+    DC_EXIT  = 20
+    ADX_MIN  = 22
