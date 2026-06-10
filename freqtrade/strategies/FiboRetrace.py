@@ -309,6 +309,10 @@ class FiboRetrace(IStrategy):
         """
         if not self.SPLIT_TP:
             return None
+        # A previous partial exit == TP1 already taken. nr_of_successful_exits
+        # is real trade state — reliable in backtesting, unlike custom_data.
+        if trade.nr_of_successful_exits > 0:
+            return None
         if trade.get_custom_data("tp1_hit", default=False):
             return None
 
@@ -564,12 +568,10 @@ class FiboRetrace(IStrategy):
 
         # F.13: after TP1 partial close, promote stop to breakeven — the
         # remaining half can no longer turn the trade negative.
+        # F.14 fix: detect TP1 via nr_of_successful_exits (real trade state);
+        # custom_data writes were not visible here in backtesting.
         if self.BE_AFTER_TP1 and self.SPLIT_TP:
-            tp1_hit = False
-            try:
-                tp1_hit = bool(trade.get_custom_data("tp1_hit", default=False))
-            except Exception:
-                pass
+            tp1_hit = trade.nr_of_successful_exits > 0
             if tp1_hit:
                 be_price = trade.open_rate * (1.001 if trade.is_short else 0.999)
                 be_sl = stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
@@ -720,3 +722,29 @@ class FiboF13full(FiboF13r75):
     """F.13c: + pair cooldown after 3 consecutive stop-outs."""
     PAIRLOCK_LOSSES = 3
     PAIRLOCK_DAYS   = 3
+
+
+# ---- Phase F.14: risk curve with working breakeven ---------------------------
+# F.13 findings:
+#   - Equal-risk sizing works exactly as designed (DD 28→16% at 0.75%/trade).
+#   - BE_AFTER_TP1 never fired: custom_data writes from adjust_trade_position
+#     were not visible in custom_stoploss during backtesting. Fixed by checking
+#     trade.nr_of_successful_exits instead (real trade state).
+#   - Pairlock dropped: locking after streaks skips the rare big winners that
+#     fund the system (IS profit collapsed from 19.9% to 1.3%).
+#
+# F.14 sweeps RISK_PCT with the fixed BE to find max profit at DD < 12%:
+#   FiboSC14w14sp15 — no risk sizing, no BE (F.12 baseline)
+#   FiboF13be       — BE only (isolates the BE fix effect)
+#   FiboF13r75      — BE + 0.75%/trade
+#   FiboF14r60      — BE + 0.60%/trade (expected DD ≈ 11-13%)
+#   FiboF14r100     — BE + 1.00%/trade (profit recovery probe)
+
+class FiboF14r60(FiboF13be):
+    """F.14: breakeven-after-TP1 + equal-risk 0.60% per trade."""
+    RISK_PCT = 0.006
+
+
+class FiboF14r100(FiboF13be):
+    """F.14: breakeven-after-TP1 + equal-risk 1.00% per trade."""
+    RISK_PCT = 0.010
