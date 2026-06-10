@@ -301,25 +301,30 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants ----------------------------------------------------
-# Strategy-list sweep: trade frequency vs. regime strictness.
-# All use ext=1.618, swing=18, entry=touch, stop at 0.786.
+# ---- Backtest variants — Phase F.2: ext sweep (best TREND_MODE=macro200) ---
+# F.1 result: FiboStrict (macro200, ext=1.618) IS +11.67% / OOS -7.61%
+# Question: does ext=1.8 (Phase E best) improve OOS with short side?
+# Question: does ext=1.0 (shorter TP, higher WR) survive OOS better?
 
 class FiboBase(FiboRetrace):
-    """No regime filter — all 4H EMA50 crossings. Most trades, noisiest."""
+    """Control: no regime filter, ext=1.618."""
     TREND_MODE = "base"
-
-
-class FiboMacro(FiboRetrace):
-    """4H EMA50 + daily SMA200 gate. Core filter."""
-    TREND_MODE = "macro"
+    FIB_EXT = 1.618
 
 
 class FiboStrict(FiboRetrace):
-    """4H EMA50 + EMA200 + daily SMA200. Fewest trades, cleanest setups."""
+    """Phase F.1 winner: macro200, ext=1.618."""
     TREND_MODE = "macro200"
+    FIB_EXT = 1.618
 
 
-class FiboSlope(FiboRetrace):
-    """4H EMA50 + EMA200 + EMA200 slope. Mid-tier momentum gate."""
-    TREND_MODE = "ema200slope"
+class FiboStrict18(FiboRetrace):
+    """macro200, ext=1.8 — Phase E in-sample winner, now with shorts."""
+    TREND_MODE = "macro200"
+    FIB_EXT = 1.8
+
+
+class FiboStrict10(FiboRetrace):
+    """macro200, ext=1.0 — TP at swing high/low, higher WR expected."""
+    TREND_MODE = "macro200"
+    FIB_EXT = 1.0

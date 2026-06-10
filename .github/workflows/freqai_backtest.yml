@@ -47,13 +47,13 @@ jobs:
             --data-format-ohlcv json \
             --pairs "BTC/USDT:USDT" "ETH/USDT:USDT"
 
-      - name: Run in-sample backtest — 4 variants (Long + Short)
+      - name: Run in-sample backtest
         run: |
           mkdir -p results
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboBase FiboMacro FiboStrict FiboSlope \
+            --strategy-list FiboBase FiboStrict FiboStrict18 FiboStrict10 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -64,7 +64,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list FiboBase FiboMacro FiboStrict FiboSlope \
+            --strategy-list FiboBase FiboStrict FiboStrict18 FiboStrict10 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
