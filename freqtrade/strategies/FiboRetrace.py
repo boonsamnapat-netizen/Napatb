@@ -44,9 +44,10 @@ class FiboRetrace(IStrategy):
     can_short                 = True
 
     # ---- Variant parameters ------------------------------------------------
-    SWING_WINDOW = 18        # fractal half-width in 1H bars
-    ENTRY_MODE   = "touch"   # "touch" = mechanical; "confirm" = RSI+MACD filter
-    TREND_MODE   = "base"    # see populate_indicators for modes
+    SWING_WINDOW   = 18        # fractal half-width in 1H bars
+    ENTRY_MODE     = "touch"   # "touch" = mechanical; "confirm" = RSI+MACD filter
+    TREND_MODE     = "base"    # see populate_indicators for modes
+    BREAKEVEN_PCT  = None      # fraction of (entry→TP) range; None = disabled
 
     # Fibonacci ratios
     FIB_50   = 0.500
@@ -279,13 +280,30 @@ class FiboRetrace(IStrategy):
 
     def custom_stoploss(self, pair, trade, current_time: datetime,
                         current_rate: float, current_profit: float, **kwargs) -> float:
-        _, stop = self._trade_levels(trade)
+        target, stop = self._trade_levels(trade)
         if stop is None or current_rate <= 0:
             return -0.05
 
-        # stoploss_from_absolute handles long vs short direction correctly
+        # Breakeven promotion: once price has moved BREAKEVEN_PCT of the way to TP,
+        # shift stop to entry (with 0.1% buffer to avoid fee-induced stops).
+        if self.BREAKEVEN_PCT is not None and target is not None:
+            entry = trade.open_rate
+            if trade.is_short:
+                total_move   = entry - target        # total move to TP (positive)
+                current_move = entry - current_rate  # how far price has moved down
+                be_price     = entry * 1.001         # breakeven with buffer (short)
+            else:
+                total_move   = target - entry        # total move to TP (positive)
+                current_move = current_rate - entry  # how far price has moved up
+                be_price     = entry * 0.999         # breakeven with buffer (long)
+
+            if total_move > 0 and current_move / total_move >= self.BREAKEVEN_PCT:
+                be_sl = stoploss_from_absolute(be_price, current_rate, is_short=trade.is_short)
+                # Only tighten — never widen the stop
+                sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
+                return max(be_sl, sl)
+
         sl = stoploss_from_absolute(stop, current_rate, is_short=trade.is_short)
-        # Clamp to safety net
         return max(sl, -0.20)
 
     def custom_exit(self, pair, trade, current_time: datetime,
@@ -301,45 +319,49 @@ class FiboRetrace(IStrategy):
         return None
 
 
-# ---- Backtest variants — Phase F.6: fine-tune swing window around w=14 -----
-# F.5 result: FiboSC14w14 (w=14) IS +34.48% / OOS +41.88% / WR 19.3% / DD 32%
-#   Trade count IS 147 vs OOS 145 — near-identical (robust signal, no overfitting)
-#   w=12: IS +15.18% / OOS +62.52% — high OOS but low IS suggests over-trading
-#   w=22: both negative — too restrictive
-# F.6 question: is w=13 or w=15 better than w=14?
+# ---- Backtest variants — Phase F.7: breakeven stop sweep ------------------
+# F.6 result: FiboSC14w14 (w=14) IS +34.48% / OOS +41.88% / WR 19.3% / DD 32%
+#   IS 147 trades vs OOS 145 — excellent consistency, no overfitting
+# F.7 goal: reduce OOS DD (32%) via breakeven stop without hurting WR
+#   BREAKEVEN_PCT = fraction of (entry→TP) distance at which stop moves to entry
+#   e.g. 0.30 = once price is 30% of the way to TP, stop moves to breakeven
 # Variants:
-#   FiboSC14w12 — w=12 (best OOS so far, control lower bound)
-#   FiboSC14w13 — w=13 (new, between w=12 and w=14)
-#   FiboSC14w14 — w=14 (F.5 winner, most consistent IS/OOS)
-#   FiboSC14w15 — w=15 (new, between w=14 and w=18)
-
-class FiboSC14w12(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=12."""
-    TREND_MODE   = "macro200"
-    ENTRY_MODE   = "confirm"
-    FIB_EXT      = 1.4
-    SWING_WINDOW = 12
-
-
-class FiboSC14w13(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=13."""
-    TREND_MODE   = "macro200"
-    ENTRY_MODE   = "confirm"
-    FIB_EXT      = 1.4
-    SWING_WINDOW = 13
-
+#   FiboSC14w14     — control: no breakeven stop
+#   FiboSC14w14be20 — breakeven at 20% of move to TP
+#   FiboSC14w14be30 — breakeven at 30% of move to TP
+#   FiboSC14w14be50 — breakeven at 50% of move to TP
 
 class FiboSC14w14(FiboRetrace):
-    """F.5 winner: macro200 + confirm + ext=1.4 + w=14."""
-    TREND_MODE   = "macro200"
-    ENTRY_MODE   = "confirm"
-    FIB_EXT      = 1.4
-    SWING_WINDOW = 14
+    """F.6 winner: macro200 + confirm + ext=1.4 + w=14. No breakeven stop."""
+    TREND_MODE    = "macro200"
+    ENTRY_MODE    = "confirm"
+    FIB_EXT       = 1.4
+    SWING_WINDOW  = 14
+    BREAKEVEN_PCT = None
 
 
-class FiboSC14w15(FiboRetrace):
-    """macro200 + confirm + ext=1.4 + w=15."""
-    TREND_MODE   = "macro200"
-    ENTRY_MODE   = "confirm"
-    FIB_EXT      = 1.4
-    SWING_WINDOW = 15
+class FiboSC14w14be20(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 20% progress."""
+    TREND_MODE    = "macro200"
+    ENTRY_MODE    = "confirm"
+    FIB_EXT       = 1.4
+    SWING_WINDOW  = 14
+    BREAKEVEN_PCT = 0.20
+
+
+class FiboSC14w14be30(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 30% progress."""
+    TREND_MODE    = "macro200"
+    ENTRY_MODE    = "confirm"
+    FIB_EXT       = 1.4
+    SWING_WINDOW  = 14
+    BREAKEVEN_PCT = 0.30
+
+
+class FiboSC14w14be50(FiboRetrace):
+    """macro200 + confirm + ext=1.4 + w=14 + breakeven at 50% progress."""
+    TREND_MODE    = "macro200"
+    ENTRY_MODE    = "confirm"
+    FIB_EXT       = 1.4
+    SWING_WINDOW  = 14
+    BREAKEVEN_PCT = 0.50
