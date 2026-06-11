@@ -127,6 +127,10 @@ jobs:
 
       - name: Commit results
         run: |
+          for f in results/c5_insample.txt results/c5_oos.txt; do
+            [ -f "$f" ] && tail -1000 "$f" > /tmp/_t.txt && mv /tmp/_t.txt "$f"
+          done
+          [ -f results/c5_holdout.txt ] && tail -500 results/c5_holdout.txt > /tmp/_t.txt && mv /tmp/_t.txt results/c5_holdout.txt
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/c5_insample.txt results/c5_oos.txt results/c5_holdout.txt 2>/dev/null || true
