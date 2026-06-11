@@ -1740,3 +1740,98 @@ class DC55v20(DC55v18):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ============================================================================
+# C.15 experiments: BTC macro regime filter + pair blacklist
+#
+# C.14 winner: DC55v20 (ADX>15, asymmetric RSI)
+#   IS:  +846%  DD 30.04%  PF 1.38
+#   OOS: +218%  DD 10.88%  PF 1.61
+#   Hold:+13.17% DD 3.72%  PF 2.16
+#
+# Remaining weakness: IS DD 30% — too high for live deployment comfort.
+# Root cause: March-July 2024 BTC sideways chop after halving. Donchian
+# breakouts in a ranging macro regime are systematically false.
+#
+# Fix 1 (v21/v22): BTC 1W ADX regime gate.
+#   When BTC weekly ADX < threshold, the entire crypto market is range-bound
+#   and breakout signals across all 73 pairs are unreliable.
+#   Threshold sweep: 15 (DC55v21, matches validated 4H ADX threshold) vs
+#                    20 (DC55v22, stricter macro-trending requirement).
+#   BTC 1W data: dp.get_pair_dataframe("BTC/USDT:USDT", "1w"), shift(1) for
+#   no lookahead (only completed weekly candles used as regime signal).
+#
+# Fix 2 (v23): SUSHI blacklist.
+#   SUSHI achieves only 5-6% win rate across DC55v15/v18/v20 (1 win in 17-18
+#   trades every variant). This is structural misfit: Sushiswap protocol had
+#   multiple treasury drain events, declining TVL, and thin OKX futures volume
+#   producing systematically false breakouts. No other pair shows comparable
+#   consistency of failure. Blacklisting SUSHI isolates pair-level vs macro-
+#   level impact.
+# ============================================================================
+
+
+class DC55v21(DC55v20):
+    """
+    DC55v20 + BTC weekly ADX macro regime gate (threshold=15).
+
+    The 30% IS DD is concentrated in sideways periods (e.g. March-July 2024)
+    where BTC had no macro directional trend. BTC 1W ADX < 15 signals that
+    the entire crypto market is choppy — Donchian breakouts on any of the 73
+    pairs are likely to be false. Gate fires BOTH directions (no longs, no
+    shorts) since ranging macro produces false long AND short breakouts.
+    Threshold 15 matches the 4H per-pair ADX threshold validated in C.12.
+    """
+    BTC_ADX_MIN = 15
+
+    def informative_pairs(self):
+        return [("BTC/USDT:USDT", "1w")]
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_indicators(dataframe, metadata)
+        btc_1w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_slim = btc_1w[["date"]].copy()
+        btc_slim["btc_adx14"] = ta.ADX(btc_1w, timeperiod=14).shift(1)
+        dataframe = merge_informative_pair(
+            dataframe, btc_slim, self.timeframe, "1w", ffill=True
+        )
+        return dataframe
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_entry_trend(dataframe, metadata)
+        btc_regime = dataframe["btc_adx14_1w"] > self.BTC_ADX_MIN
+        dataframe.loc[~btc_regime, "enter_long"]  = 0
+        dataframe.loc[~btc_regime, "enter_short"] = 0
+        return dataframe
+
+
+class DC55v22(DC55v21):
+    """
+    DC55v20 + BTC 1W ADX macro regime gate (threshold=20).
+
+    Stricter variant of DC55v21: only enter when BTC weekly ADX > 20,
+    requiring a more established macro trend. Higher threshold = fewer
+    trades but potentially higher quality in strong trending markets.
+    Expected: lower trade count, lower DD, potentially lower profit.
+    """
+    BTC_ADX_MIN = 20
+
+
+class DC55v23(DC55v20):
+    """
+    DC55v20 + SUSHI/USDT:USDT blacklisted.
+
+    SUSHI achieves 5-6% win rate across every variant (DC55v15: 5.9%,
+    DC55v18: 5.6%, DC55v20: 5.6%) — structural misfit, not cyclical noise.
+    1 win in 17-18 trades every time. This is not a bad-period effect;
+    Sushiswap's declining TVL and thin OKX futures liquidity generate
+    breakout signals that immediately reverse. Isolates pair-blacklist
+    impact independently of the macro regime filter.
+    """
+    BLACKLIST = frozenset(["SUSHI/USDT:USDT"])
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if metadata["pair"] in self.BLACKLIST:
+            return dataframe
+        return super().populate_entry_trend(dataframe, metadata)
