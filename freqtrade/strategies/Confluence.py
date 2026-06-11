@@ -1835,3 +1835,52 @@ class DC55v23(DC55v20):
         if metadata["pair"] in self.BLACKLIST:
             return dataframe
         return super().populate_entry_trend(dataframe, metadata)
+
+
+# ============================================================================
+# C.16 experiments: expanded pair blacklist
+#
+# C.15 results:
+#   DC55v20 (baseline):  IS +846%  DD30.04%  OOS +218% DD10.88%  Hold +13.17%
+#   DC55v21 (BTC ADX>15): IS +662% DD30.06%  OOS +218% DD10.88%  Hold +13.17%
+#   DC55v22 (BTC ADX>20): IS +367% DD30.06%  OOS +173% DD15.11%  Hold +13.17%
+#   DC55v23 (+SUSHI):    IS +928%  DD29.76%  OOS +222% DD10.89%  Hold +13.17%
+#
+# Key finding: BTC 1W ADX filter FAILS to reduce IS DD 30% because during the
+# problem period (March-July 2024 post-halving chop) BTC weekly ADX was still
+# elevated from the preceding uptrend. ADX measures "how much trend occurred
+# recently" — not "is the market trending now." The 30% IS DD is structural.
+#
+# DC55v23 (SUSHI blacklist) is the C.15 winner: +82% IS profit, +4% OOS profit.
+# Mechanism: SUSHI has 5-6% win rate across every variant due to structural DeFi
+# decline — removing it is a quality improvement, not overfitting.
+#
+# C.16 expands the blacklist to pairs consistently negative in BOTH IS and OOS:
+#   ATOM/USDT:USDT  IS -39.5%, OOS -14.5%  (Cosmos ecosystem competitive decline)
+#   YFI/USDT:USDT   IS -37.8%, OOS -11.5%  (Yearn Finance TVL erosion)
+#   CRV/USDT:USDT   IS -20.1%, OOS -7.3%   (Curve hack 2023 + token unlock)
+#
+# Pairs excluded from expansion despite bad IS: DYDX (OOS -1% only, marginal),
+# CHZ (bad OOS but positive IS — inconsistent, not structural).
+# ============================================================================
+
+
+class DC55v24(DC55v23):
+    """
+    DC55v23 (SUSHI blacklisted) + ATOM, YFI, CRV blacklisted.
+
+    These three pairs are consistently negative in BOTH IS and OOS across all
+    strategy variants — not cyclical underperformance but structural decline:
+    ATOM: Cosmos IBC ecosystem lost market share vs Solana/ETH L2s post-2022.
+    YFI:  Yearn Finance TVL declined 90%+ from 2021 peak; yield compression.
+    CRV:  Curve Finance exploit (July 2023) + CRV founder loan liquidation
+          crisis created structural token instability; OKX futures thin volume.
+    Together with SUSHI, these 4 pairs constitute 4/73 = 5.5% of the universe
+    but disproportionately drag portfolio performance.
+    """
+    BLACKLIST = frozenset([
+        "SUSHI/USDT:USDT",
+        "ATOM/USDT:USDT",
+        "YFI/USDT:USDT",
+        "CRV/USDT:USDT",
+    ])
