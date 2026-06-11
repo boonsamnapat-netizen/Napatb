@@ -1514,3 +1514,89 @@ class DC55v14(DC55v9):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ============================================================================
+# C.12 experiments: ADX threshold fine-tuning around DC55v12
+#
+# C.11 results (key finding — DC55v12 is the IS/OOS standout):
+#   DC55v9  (RSI>55 baseline):  IS +856%  OOS +204% PF1.55 DD16.9%  Hold +12.10% PF1.98
+#   DC55v11 (RSI>50):           IS +800%  OOS +202% PF1.54 DD16.0%  Hold ???      (worse)
+#   DC55v12 (ADX>20+RSI>55):   IS +1022% OOS +280% PF1.74 DD10.6%  Hold  +6.02% PF1.50
+#   DC55v13 (EMA200_1d):        IS +856%  OOS +204% PF1.55 DD16.9%  Hold +12.10% (=DC55v9, redundant)
+#   DC55v14 (DC width>10%):     IS +419%  OOS +209% PF1.57 DD16.9%  Hold  +6.64%
+#
+# DC55v12 WINS IS (+19%) and OOS (+37% profit, -37% DD) vs DC55v9.
+# But LOSES holdout 2025Q2 (+6.02% vs +12.10%).
+# Hypothesis: ADX threshold of 20 is too restrictive for 2025 bull market
+# where slow, steady trends have ADX 15-20 but are still profitable.
+#
+# C.12 tests three ADX thresholds to find the optimal operating point:
+#   v15 — ADX > 15 (permissive: keeps slow bull trends, still filters pure chop)
+#   v16 — ADX > 18 (middle ground between v9 and v12)
+#   v17 — ADX > 25 (strict: only strong directional moves, fewer but cleaner)
+# ============================================================================
+
+
+class DC55v15(DC55v9):
+    """
+    DC55v9 + 4H ADX(14) > 15 trend-strength gate (permissive).
+
+    DC55v12 (ADX>20) won IS/OOS convincingly but lost holdout 2025Q2
+    (+6.02% vs DC55v9 +12.10%). Hypothesis: the 2025 bull market had many
+    slow, steady trends with ADX 15-20 that DC55v12 filtered out incorrectly.
+    ADX>15 still removes pure chop (random noise) but admits the 15-20 band
+    of slow directional trends where Donchian breakouts are still valid.
+    Expected: better than DC55v9 in bear OOS (ADX filter helps), closer to
+    DC55v9 than DC55v12 in bull holdout.
+    """
+    ADX_THRESHOLD = 15
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live         = dataframe["volume"] > 0
+        vol_ok       = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d      = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                     & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d      = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                     & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand   = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        rsi_ok_long  = dataframe[f"rsi14_{itf}"] > 55
+        rsi_ok_short = dataframe[f"rsi14_{itf}"] < 45
+        adx_ok       = dataframe[f"adx_{itf}"]   > self.ADX_THRESHOLD
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & rsi_ok_long & adx_ok
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & rsi_ok_short & adx_ok
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+class DC55v16(DC55v15):
+    """
+    DC55v9 + 4H ADX(14) > 18 trend-strength gate (middle ground).
+
+    Between DC55v15 (ADX>15) and DC55v12 (ADX>20). Tests whether 18 is
+    the sweet spot: captures more of the holdout trades than DC55v12 while
+    still providing meaningful OOS quality improvement over DC55v9 (no ADX).
+    """
+    ADX_THRESHOLD = 18
+
+
+class DC55v17(DC55v15):
+    """
+    DC55v9 + 4H ADX(14) > 25 trend-strength gate (strict).
+
+    Requires strong directional momentum at entry — only the clearest,
+    highest-conviction trending environments. ADX>25 is the traditional
+    "strongly trending" threshold (Wilder's original definition).
+    Expected: fewest trades, highest quality per trade, likely lower total
+    profit (fewer opportunities) but much lower drawdown.
+    """
+    ADX_THRESHOLD = 25

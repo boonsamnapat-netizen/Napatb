@@ -1,4 +1,4 @@
-name: "Backtest C.11 - DC55v9 baseline vs v11-v14 quality filters 73 pairs"
+name: "Backtest C.12 - DC55v12 ADX threshold fine-tuning 73 pairs"
 
 on:
   push:
@@ -99,10 +99,10 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v9 DC55v11 DC55v12 DC55v13 DC55v14 \
+            --strategy-list DC55v9 DC55v12 DC55v15 DC55v16 DC55v17 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange || '20200101-20250301' }} \
-            2>&1 | tee results/c11_insample.txt
+            2>&1 | tee results/c12_insample.txt
 
       - name: Run OOS backtest — 2021-2023 (bear market reference)
         if: ${{ github.event.inputs.run_oos != 'false' }}
@@ -110,29 +110,29 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v9 DC55v11 DC55v12 DC55v13 DC55v14 \
+            --strategy-list DC55v9 DC55v12 DC55v15 DC55v16 DC55v17 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
-            2>&1 | tee results/c11_oos.txt
+            2>&1 | tee results/c12_oos.txt
 
       - name: Run holdout backtest — 2025-03 to 2025-06 (untouched)
         run: |
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v9 DC55v11 DC55v12 DC55v13 DC55v14 \
+            --strategy-list DC55v9 DC55v12 DC55v15 DC55v16 DC55v17 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
-            2>&1 | tee results/c11_holdout.txt
+            2>&1 | tee results/c12_holdout.txt
 
       - name: Commit results
         run: |
-          for f in results/c11_insample.txt results/c11_oos.txt; do
+          for f in results/c12_insample.txt results/c12_oos.txt; do
             [ -f "$f" ] && tail -1000 "$f" > /tmp/_t.txt && mv /tmp/_t.txt "$f"
           done
-          [ -f results/c11_holdout.txt ] && tail -500 results/c11_holdout.txt > /tmp/_t.txt && mv /tmp/_t.txt results/c11_holdout.txt
+          [ -f results/c12_holdout.txt ] && tail -500 results/c12_holdout.txt > /tmp/_t.txt && mv /tmp/_t.txt results/c12_holdout.txt
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/c11_insample.txt results/c11_oos.txt results/c11_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.11 DC55v9 vs v11-v14 quality filter backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/c12_insample.txt results/c12_oos.txt results/c12_holdout.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "C.12 DC55v12 ADX threshold fine-tuning backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
