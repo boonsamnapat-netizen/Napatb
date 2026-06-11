@@ -678,3 +678,58 @@ class DC55v5(DC55v2):
     Target: ~20+ trades/month holdout, OOS PF still > 1.4.
     """
     REL_VOL = 1.5
+
+
+# ---- C.7: dual timeframe + expanded universe
+#
+# C.6 proved REL_VOL=2.0 is doing real work — can't lower it.
+# Frequency must come from more opportunities, not looser filters.
+#
+# DC55v6: DC55v2 + 1H 100-bar Donchian as alternate entry.
+#   - Enter on 4H breakout OR 1H breakout (same quality gates for both)
+#   - 1H 100-bar ≈ 4.2-day channel: meaningful breakout, shorter reaction time
+#   - 60-pair universe adds ~2× independent breakout opportunities
+#   - Expected frequency: ~3× DC55v2 while preserving OOS quality
+
+class DC55v6(DC55v2):
+    """
+    DC55v2 + 1H Donchian (100-bar) as alternate entry timeframe.
+    Fires on 4H 55-bar breakout OR 1H 100-bar breakout, same quality filters.
+    Pair universe 31→60: independent breakout sources double opportunity set.
+    """
+    TF1H_PERIOD = 100
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_indicators(dataframe, metadata)
+        p = self.TF1H_PERIOD
+        dataframe["dc_entry_high_1h"] = dataframe["high"].shift(1).rolling(p).max()
+        dataframe["dc_entry_low_1h"]  = dataframe["low"].shift(1).rolling(p).min()
+        return dataframe
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        btc_bull_w = dataframe["close_1w"] > dataframe["ema50_1w"]
+        btc_bear_w = dataframe["close_1w"] < dataframe["ema50_1w"]
+
+        # dual timeframe: 4H 55-bar channel OR 1H 100-bar channel
+        break_long  = (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]) \
+                    | (dataframe["close"] > dataframe["dc_entry_high_1h"])
+        break_short = (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]) \
+                    | (dataframe["close"] < dataframe["dc_entry_low_1h"])
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & btc_bull_w & break_long,
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & btc_bear_w & break_short,
+            "enter_short",
+        ] = 1
+        return dataframe
