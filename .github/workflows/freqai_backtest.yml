@@ -1,4 +1,4 @@
-name: "Backtest C.9 - DC55v7 no-BTC-gate REL_VOL=2 universe 73 pairs"
+name: "Backtest C.10 - DC55v7-v10 strategy comparison 73 pairs"
 
 on:
   push:
@@ -99,7 +99,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v7 \
+            --strategy-list DC55v7 DC55v8 DC55v9 DC55v10 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange || '20200101-20250301' }} \
             2>&1 | tee results/c5_insample.txt
@@ -110,7 +110,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v7 \
+            --strategy-list DC55v7 DC55v8 DC55v9 DC55v10 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/c5_oos.txt
@@ -120,7 +120,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v7 \
+            --strategy-list DC55v7 DC55v8 DC55v9 DC55v10 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
             2>&1 | tee results/c5_holdout.txt
@@ -130,5 +130,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/c5_insample.txt results/c5_oos.txt results/c5_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.9 DC55v7 no-BTC-gate 73-pair universe backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.10 DC55v7-v10 strategy comparison backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

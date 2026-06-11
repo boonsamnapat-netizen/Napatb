@@ -759,3 +759,226 @@ class DC55v7(DC55combo):
     One change from DC55v2: remove global BTC weekly EMA50 gate.
     """
     REL_VOL = 2.0
+
+
+# ---- DC55v9: RSI momentum confirmation filter --------------------------------
+#
+# Problem: DC55v7 73.8% trailing-stop exits at -4.17% avg = price extends
+#   through the Donchian channel but immediately reverses. These are false
+#   breakouts: price breaks the structural level but momentum has not confirmed.
+#
+# Hypothesis: 4H RSI(14) > 55 at breakout time is a necessary (not sufficient)
+#   condition for a genuine trend continuation move. When price breaks the 55-bar
+#   channel but RSI is still mid-range (40-55), the breakout lacks the underlying
+#   momentum buildup that precedes sustained trending moves — it's a mechanical
+#   level breach, not a momentum surge. Requiring RSI > 55 for longs and < 45 for
+#   shorts filters the subset of breakouts where momentum has already elevated
+#   in the direction of the trade, dramatically cutting false-breakout frequency.
+
+class DC55v9(DC55v7):
+    """
+    DC55v7 + 4H RSI(14) momentum confirmation.
+
+    Motivation: DC55v7 shows 73.8% of trades exit via trailing stop at -4.17%
+    avg — textbook false breakouts where price crosses the Donchian level but
+    immediately reverses. Win rate ~21-24%. Adding RSI momentum confirmation
+    requires that the 4H timeframe already exhibits elevated momentum at the
+    time of breakout: RSI > 55 for longs, RSI < 45 for shorts. This filters
+    breakouts where price has mechanically extended past a structural level but
+    the underlying momentum distribution has not confirmed directional intent.
+
+    Inherits: DC55v7 (DC55combo base, REL_VOL=2.0, no BTC weekly gate).
+    New filter: 4H RSI(14) — computed on informative frame before merge.
+    Expected trade-off: fewer entries, higher win rate, lower trailing-stop %.
+    """
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_indicators(dataframe, metadata)
+        pair = metadata["pair"]
+        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        inf_rsi = inf[["date"]].copy()
+        inf_rsi["rsi14"] = ta.RSI(inf, timeperiod=14)
+        dataframe = merge_informative_pair(
+            dataframe, inf_rsi, self.timeframe, self.inf_timeframe, ffill=True
+        )
+        return dataframe
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand  = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        rsi_ok_long  = dataframe[f"rsi14_{itf}"] > 55
+        rsi_ok_short = dataframe[f"rsi14_{itf}"] < 45
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & rsi_ok_long
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & rsi_ok_short
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+# ---- C.9/C.8 motivated: soft BTC weekly gate — consolidation zone passthrough
+#
+# C.8 finding: BTC weekly EMA50 binary gate kills 78% of signals; 73-pair universe
+#   gave only 13 holdout trades (vs DC55combo 58). Root cause: global binary switch
+#   blocks all 73 pairs simultaneously the moment BTC dips 0.1% below EMA50.
+# C.9 finding: DC55v7 (no gate, REL_VOL=2.0) recovers ~30-45 holdout trades but
+#   may admit entries in clear BTC bear markets that the gate was right to block.
+#
+# Hypothesis: the gate's value is blocking CLEAR bears/bulls — not consolidation.
+#   BTC ±8% around EMA50 is a consolidation zone where per-pair 1D filters are
+#   sufficient. Hard bear (BTC >8% below EMA50) should still block longs;
+#   hard bull (BTC >8% above EMA50) should still block shorts.
+#   Expected: frequency close to DC55v7 (~30-45) with quality closer to DC55v2.
+
+class DC55v8(DC55v2):
+    """
+    DC55v2 with a soft BTC weekly macro gate replacing the binary one.
+
+    Binary gate (DC55v2): long only when close_1w > ema50_1w (exact level).
+    Soft gate (DC55v8): allow trading when BTC is within ±8% of its weekly EMA50
+    — i.e., consolidation zone is open; only hard bear/bull regimes are blocked.
+
+      Long  allowed when: close_1w > ema50_1w * 0.92  (not a clear BTC bear)
+      Short allowed when: close_1w < ema50_1w * 1.08  (not a clear BTC bull)
+
+    Motivation (C.8/C.9 data):
+      DC55v2  binary gate → 13 holdout trades, OOS +219%, DD 14.2%
+      DC55v7  no gate     → ~30-45 holdout trades (estimate), OOS TBD
+      DC55combo no gate   → 58 holdout trades, OOS +172%, Win% 36.2%
+    DC55v8 targets: holdout ~25-40 trades, OOS quality between v2 and v7,
+    by admitting consolidation-zone periods where the binary gate fired false.
+
+    populate_indicators inherited from DC55v2 unchanged — ema50_1w is already
+    available via merge_informative_pair(btc_w, ..., "1w").
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+
+        # Soft BTC weekly gate: block only clear bear (>8% below EMA50) for longs,
+        # clear bull (>8% above EMA50) for shorts. Consolidation zone passes through.
+        btc_not_hard_bear = dataframe["close_1w"] > dataframe["ema50_1w"] * 0.92
+        btc_not_hard_bull = dataframe["close_1w"] < dataframe["ema50_1w"] * 1.08
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & btc_not_hard_bear
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & btc_not_hard_bull
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+# ---- C.10: ATR adaptive stop — cut false-breakout bleed ----------------------
+#
+# C.8/C.9 exit analysis:
+#   73.8% trailing_stop_loss exits at avg -4.17%  (all losers — false breakouts
+#     stopped by the DC 20-bar channel exit after ~23h average hold)
+#   25.8% exit_signal exits at avg +19.11%  (83.1% win rate — real trend trades)
+#
+# The flat -15% catastrophe stop is irrelevant to daily P&L; the DC channel
+# exit is the de-facto stop and it's too slow. ATR14 on 4H crypto ≈ 2-3%/bar
+# → 2×ATR14(1H) ≈ 4-6% is a structurally meaningful initial stop that fires
+# before the 23h average compound loss, while staying outside normal noise.
+# After 3 days in profit > 5%, trailing at 1.5×ATR protects the gain without
+# cutting trending trades that the DC channel exit would ride for +19%.
+
+class DC55v10(DC55v7):
+    """
+    DC55v7 entries + two-phase ATR adaptive stoploss.
+
+    Phase 1 — initial structural stop:
+      stop = open_rate ± ATR_INITIAL × ATR14(1H) at the entry bar.
+      Default 2.0×ATR → ~4-6% stop on typical 4H crypto volatility.
+      Fires within hours of a failed breakout; the DC channel exit took ~23h.
+
+    Phase 2 — trailing profit protection:
+      Activates when current_profit > TRAIL_PROFIT (default 5%) AND
+      trade age > TRAIL_DAYS (default 3 days).
+      stop = current_rate ± ATR_TRAIL × ATR14(1H) at current bar.
+      Default 1.5×ATR — tight enough to protect gains, loose enough for
+      intraday noise on a real trending move.
+      Freqtrade's stop-ratchet ensures the stop only moves favourably;
+      we do not need to track the high-water mark here.
+
+    Exit channel, regime gates, volume filter: identical to DC55v7.
+    TP1/TP2 disabled — DC approach rides the full trend to channel exit.
+    """
+
+    use_custom_stoploss = True
+    stoploss            = -0.15     # catastrophe net; custom stop is tighter
+
+    ATR_INITIAL  = 2.0   # initial stop: multiples of ATR14(1H) from open_rate
+    ATR_TRAIL    = 1.5   # trailing stop: multiples of ATR14(1H) from current_rate
+    TRAIL_DAYS   = 3     # trade age (days) required before Phase 2 activates
+    TRAIL_PROFIT = 0.05  # minimum profit required before Phase 2 activates
+
+    # DC approach rides the trend; no split-TP partial exits
+    TP1_R = None
+    TP2_R = None
+
+    def _current_atr(self, pair: str) -> Optional[float]:
+        """ATR14 of the most recent completed 1H bar (for Phase 2 trailing)."""
+        df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+        if df is None or df.empty:
+            return None
+        atr = df.iloc[-1].get("atr14")
+        if atr is None or pd.isna(atr):
+            return None
+        return float(atr)
+
+    def custom_stoploss(self, pair: str, trade, current_time: datetime,
+                        current_rate: float, current_profit: float,
+                        after_fill: bool, **kwargs) -> float:
+        """
+        Returns stoploss in [-1, 0] relative to current_rate.
+
+        Phase 1: structural stop from open_rate using entry-bar ATR14.
+        Phase 2: trailing stop from current_rate using live ATR14, once
+                 profit > TRAIL_PROFIT and trade age > TRAIL_DAYS.
+        Returns None on ATR unavailability → falls back to stoploss = -0.15.
+        """
+        if current_rate <= 0:
+            return None
+
+        trade_age_days = (current_time - trade.open_date_utc).total_seconds() / 86400.0
+        use_trail = (current_profit > self.TRAIL_PROFIT
+                     and trade_age_days > self.TRAIL_DAYS)
+
+        if use_trail:
+            atr = self._current_atr(pair)
+            if atr is None:
+                return None
+            stop_price = (current_rate + self.ATR_TRAIL * atr) if trade.is_short \
+                         else (current_rate - self.ATR_TRAIL * atr)
+        else:
+            atr = self._entry_atr(trade)   # reuses ConfluenceBase helper
+            if atr is None:
+                return None
+            stop_price = (trade.open_rate + self.ATR_INITIAL * atr) if trade.is_short \
+                         else (trade.open_rate - self.ATR_INITIAL * atr)
+
+        return stoploss_from_absolute(stop_price, current_rate, is_short=trade.is_short)
