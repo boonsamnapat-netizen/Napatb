@@ -552,3 +552,91 @@ class DC55v2(DC55combo):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ---- C.5 experiments: fix DC55v2's 2025-Q2 weakness (binary weekly gate
+#      cut 72% of trades during BTC transition; OOS win was real but holdout
+#      had too few trades to express edge)
+#
+# DC55v3: slope-based gate — allow longs when BTC EMA50(1W) is rising even
+#         if price is still below it (catches early recovery; blocks longs
+#         only when both price AND EMA50 are falling together)
+#
+# DC55v4: zone-based gate — 3 zones:
+#         bull (>EMA50×1.02): weekly filter active, block shorts
+#         bear (<EMA50×0.98): weekly filter active, block longs
+#         neutral (±2% band): skip weekly, fall back to daily filter only
+
+class DC55v3(DC55v2):
+    """
+    DC55v2 with slope-based BTC weekly filter (EMA50 direction > price level).
+    Allows longs when BTC EMA50(1W) is turning up, even if close < EMA50.
+    Blocks longs only when both price AND EMA50 are falling together.
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+
+        # slope: EMA50(1W) higher than it was 4 weeks ago → macro turning up
+        ema50_rising = dataframe["ema50_1w"] > dataframe["ema50_1w"].shift(4)
+        btc_bull_w   = (dataframe["close_1w"] > dataframe["ema50_1w"]) | ema50_rising
+        btc_bear_w   = (dataframe["close_1w"] < dataframe["ema50_1w"]) & ~ema50_rising
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & btc_bull_w
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & btc_bear_w
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+class DC55v4(DC55v2):
+    """
+    DC55v2 with zone-based BTC weekly filter.
+    bull zone (>EMA50×1.02): weekly gate on, shorts blocked.
+    bear zone (<EMA50×0.98): weekly gate on, longs blocked.
+    neutral (±2%): skip weekly gate, fall back to daily filter only.
+    """
+    ZONE_PCT = 0.02   # ±2% neutral band around weekly EMA50
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+
+        # 3-zone regime: clear bull / neutral transition / clear bear
+        ema50_1w   = dataframe["ema50_1w"]
+        zone_bull  = dataframe["close_1w"] > ema50_1w * (1 + self.ZONE_PCT)
+        zone_bear  = dataframe["close_1w"] < ema50_1w * (1 - self.ZONE_PCT)
+        # neutral = ~zone_bull & ~zone_bear → no weekly condition needed
+
+        # longs: block only when clearly in bear zone
+        # shorts: block only when clearly in bull zone
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & ~zone_bear
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & ~zone_bull
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
