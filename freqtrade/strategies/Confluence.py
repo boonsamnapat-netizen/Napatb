@@ -658,3 +658,23 @@ class DC55v4(DC55v2):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ---- C.6: frequency tuning — test whether REL_VOL=2.0 is over-cutting
+#
+# DC55v2 OOS: +130%, PF 1.59 — weekly filter is the primary quality gate.
+# DC55v2 holdout: only 11 trades (78% slot-idle) — too slow for live use.
+#
+# Hypothesis: the BTC weekly level filter does the heavy quality lifting.
+# REL_VOL=2.0 cuts a further 34% of trades with marginal quality gain.
+# Restoring REL_VOL=1.5 + keeping weekly filter may recover frequency
+# while preserving the OOS quality advantage over DC55combo.
+
+class DC55v5(DC55v2):
+    """
+    DC55v2 with REL_VOL restored to 1.5 (DC55combo default).
+    Tests whether the BTC weekly macro gate alone is sufficient for quality
+    and the 2× volume filter over-cuts valid signals.
+    Target: ~20+ trades/month holdout, OOS PF still > 1.4.
+    """
+    REL_VOL = 1.5

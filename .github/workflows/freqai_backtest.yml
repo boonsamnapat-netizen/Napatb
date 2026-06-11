@@ -1,4 +1,4 @@
-name: Backtest — C.5v2 (DC55v3 slope fix + DC55v4 weekly ATR expansion)
+name: Backtest — C.6 (DC55v5 frequency tuning — REL_VOL 1.5 + BTC weekly)
 
 on:
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v3 DC55v4 \
+            --strategy-list DC55combo DC55v2 DC55v5 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/c5_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v3 DC55v4 \
+            --strategy-list DC55combo DC55v2 DC55v5 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/c5_oos.txt
@@ -113,7 +113,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55combo DC55v2 DC55v3 DC55v4 \
+            --strategy-list DC55combo DC55v2 DC55v5 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
             2>&1 | tee results/c5_holdout.txt
@@ -123,5 +123,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/c5_insample.txt results/c5_oos.txt results/c5_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.5v2 DC55v3-fix/v4-ATR backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.6 DC55v5 frequency backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
