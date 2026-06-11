@@ -1678,3 +1678,65 @@ class DC55v19(DC55v15):
     TP1_R   = 1.5   # close 50% at 1.5R (inherits adjust_trade_position logic)
     TP2_R   = None  # let remaining 50% ride to DC exit signal
     TP1_PCT = 0.5   # 50% partial close at TP1
+
+
+# ============================================================================
+# C.14 experiments: DC55v18 vs DC55v15 production decision + asymmetric RSI
+#
+# C.13 results (RSI redundancy + partial TP):
+#   DC55v9  (baseline):     IS +856%  OOS +204% PF1.55 DD16.9%  Hold +12.10% PF1.98
+#   DC55v15 (ADX>15+RSI):   IS +870%  OOS +215% PF1.60 DD16.1%  Hold +13.17% PF2.16  ← C.12 champion
+#   DC55v18 (ADX>15 noRSI): IS +963%  OOS +212% PF1.58 DD10.9%  Hold +12.44% PF2.04  ← C.13 surprise
+#   DC55v19 (ADX+RSI+TP):   IS +273%  OOS  +90% PF1.39 DD11.1%  Hold +11.06% PF2.10
+#
+# DC55v18 without RSI shows:
+#   - Best IS (+963% vs +870%), best IS Sharpe (1.03 vs 0.95)
+#   - OOS DD massively better: 10.88% vs 16.07% (35% reduction)
+#   - Holdout marginally lower: +12.44% vs +13.17% (within noise for 3 months)
+#
+# Partial TP (v19) raises Win% to 37% but halves total profit — fat tails are
+# the engine; cutting them at 1.5R destroys the strategy's edge. Not viable.
+#
+# Key question for C.14: does RSI help more on shorts or longs?
+# In a bear market, RSI naturally stays <45, so the RSI<45 short filter
+# may add little signal. In bull markets, RSI is naturally >55 for longs.
+# DC55v20 tests asymmetric RSI: no RSI gate for longs (trust ADX+daily trend),
+# RSI<45 required for shorts (extra guard against false breakdowns in bull).
+# ============================================================================
+
+
+class DC55v20(DC55v18):
+    """
+    DC55v18 (ADX>15, no RSI) with RSI gate restored for shorts only.
+
+    C.13 showed DC55v18 (no RSI) gives better IS/OOS DD than DC55v15.
+    But: removing RSI from shorts risks entering false breakdowns in bull
+    markets where RSI stays above 45 even during sharp drops.
+    Asymmetric approach: longs need only ADX>15 (trend + volume); shorts
+    additionally require RSI<45 (momentum must confirm the downtrend).
+    Expected: same long performance as DC55v18, fewer bad shorts in bull mkts.
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live        = dataframe["volume"] > 0
+        vol_ok      = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d     = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                    & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d     = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                    & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand  = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        adx_ok      = dataframe[f"adx_{itf}"]   > self.ADX_THRESHOLD   # 15
+        rsi_short   = dataframe[f"rsi14_{itf}"] < 45   # only for shorts
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & adx_ok   # no RSI for longs
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & adx_ok & rsi_short
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
