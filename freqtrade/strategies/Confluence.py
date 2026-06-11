@@ -733,3 +733,29 @@ class DC55v6(DC55v2):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ---- C.9: remove BTC weekly gate — test per-pair filters alone
+#
+# C.8 finding (73 pairs): BTC weekly EMA50 gate kills 78% of valid signals
+# during BTC consolidation. Universe expansion gave only 11→13 holdout trades.
+# DC55combo (no gate): 58 holdout trades, +3.8%, Win% 36.2%.
+# DC55v2 (with gate): 13 holdout trades, +0.6%, OOS +219% DD 14.2%.
+#
+# Root cause: BTC weekly EMA50 is a global binary switch that hits all 73 pairs
+# simultaneously when BTC is in a transition zone. Per-pair 1D trend filters
+# (golden cross + close>EMA50 + ATR expansion) already capture the relevant
+# trend quality at the individual pair level.
+#
+# Hypothesis: REL_VOL=2.0 + per-pair 1D filters → sufficient quality gate,
+# without the global BTC macro override that destroys frequency in sideways BTC.
+# Expected holdout: ~30-45 trades (between DC55combo 58 and DC55v2 13).
+# Expected OOS: between DC55combo +172% and DC55v2 +219%, DD similar to DC55v2.
+
+class DC55v7(DC55combo):
+    """
+    DC55combo with REL_VOL raised to 2.0. No BTC weekly macro gate.
+    One change from DC55combo: stricter volume filter only.
+    One change from DC55v2: remove global BTC weekly EMA50 gate.
+    """
+    REL_VOL = 2.0
