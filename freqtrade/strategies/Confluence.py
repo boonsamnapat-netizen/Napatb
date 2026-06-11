@@ -1600,3 +1600,81 @@ class DC55v17(DC55v15):
     profit (fewer opportunities) but much lower drawdown.
     """
     ADX_THRESHOLD = 25
+
+
+# ============================================================================
+# C.13 experiments: DC55v15 refinements — RSI redundancy + partial TP
+#
+# C.12 results (ADX threshold sweep):
+#   DC55v9  (no ADX):  IS +856%  OOS +204% PF1.55 DD16.9%  Hold +12.10% PF1.98
+#   DC55v15 (ADX>15):  IS +870%  OOS +215% PF1.60 DD16.1%  Hold +13.17% PF2.16  *** WINNER ***
+#   DC55v16 (ADX>18):  IS +840%  OOS +236% PF1.65 DD13.9%  Hold +10.18% PF1.86
+#   DC55v12 (ADX>20):  IS +1022% OOS +280% PF1.74 DD10.6%  Hold  +6.02% PF1.50
+#   DC55v17 (ADX>25):  IS +553%  OOS +262% PF1.75 DD14.7%  Hold  -2.18% PF0.87
+#
+# DC55v15 wins BOTH OOS and Holdout vs DC55v9 -- first strategy to do so.
+# Key insight: ADX>25 hurts bull markets because it filters slow-trending longs
+# (ADX 15-25) while keeping high-momentum shorts that fail against bull trend.
+# ADX>15 removes pure noise without cutting valid slow bull trends.
+#
+# C.13 tests two refinements of DC55v15:
+#   v18 — DC55v15 without RSI filter (is RSI redundant now that ADX>15 exists?)
+#   v19 — DC55v15 + partial TP at 1.5R (lock 50% profit, let rest ride to DC exit)
+# ============================================================================
+
+
+class DC55v18(DC55v15):
+    """
+    DC55v15 (ADX>15) without RSI momentum gate.
+
+    DC55v9 added RSI>55 to filter false breakouts where price crossed the
+    Donchian level but lacked momentum (+2.1% holdout improvement over v7).
+    DC55v15 added ADX>15 and improved holdout further (+1.07% over v9).
+    Question: with ADX>15 already requiring directional momentum, does RSI>55
+    add independent value or just reduce frequency with no quality gain?
+    ADX>15 ensures the 4H is trending; RSI>55 ensures momentum is elevated.
+    These could be redundant (both measure momentum, just differently).
+    Expected: more trades than DC55v15 (RSI removes ~5-10%), quality TBD.
+    If quality holds → simpler strategy with same or better results.
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live        = dataframe["volume"] > 0
+        vol_ok      = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d     = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                    & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d     = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                    & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand  = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        adx_ok      = dataframe[f"adx_{itf}"]   > self.ADX_THRESHOLD   # 15
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & adx_ok
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & adx_ok
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+class DC55v19(DC55v15):
+    """
+    DC55v15 (ADX>15 + RSI>55) + partial take-profit at 1.5R.
+
+    DC55v15 exits entirely at the 20-bar Donchian channel (or structural stop).
+    Win rate is ~24-25% in OOS — 3 out of 4 trades are stopped out.
+    Idea: take 50% off the table at 1.5R (locking a meaningful winner), then
+    let the remaining 50% ride to the Donchian exit for the fat tail.
+    This raises the effective win rate by converting partial exits to wins,
+    while preserving the full upside capture on strong trending moves.
+    TP1_R = 1.5 × SL_ATR → close TP1_PCT=50% of position at 1.5× initial risk.
+    TP2 disabled — second half exits via Donchian channel signal.
+    """
+    TP1_R   = 1.5   # close 50% at 1.5R (inherits adjust_trade_position logic)
+    TP2_R   = None  # let remaining 50% ride to DC exit signal
+    TP1_PCT = 0.5   # 50% partial close at TP1
