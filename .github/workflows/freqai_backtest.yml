@@ -1,4 +1,4 @@
-name: Backtest — C.7 (DC55v6 dual-TF 4H+1H, universe 60 pairs)
+name: Backtest — C.8 (DC55v6, universe 73 pairs: crypto+AI+meme+L2)
 
 on:
   workflow_dispatch:
@@ -62,7 +62,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: freqtrade/user_data/data/okx
-          key: okx-ohlcv-universe60-20200101-20250601-v1
+          key: okx-ohlcv-universe73-20200101-20250601-v1
 
       - name: Download historical data (OKX, fallback to Binance)
         if: steps.cache-ohlcv.outputs.cache-hit != 'true'
@@ -75,7 +75,7 @@ jobs:
             --timerange 20200101-20250601 \
             --timeframes 1h 4h 1d 1w \
             --data-format-ohlcv json \
-            --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "BNB/USDT:USDT" "SOL/USDT:USDT" "XRP/USDT:USDT" "DOGE/USDT:USDT" "ADA/USDT:USDT" "MATIC/USDT:USDT" "LINK/USDT:USDT" "DOT/USDT:USDT" "AVAX/USDT:USDT" "LTC/USDT:USDT" "BCH/USDT:USDT" "UNI/USDT:USDT" "ATOM/USDT:USDT" "ETC/USDT:USDT" "FIL/USDT:USDT" "TRX/USDT:USDT" "EOS/USDT:USDT" "XLM/USDT:USDT" "ALGO/USDT:USDT" "AAVE/USDT:USDT" "CRV/USDT:USDT" "SAND/USDT:USDT" "MANA/USDT:USDT" "SUSHI/USDT:USDT" "NEAR/USDT:USDT" "FTM/USDT:USDT" "AXS/USDT:USDT" "SNX/USDT:USDT" "COMP/USDT:USDT" "RUNE/USDT:USDT" "GRT/USDT:USDT" "1INCH/USDT:USDT" "THETA/USDT:USDT" "VET/USDT:USDT" "CHZ/USDT:USDT" "ENJ/USDT:USDT" "GALA/USDT:USDT" "STX/USDT:USDT" "ROSE/USDT:USDT" "KSM/USDT:USDT" "ZEC/USDT:USDT" "WAVES/USDT:USDT" "OMG/USDT:USDT" "DYDX/USDT:USDT" "LDO/USDT:USDT" "IMX/USDT:USDT" "APE/USDT:USDT" "FLOW/USDT:USDT" "AR/USDT:USDT" "ICP/USDT:USDT" "ANKR/USDT:USDT" "ZRX/USDT:USDT" "LRC/USDT:USDT" "ONE/USDT:USDT" "KAVA/USDT:USDT" "YFI/USDT:USDT" "BAT/USDT:USDT" "OP/USDT:USDT" \
+            --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "BNB/USDT:USDT" "SOL/USDT:USDT" "XRP/USDT:USDT" "DOGE/USDT:USDT" "ADA/USDT:USDT" "MATIC/USDT:USDT" "LINK/USDT:USDT" "DOT/USDT:USDT" "AVAX/USDT:USDT" "LTC/USDT:USDT" "BCH/USDT:USDT" "UNI/USDT:USDT" "ATOM/USDT:USDT" "ETC/USDT:USDT" "FIL/USDT:USDT" "TRX/USDT:USDT" "EOS/USDT:USDT" "XLM/USDT:USDT" "ALGO/USDT:USDT" "AAVE/USDT:USDT" "CRV/USDT:USDT" "SAND/USDT:USDT" "MANA/USDT:USDT" "SUSHI/USDT:USDT" "NEAR/USDT:USDT" "FTM/USDT:USDT" "AXS/USDT:USDT" "SNX/USDT:USDT" "COMP/USDT:USDT" "RUNE/USDT:USDT" "GRT/USDT:USDT" "1INCH/USDT:USDT" "THETA/USDT:USDT" "VET/USDT:USDT" "CHZ/USDT:USDT" "ENJ/USDT:USDT" "GALA/USDT:USDT" "STX/USDT:USDT" "ROSE/USDT:USDT" "KSM/USDT:USDT" "ZEC/USDT:USDT" "WAVES/USDT:USDT" "OMG/USDT:USDT" "DYDX/USDT:USDT" "LDO/USDT:USDT" "IMX/USDT:USDT" "APE/USDT:USDT" "FLOW/USDT:USDT" "AR/USDT:USDT" "ICP/USDT:USDT" "ANKR/USDT:USDT" "ZRX/USDT:USDT" "LRC/USDT:USDT" "ONE/USDT:USDT" "KAVA/USDT:USDT" "YFI/USDT:USDT" "BAT/USDT:USDT" "OP/USDT:USDT" "FET/USDT:USDT" "RNDR/USDT:USDT" "TAO/USDT:USDT" "INJ/USDT:USDT" "WLD/USDT:USDT" "PEPE/USDT:USDT" "WIF/USDT:USDT" "BONK/USDT:USDT" "SHIB/USDT:USDT" "SUI/USDT:USDT" "APT/USDT:USDT" "SEI/USDT:USDT" "TIA/USDT:USDT" \
           || { echo "OKX download failed — falling back to Binance..." && \
                python3 -c "import json; cfg=json.load(open('freqtrade/config_okx.json')); cfg['exchange']['name']='binance'; json.dump(cfg,open('/tmp/cfg_binance_dl.json','w'))" && \
                freqtrade download-data \
@@ -123,5 +123,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/c5_insample.txt results/c5_oos.txt results/c5_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.7 DC55v6 dual-TF+60pairs backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.8 DC55v6 73-pair universe backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

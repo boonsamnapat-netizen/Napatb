@@ -77,7 +77,20 @@
       "KAVA/USDT:USDT",
       "YFI/USDT:USDT",
       "BAT/USDT:USDT",
-      "OP/USDT:USDT"
+      "OP/USDT:USDT",
+      "FET/USDT:USDT",
+      "RNDR/USDT:USDT",
+      "TAO/USDT:USDT",
+      "INJ/USDT:USDT",
+      "WLD/USDT:USDT",
+      "PEPE/USDT:USDT",
+      "WIF/USDT:USDT",
+      "BONK/USDT:USDT",
+      "SHIB/USDT:USDT",
+      "SUI/USDT:USDT",
+      "APT/USDT:USDT",
+      "SEI/USDT:USDT",
+      "TIA/USDT:USDT"
     ],
     "pair_blacklist": []
   },
