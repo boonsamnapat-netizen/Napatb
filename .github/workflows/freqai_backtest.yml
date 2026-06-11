@@ -1,4 +1,4 @@
-name: Backtest — DC55 vs DC55combo (Phase C.4 — 5yr / 31-pair universe)
+name: Backtest — DC55combo vs DC55v2 (Phase C.4v2 — BTC weekly + vol filter)
 
 on:
   workflow_dispatch:
@@ -62,7 +62,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: freqtrade/user_data/data/okx
-          key: okx-ohlcv-universe31-20200101-20250601-v1
+          key: okx-ohlcv-universe31-20200101-20250601-v2-weekly
 
       - name: Download historical data (OKX, fallback to Binance)
         if: steps.cache-ohlcv.outputs.cache-hit != 'true'
@@ -73,7 +73,7 @@ jobs:
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
             --timerange 20200101-20250601 \
-            --timeframes 1h 4h 1d \
+            --timeframes 1h 4h 1d 1w \
             --data-format-ohlcv json \
             --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "BNB/USDT:USDT" "SOL/USDT:USDT" "XRP/USDT:USDT" "DOGE/USDT:USDT" "ADA/USDT:USDT" "MATIC/USDT:USDT" "LINK/USDT:USDT" "DOT/USDT:USDT" "AVAX/USDT:USDT" "LTC/USDT:USDT" "BCH/USDT:USDT" "UNI/USDT:USDT" "ATOM/USDT:USDT" "ETC/USDT:USDT" "FIL/USDT:USDT" "TRX/USDT:USDT" "EOS/USDT:USDT" "XLM/USDT:USDT" "ALGO/USDT:USDT" "AAVE/USDT:USDT" "CRV/USDT:USDT" "SAND/USDT:USDT" "MANA/USDT:USDT" "SUSHI/USDT:USDT" "NEAR/USDT:USDT" "FTM/USDT:USDT" "AXS/USDT:USDT" "SNX/USDT:USDT" "COMP/USDT:USDT" \
           || { echo "OKX download failed — falling back to Binance..." && \
@@ -82,7 +82,7 @@ jobs:
                  --config /tmp/cfg_binance_dl.json \
                  --datadir freqtrade/user_data/data/okx \
                  --timerange 20200101-20250601 \
-                 --timeframes 1h 4h 1d \
+                 --timeframes 1h 4h 1d 1w \
                  --data-format-ohlcv json \
                  --pairs "BTC/USDT:USDT" "ETH/USDT:USDT" "BNB/USDT:USDT" "SOL/USDT:USDT" "XRP/USDT:USDT" "DOGE/USDT:USDT" "ADA/USDT:USDT" "MATIC/USDT:USDT" "LINK/USDT:USDT" "DOT/USDT:USDT" "AVAX/USDT:USDT" "LTC/USDT:USDT" "BCH/USDT:USDT" "UNI/USDT:USDT" "ATOM/USDT:USDT" "ETC/USDT:USDT" "FIL/USDT:USDT" "TRX/USDT:USDT" "EOS/USDT:USDT" "XLM/USDT:USDT" "ALGO/USDT:USDT" "AAVE/USDT:USDT" "CRV/USDT:USDT" "SAND/USDT:USDT" "MANA/USDT:USDT" "SUSHI/USDT:USDT" "NEAR/USDT:USDT" "FTM/USDT:USDT" "AXS/USDT:USDT" "SNX/USDT:USDT" "COMP/USDT:USDT"; }
 
@@ -92,7 +92,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55 DC55combo \
+            --strategy-list DC55combo DC55v2 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange }} \
             2>&1 | tee results/fibo_insample.txt
@@ -103,7 +103,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55 DC55combo \
+            --strategy-list DC55combo DC55v2 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
             2>&1 | tee results/fibo_oos.txt
@@ -113,7 +113,7 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55 DC55combo \
+            --strategy-list DC55combo DC55v2 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
             2>&1 | tee results/fibo_holdout.txt
@@ -123,5 +123,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/fibo_insample.txt results/fibo_oos.txt results/fibo_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.4 5yr/31-pair backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.4v2 DC55v2 backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

@@ -496,3 +496,59 @@ class DC55combo(DC55):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ---- C.4 v2: BTC weekly macro regime + tighter volume gate ------------------
+# Analysis of DC55combo weakness:
+#   1. All 31 pairs are BTC-correlated — when BTC breaks out, all altcoins
+#      signal together. max_open_trades=4 fills randomly, not by quality.
+#   2. Crypto longs during BTC macro bear still bleed despite daily EMA filter.
+#
+# Fix:
+#   A) vol ≥ 2.0× average (was 1.5×) — select only top-quality breakouts,
+#      naturally filters correlation noise (only strongest signals fire)
+#   B) BTC 1W close > EMA50(1W) required for longs — pure macro regime gate.
+#      A breakout during BTC weekly downtrend is far more likely to be a trap.
+
+class DC55v2(DC55combo):
+    """
+    DC55combo + BTC weekly macro gate + tighter volume quality filter.
+    Enters only when: (1) BTC weekly trend confirmed, (2) volume is a genuine
+    2× surge above average — filters correlation-driven fake breakouts.
+    """
+    REL_VOL = 2.0   # was 1.5 — top-quality breakouts only
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = self._base_indicators(dataframe, metadata)
+        # BTC 1W macro regime — always BTC regardless of which pair we're on
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
+        dataframe = merge_informative_pair(
+            dataframe, btc_w, self.timeframe, "1w", ffill=True
+        )
+        return dataframe
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        itf = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = (dataframe["ema50_1d"] > dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  > dataframe["ema50_1d"])
+        bear_1d    = (dataframe["ema50_1d"] < dataframe["ema200_1d"]) \
+                   & (dataframe["close_1d"]  < dataframe["ema50_1d"])
+        atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
+        # BTC weekly macro regime gate
+        btc_bull_w = dataframe["close_1w"] > dataframe["ema50_1w"]
+        btc_bear_w = dataframe["close_1w"] < dataframe["ema50_1w"]
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & atr_expand & btc_bull_w
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & atr_expand & btc_bear_w
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
