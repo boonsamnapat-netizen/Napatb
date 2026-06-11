@@ -1,4 +1,4 @@
-name: Backtest — C.5 (DC55v3 slope + DC55v4 zone weekly filter)
+name: Backtest — C.5v2 (DC55v3 slope fix + DC55v4 weekly ATR expansion)
 
 on:
   workflow_dispatch:
@@ -123,5 +123,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/c5_insample.txt results/c5_oos.txt results/c5_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.5 DC55v3/v4 backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet || git commit -m "C.5v2 DC55v3-fix/v4-ATR backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

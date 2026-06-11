@@ -554,25 +554,35 @@ class DC55v2(DC55combo):
         return dataframe
 
 
-# ---- C.5 experiments: fix DC55v2's 2025-Q2 weakness (binary weekly gate
-#      cut 72% of trades during BTC transition; OOS win was real but holdout
-#      had too few trades to express edge)
+# ---- C.5 experiments (v2): fixed slope bug + weekly ATR expansion filter
 #
-# DC55v3: slope-based gate — allow longs when BTC EMA50(1W) is rising even
-#         if price is still below it (catches early recovery; blocks longs
-#         only when both price AND EMA50 are falling together)
+# DC55v3 fix: C.5 run showed DC55v3 == DC55v2 — bug was shift(4) on ffilled
+#   hourly column = 4 hours not 4 weeks. Fix: compute slope on btc_w BEFORE
+#   merge_informative_pair so diff(4) works on actual weekly candles.
 #
-# DC55v4: zone-based gate — 3 zones:
-#         bull (>EMA50×1.02): weekly filter active, block shorts
-#         bear (<EMA50×0.98): weekly filter active, block longs
-#         neutral (±2% band): skip weekly, fall back to daily filter only
+# DC55v4 redesign: neutral-zone approach backfired — 2025-Q2 neutral BTC
+#   produced WORSE trades (+8 entries, win% 21% vs 36%). Neutral zone IS bad.
+#   New idea: weekly ATR expansion gate — enter only when BTC weekly volatility
+#   is expanding (ATR14 > SMA20 on weekly). Filters choppy sideways regardless
+#   of direction; keeps the binary level filter from DC55v2.
 
 class DC55v3(DC55v2):
     """
-    DC55v2 with slope-based BTC weekly filter (EMA50 direction > price level).
-    Allows longs when BTC EMA50(1W) is turning up, even if close < EMA50.
-    Blocks longs only when both price AND EMA50 are falling together.
+    DC55v2 with slope-based BTC weekly filter — fixed: slope computed on
+    weekly candles before merge, not on ffilled hourly column.
+    Blocks longs only when BTC EMA50(1W) is actively falling AND price below.
     """
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = self._base_indicators(dataframe, metadata)
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
+        # slope computed on weekly data — diff(4) = change over 4 real weeks
+        btc_w["ema50_slope"] = btc_w["ema50"].diff(4) > 0
+        dataframe = merge_informative_pair(
+            dataframe, btc_w, self.timeframe, "1w", ffill=True
+        )
+        return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         itf = self.inf_timeframe
@@ -584,8 +594,7 @@ class DC55v3(DC55v2):
                    & (dataframe["close_1d"]  < dataframe["ema50_1d"])
         atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
 
-        # slope: EMA50(1W) higher than it was 4 weeks ago → macro turning up
-        ema50_rising = dataframe["ema50_1w"] > dataframe["ema50_1w"].shift(4)
+        ema50_rising = dataframe["ema50_slope_1w"].astype(bool)
         btc_bull_w   = (dataframe["close_1w"] > dataframe["ema50_1w"]) | ema50_rising
         btc_bear_w   = (dataframe["close_1w"] < dataframe["ema50_1w"]) & ~ema50_rising
 
@@ -604,12 +613,23 @@ class DC55v3(DC55v2):
 
 class DC55v4(DC55v2):
     """
-    DC55v2 with zone-based BTC weekly filter.
-    bull zone (>EMA50×1.02): weekly gate on, shorts blocked.
-    bear zone (<EMA50×0.98): weekly gate on, longs blocked.
-    neutral (±2%): skip weekly gate, fall back to daily filter only.
+    DC55v2 + weekly ATR expansion gate.
+    C.5 proved neutral-zone trades are losers; binary level filter is correct.
+    This variant keeps the binary weekly level gate and adds a second condition:
+    BTC weekly ATR(14) > SMA20(ATR14) — volatility must be expanding.
+    Filters choppy sideways weeks regardless of BTC level.
     """
-    ZONE_PCT = 0.02   # ±2% neutral band around weekly EMA50
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = self._base_indicators(dataframe, metadata)
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
+        btc_w["atr14"] = ta.ATR(btc_w, timeperiod=14)
+        btc_w["atr14_sma20"] = btc_w["atr14"].rolling(20).mean()
+        dataframe = merge_informative_pair(
+            dataframe, btc_w, self.timeframe, "1w", ffill=True
+        )
+        return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         itf = self.inf_timeframe
@@ -621,21 +641,19 @@ class DC55v4(DC55v2):
                    & (dataframe["close_1d"]  < dataframe["ema50_1d"])
         atr_expand = dataframe[f"atr14_{itf}"] > dataframe[f"atr14_sma20_{itf}"]
 
-        # 3-zone regime: clear bull / neutral transition / clear bear
-        ema50_1w   = dataframe["ema50_1w"]
-        zone_bull  = dataframe["close_1w"] > ema50_1w * (1 + self.ZONE_PCT)
-        zone_bear  = dataframe["close_1w"] < ema50_1w * (1 - self.ZONE_PCT)
-        # neutral = ~zone_bull & ~zone_bear → no weekly condition needed
+        # binary weekly level gate (same as DC55v2)
+        btc_bull_w = dataframe["close_1w"] > dataframe["ema50_1w"]
+        btc_bear_w = dataframe["close_1w"] < dataframe["ema50_1w"]
+        # extra: BTC weekly volatility must be expanding (not choppy sideways)
+        btc_atr_w  = dataframe["atr14_1w"] > dataframe["atr14_sma20_1w"]
 
-        # longs: block only when clearly in bear zone
-        # shorts: block only when clearly in bull zone
         dataframe.loc[
-            live & vol_ok & bull_1d & atr_expand & ~zone_bear
+            live & vol_ok & bull_1d & atr_expand & btc_bull_w & btc_atr_w
             & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
             "enter_long",
         ] = 1
         dataframe.loc[
-            live & vol_ok & bear_1d & atr_expand & ~zone_bull
+            live & vol_ok & bear_1d & atr_expand & btc_bear_w & btc_atr_w
             & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
             "enter_short",
         ] = 1
