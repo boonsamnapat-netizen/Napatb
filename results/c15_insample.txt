@@ -1,0 +1,1000 @@
+2026-06-11 23:08:43,151 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=271.00000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,153 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,154 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000735, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,156 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,156 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001214, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,159 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,159 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2099.01000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,161 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,162 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.22690000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,164 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,165 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04684000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,167 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,167 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=269.70000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,169 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,170 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000731, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,172 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,172 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001215, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,175 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,175 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2072.92000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,177 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,178 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.22500000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,180 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,181 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04703000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,183 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,183 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=271.90000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,185 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,186 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000735, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,188 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,188 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001217, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,191 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,191 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2088.58000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,193 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,193 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.22680000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,196 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,196 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04650000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,198 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,199 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=270.40000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,201 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,201 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000726, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,204 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,204 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001213, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,206 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,207 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2076.00000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,209 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,209 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.22470000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,212 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,212 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04745000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,214 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,215 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=278.50000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,217 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,218 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000745, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,220 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,220 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001238, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,223 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,223 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2115.07000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,225 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,226 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23050000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,228 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,229 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04776000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,231 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,232 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=278.90000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,235 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,235 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000742, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,238 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,238 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001232, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,240 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,241 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2112.00000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,243 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,243 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23110000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,246 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,246 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04749000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,249 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,249 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=279.30000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,252 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,252 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000742, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,254 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,255 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001233, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,257 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,257 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2117.00000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,260 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,260 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23130000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,263 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,263 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04749000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,266 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,266 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=280.10000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,268 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,269 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000742, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,271 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,272 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001236, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,274 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,275 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2105.06000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,277 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,277 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23080000, open_rate=0.23250000, max_rate=0.23590000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,280 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,280 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04781000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,282 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,283 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=282.50000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,285 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,285 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000749, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,288 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,288 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001250, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,290 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,290 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2116.73000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,293 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,293 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23190000, open_rate=0.23250000, max_rate=0.23820000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,296 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,296 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04872000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,299 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,299 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=289.20000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,301 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,301 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000764, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,304 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,304 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001280, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,306 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,306 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2138.77000000, open_rate=2193.56000000, max_rate=2226.33000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,309 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,309 - freqtrade.persistence.trade_model - DEBUG - 1INCH/USDT:USDT - Stoploss adjusted. current_price=0.23510000, open_rate=0.23250000, max_rate=0.23850000, 
+initial_stop_loss=0.26730000, stop_loss=0.24090000. Trailing stoploss saved us: -0.02640000.
+2026-06-11 23:08:43,313 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,313 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04933000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,315 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,316 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=295.20000000, open_rate=306.60000000, max_rate=312.30000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,319 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,319 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000772, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,322 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,322 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001304, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,324 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,325 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2163.71000000, open_rate=2193.56000000, max_rate=2228.95000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,326 - freqtrade.strategy.interface - DEBUG - 1INCH/USDT:USDT - HIT STOP: current price at 0.242100, stoploss is 0.240900, initial stoploss was at 0.267300, trade opened at 0.232500
+2026-06-11 23:08:43,327 - freqtrade.strategy.interface - DEBUG - 1INCH/USDT:USDT - Trailing stoploss hit.
+2026-06-11 23:08:43,330 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,330 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.04985000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,332 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,333 - freqtrade.persistence.trade_model - DEBUG - BCH/USDT:USDT - Stoploss adjusted. current_price=303.60000000, open_rate=306.60000000, max_rate=313.80000000, 
+initial_stop_loss=352.50000000, stop_loss=314.00000000. Trailing stoploss saved us: -38.50000000.
+2026-06-11 23:08:43,333 - freqtrade.strategy.interface - DEBUG - BCH/USDT:USDT - Sell signal received. exit_type=ExitType.EXIT_SIGNAL
+2026-06-11 23:08:43,336 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,336 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000785, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,338 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,339 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001324, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,341 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,341 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2206.29000000, open_rate=2193.56000000, max_rate=2246.43000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,344 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,345 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05039000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,347 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,347 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000791, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,350 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,350 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001338, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,352 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,353 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2208.53000000, open_rate=2193.56000000, max_rate=2246.43000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,355 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,356 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05060000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,358 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,358 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000789, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,361 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,361 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001345, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,363 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,364 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2193.07000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,366 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,367 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05093000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,369 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,369 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000791, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,371 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,372 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001358, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,374 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,374 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2221.14000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,377 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,377 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05066000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,380 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,380 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000787, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,382 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,382 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001362, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,385 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,385 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2198.50000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,388 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,388 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05091000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,390 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,391 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000793, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,393 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,393 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001379, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,396 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,396 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2210.53000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,399 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,399 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05077000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,401 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,402 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000787, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,404 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,404 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001356, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,407 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,407 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2209.29000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,463 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,464 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05088000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,467 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,467 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000785, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,469 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,470 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001355, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,472 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,472 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2213.41000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:43,475 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,475 - freqtrade.persistence.trade_model - DEBUG - CHZ/USDT:USDT - Stoploss adjusted. current_price=0.05050000, open_rate=0.05498000, max_rate=0.05582000, 
+initial_stop_loss=0.06322000, stop_loss=0.05701000. Trailing stoploss saved us: -0.00621000.
+2026-06-11 23:08:43,477 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,478 - freqtrade.persistence.trade_model - DEBUG - PEPE/USDT:USDT - Stoploss adjusted. current_price=0.00000781, open_rate=0.00000842, max_rate=0.00000860, 
+initial_stop_loss=0.00000968, stop_loss=0.00000875. Trailing stoploss saved us: -0.00000093.
+2026-06-11 23:08:43,480 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,480 - freqtrade.persistence.trade_model - DEBUG - BONK/USDT:USDT - Stoploss adjusted. current_price=0.00001345, open_rate=0.00001415, max_rate=0.00001435, 
+initial_stop_loss=0.00001627, stop_loss=0.00001470. Trailing stoploss saved us: -0.00000157.
+2026-06-11 23:08:43,482 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Keeping current stoploss...
+2026-06-11 23:08:43,483 - freqtrade.persistence.trade_model - DEBUG - ETH/USDT:USDT - Stoploss adjusted. current_price=2215.36000000, open_rate=2193.56000000, max_rate=2256.76000000, 
+initial_stop_loss=2522.59000000, stop_loss=2279.56000000. Trailing stoploss saved us: -243.03000000.
+2026-06-11 23:08:53,266 - freqtrade.misc - INFO - dumping json to "freqtrade/user_data/backtest_results/backtest-result-2026-06-11_23-08-52.meta.json"
+2026-06-11 23:08:53,267 - freqtrade.misc - DEBUG - done writing json to "freqtrade/user_data/backtest_results/backtest-result-2026-06-11_23-08-52.meta.json"
+2026-06-11 23:08:53,268 - freqtrade.misc - DEBUG - done writing json to "freqtrade/user_data/backtest_results/.last_result.json"
+Result for strategy DC55v20
+                                                   BACKTESTING REPORT                                                   
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃            Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   BTC/USDT:USDT │     42 │         3.85 │       24875.727 │       248.76 │  6 days, 6:14:00 │   12     0    30  28.6 │
+│   LRC/USDT:USDT │     13 │        22.07 │        9399.115 │        93.99 │ 3 days, 12:05:00 │    4     0     9  30.8 │
+│   ETC/USDT:USDT │     28 │         8.38 │        9305.825 │        93.06 │ 3 days, 11:13:00 │    9     0    19  32.1 │
+│  SAND/USDT:USDT │     24 │         9.39 │        8980.538 │        89.81 │ 4 days, 12:00:00 │   11     0    13  45.8 │
+│   XRP/USDT:USDT │     33 │         6.03 │        8888.374 │        88.88 │ 2 days, 18:22:00 │    6     0    27  18.2 │
+│ 1INCH/USDT:USDT │     16 │         2.34 │        7897.367 │        78.97 │ 5 days, 14:52:00 │    6     0    10  37.5 │
+│   SOL/USDT:USDT │     39 │         4.01 │        6796.462 │        67.96 │  4 days, 2:08:00 │   12     0    27  30.8 │
+│  DOGE/USDT:USDT │     29 │        16.18 │        6672.425 │        66.72 │  3 days, 6:35:00 │    7     0    22  24.1 │
+│   ZRX/USDT:USDT │     14 │         8.11 │        5955.403 │        59.55 │ 2 days, 13:00:00 │    3     0    11  21.4 │
+│   STX/USDT:USDT │      9 │         5.19 │        5616.680 │        56.17 │ 4 days, 18:47:00 │    4     0     5  44.4 │
+│  GALA/USDT:USDT │     10 │         1.93 │        3937.478 │        39.37 │ 5 days, 21:48:00 │    5     0     5  50.0 │
+│  PEPE/USDT:USDT │     10 │          4.3 │        3394.016 │        33.94 │  3 days, 0:06:00 │    2     0     8  20.0 │
+│    OP/USDT:USDT │     20 │         2.43 │        3196.162 │        31.96 │  3 days, 0:36:00 │    4     0    16  20.0 │
+│   FIL/USDT:USDT │     15 │         7.52 │        3142.794 │        31.43 │ 4 days, 18:40:00 │    5     0    10  33.3 │
+│  MANA/USDT:USDT │     18 │         2.63 │        3129.176 │        31.29 │ 5 days, 23:40:00 │    8     0    10  44.4 │
+│   ADA/USDT:USDT │     31 │         4.11 │        3032.209 │        30.32 │ 3 days, 14:52:00 │    9     0    22  29.0 │
+│  NEAR/USDT:USDT │     22 │         1.64 │        2761.221 │        27.61 │  3 days, 9:03:00 │    6     0    16  27.3 │
+│  LINK/USDT:USDT │     37 │        -0.53 │        2607.804 │        26.08 │ 2 days, 10:49:00 │    6     0    31  16.2 │
+│   CHZ/USDT:USDT │     14 │        -1.58 │        2025.063 │        20.25 │ 3 days, 16:17:00 │    3     0    11  21.4 │
+│   AXS/USDT:USDT │     11 │         0.74 │        1689.463 │        16.89 │ 3 days, 17:11:00 │    4     0     7  36.4 │
+│   TRX/USDT:USDT │     58 │         1.35 │        1635.842 │        16.36 │ 2 days, 20:16:00 │   13     0    45  22.4 │
+│  AAVE/USDT:USDT │     27 │         0.91 │        1576.012 │        15.76 │  3 days, 5:13:00 │    7     0    20  25.9 │
+│  AVAX/USDT:USDT │     23 │        -0.68 │        1362.971 │        13.63 │ 3 days, 20:34:00 │    5     0    18  21.7 │
+│   KSM/USDT:USDT │     15 │          1.6 │        1182.937 │        11.83 │  3 days, 0:56:00 │    6     0     9  40.0 │
+│   BNB/USDT:USDT │     12 │         0.61 │        1095.958 │        10.96 │  3 days, 0:35:00 │    3     0     9  25.0 │
+│   WIF/USDT:USDT │      1 │         6.89 │         685.792 │         6.86 │ 6 days, 20:00:00 │    1     0     0   100 │
+│   UNI/USDT:USDT │     26 │         0.04 │         345.498 │         3.45 │ 3 days, 10:55:00 │    7     0    19  26.9 │
+│   GRT/USDT:USDT │     19 │        -0.45 │         113.548 │         1.14 │ 2 days, 18:22:00 │    3     0    16  15.8 │
+│   ONE/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   TAO/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   SUI/USDT:USDT │     12 │         0.14 │          -2.187 │        -0.02 │  2 days, 6:20:00 │    1     0    11   8.3 │
+│   APE/USDT:USDT │      8 │         1.05 │          -9.831 │         -0.1 │  3 days, 4:15:00 │    2     0     6  25.0 │
+│   XLM/USDT:USDT │     26 │        -0.77 │         -51.081 │        -0.51 │  2 days, 8:28:00 │    3     0    23  11.5 │
+│   IMX/USDT:USDT │     15 │        -1.01 │        -254.601 │        -2.55 │ 2 days, 12:12:00 │    1     0    14   6.7 │
+│  FLOW/USDT:USDT │      1 │        -3.15 │        -343.399 │        -3.43 │         20:00:00 │    0     0     1     0 │
+│  BONK/USDT:USDT │      3 │        -3.04 │        -379.559 │         -3.8 │  4 days, 0:20:00 │    1     0     2  33.3 │
+│   ICP/USDT:USDT │     24 │        -0.41 │        -400.901 │        -4.01 │  2 days, 4:32:00 │    5     0    19  20.8 │
+│   DOT/USDT:USDT │     27 │        -0.64 │        -416.201 │        -4.16 │ 3 days, 11:22:00 │    6     0    21  22.2 │
+│   SNX/USDT:USDT │     13 │        -0.66 │        -714.159 │        -7.14 │  4 days, 5:00:00 │    3     0    10  23.1 │
+│   ETH/USDT:USDT │     47 │          2.2 │        -809.367 │        -8.09 │ 4 days, 18:46:00 │   15     0    32  31.9 │
+│   INJ/USDT:USDT │      2 │        -4.22 │        -820.848 │        -8.21 │  1 day, 23:00:00 │    0     0     2     0 │
+│   BAT/USDT:USDT │     14 │        -1.12 │        -885.129 │        -8.85 │ 2 days, 14:13:00 │    4     0    10  28.6 │
+│ THETA/USDT:USDT │     23 │         2.62 │        -930.056 │         -9.3 │ 2 days, 12:26:00 │    3     0    20  13.0 │
+│   ENJ/USDT:USDT │      2 │        -5.13 │        -943.672 │        -9.44 │          7:30:00 │    0     0     2     0 │
+│   TIA/USDT:USDT │      5 │        -2.45 │        -973.431 │        -9.73 │ 3 days, 10:36:00 │    1     0     4  20.0 │
+│  SHIB/USDT:USDT │      9 │        -2.25 │       -1428.844 │       -14.29 │  2 days, 1:53:00 │    2     0     7  22.2 │
+│  ALGO/USDT:USDT │     26 │        -1.21 │       -1527.425 │       -15.27 │  3 days, 5:35:00 │    6     0    20  23.1 │
+│   APT/USDT:USDT │      6 │        -4.37 │       -1896.863 │       -18.97 │         13:10:00 │    0     0     6     0 │
+│   LDO/USDT:USDT │      5 │        -5.32 │       -1969.247 │       -19.69 │         16:36:00 │    0     0     5     0 │
+│   CRV/USDT:USDT │     31 │         -2.2 │       -2011.059 │       -20.11 │  2 days, 0:17:00 │    6     0    25  19.4 │
+│  COMP/USDT:USDT │     20 │         0.51 │       -2039.885 │        -20.4 │ 2 days, 19:33:00 │    3     0    17  15.0 │
+│   WLD/USDT:USDT │      7 │        -5.51 │       -2571.376 │       -25.71 │  1 day, 17:09:00 │    0     0     7     0 │
+│    AR/USDT:USDT │     13 │        -2.63 │       -2899.105 │       -28.99 │  3 days, 3:55:00 │    3     0    10  23.1 │
+│   LTC/USDT:USDT │     44 │        -0.35 │       -3011.303 │       -30.11 │ 2 days, 16:34:00 │    8     0    36  18.2 │
+│   BCH/USDT:USDT │     38 │        -0.93 │       -3582.277 │       -35.82 │ 2 days, 21:28:00 │    8     0    30  21.1 │
+│   YFI/USDT:USDT │     21 │        -2.67 │       -3779.194 │       -37.79 │  1 day, 14:20:00 │    2     0    19   9.5 │
+│  ATOM/USDT:USDT │     35 │        -2.19 │       -3952.675 │       -39.53 │  2 days, 2:57:00 │    4     0    31  11.4 │
+│  DYDX/USDT:USDT │     24 │        -2.16 │       -4042.316 │       -40.42 │  1 day, 22:42:00 │    2     0    22   8.3 │
+│ SUSHI/USDT:USDT │     18 │        -3.52 │       -4060.707 │       -40.61 │  2 days, 2:30:00 │    1     0    17   5.6 │
+│           TOTAL │   1135 │         1.73 │       84595.161 │       845.95 │  3 days, 6:22:00 │  261     0   874  23.0 │
+└─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                LEFT OPEN TRADES REPORT                                                
+┏━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│  CHZ/USDT:USDT │      1 │         7.02 │         915.762 │         9.16 │ 10 days, 8:00:00 │    1     0     0   100 │
+│ PEPE/USDT:USDT │      1 │         5.73 │         680.820 │         6.81 │  4 days, 4:00:00 │    1     0     0   100 │
+│ BONK/USDT:USDT │      1 │         3.43 │         411.562 │         4.12 │  4 days, 4:00:00 │    1     0     0   100 │
+│  ETH/USDT:USDT │      1 │        -2.11 │        -248.008 │        -2.48 │         22:00:00 │    0     0     1     0 │
+│          TOTAL │      4 │         3.52 │        1760.136 │         17.6 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+└────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                 ENTER TAG STATS                                                  
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    1135 │         1.73 │       84595.161 │       845.95 │ 3 days, 6:22:00 │  261     0   874  23.0 │
+│     TOTAL │    1135 │         1.73 │       84595.161 │       845.95 │ 3 days, 6:22:00 │  261     0   874  23.0 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                    EXIT REASON STATS                                                     
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃        Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│        exit_signal │   295 │        18.05 │      300680.874 │      3006.81 │ 9 days, 17:38:00 │  258     0    37  87.5 │
+│         force_exit │     4 │         3.52 │        1760.136 │         17.6 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│          stop_loss │     3 │       -15.08 │        -602.035 │        -6.02 │          0:40:00 │    0     0     3     0 │
+│ trailing_stop_loss │   833 │         -4.0 │     -217243.814 │     -2172.44 │         23:28:00 │    0     0   833     0 │
+│              TOTAL │  1135 │         1.73 │       84595.161 │       845.95 │  3 days, 6:22:00 │  261     0   874  23.0 │
+└────────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                            MIXED TAG STATS                                                            
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃        Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │        exit_signal │    295 │        18.05 │      300680.874 │      3006.81 │ 9 days, 17:38:00 │  258     0    37  87.5 │
+│           │         force_exit │      4 │         3.52 │        1760.136 │         17.6 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│           │          stop_loss │      3 │       -15.08 │        -602.035 │        -6.02 │          0:40:00 │    0     0     3     0 │
+│           │ trailing_stop_loss │    833 │         -4.0 │     -217243.814 │     -2172.44 │         23:28:00 │    0     0   833     0 │
+│     TOTAL │                    │   1135 │         1.73 │       84595.161 │       845.95 │  3 days, 6:22:00 │  261     0   874  23.0 │
+└───────────┴────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                   SUMMARY METRICS                                    
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                                 ┃ Value                                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from                       │ 2020-02-07 12:00:00                       │
+│ Backtesting to                         │ 2025-03-01 00:00:00                       │
+│ Trading Mode                           │ Isolated Futures                          │
+│ Max open trades                        │ 6                                         │
+│                                        │                                           │
+│ Total/Daily Avg Trades                 │ 1135 / 0.61                               │
+│ Starting balance                       │ 10000 USDT                                │
+│ Final balance                          │ 94595.161 USDT                            │
+│ Absolute profit                        │ 84595.161 USDT                            │
+│ Total profit %                         │ 845.95%                                   │
+│ CAGR %                                 │ 55.86%                                    │
+│ Sharpe (closed trades)                 │ 0.93                                      │
+│ Sortino (closed trades)                │ 7.26                                      │
+│ Calmar (closed trades)                 │ 29.11                                     │
+│ SQN                                    │ 2.67                                      │
+│ Profit factor                          │ 1.38                                      │
+│ Expectancy (Ratio)                     │ 74.53 (0.29)                              │
+│ Avg. daily profit                      │ 45.777 USDT                               │
+│ Avg. stake amount                      │ 8281.546 USDT                             │
+│ Market change                          │ 259.12%                                   │
+│ Total trade volume                     │ 18860992.787 USDT                         │
+│                                        │                                           │
+│ Long / Short trades                    │ 667 / 468                                 │
+│ Long / Short profit %                  │ 681.37% / 164.58%                         │
+│ Long / Short profit USDT               │ 68136.884 / 16458.277                     │
+│                                        │                                           │
+│ Best Pair                              │ BTC/USDT:USDT 248.76%                     │
+│ Worst Pair                             │ SUSHI/USDT:USDT -40.61%                   │
+│ Best trade                             │ DOGE/USDT:USDT 474.12%                    │
+│ Worst trade                            │ NEAR/USDT:USDT -15.08%                    │
+│ Best day                               │ 14303.232 USDT                            │
+│ Worst day                              │ -2973.606 USDT                            │
+│ Days win/draw/lose                     │ 156 / 1051 / 475                          │
+│ Min/Max/Avg. Duration Winners          │ 3d 21:00 / 47d 17:00 / 10d 08:17          │
+│ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 9d 23:00 / 1d 03:37            │
+│ Max Consecutive Wins / Loss            │ 7 / 27                                    │
+│ Rejected Entry signals                 │ 3267                                      │
+│ Entry/Exit Timeouts                    │ 0 / 0                                     │
+│                                        │                                           │
+│ Min/Max balance (closed trades)        │ 9929.517 USDT / 103523.881 USDT           │
+│ Max % of account underwater            │ 30.04%                                    │
+│ Absolute drawdown                      │ 25446.772 USDT (30.04%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 74698.697 USDT                            │
+│ Profit at drawdown end                 │ 49251.925 USDT                            │
+│ Drawdown start                         │ 2024-03-21 08:00:00                       │
+│ Drawdown end                           │ 2024-07-31 06:00:00                       │
+│                                        │                                           │
+│ Wallet based Metrics                   │                                           │
+│ Min/Max balance (wallet balance)       │ 9929.517 USDT / 103523.881 USDT           │
+│ Min/Max balance dates (wallet balance) │ 2020-07-30 01:00:00 / 2024-12-09 23:00:00 │
+│ Max % of account underwater (balance)  │ 30.04%                                    │
+│ Absolute drawdown (wallet balance)     │ 25446.772 USDT (30.04%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 74698.697 USDT                            │
+│ Profit at drawdown end                 │ 49251.925 USDT                            │
+│ Drawdown start                         │ 2024-03-21 09:00:00                       │
+│ Drawdown end                           │ 2024-07-31 07:00:00                       │
+│ Sharpe (daily wallet balance)          │ 1.35                                      │
+│ Sortino (daily wallet balance)         │ 4.98                                      │
+│ Calmar (daily wallet balance)          │ 28.50                                     │
+└────────────────────────────────────────┴───────────────────────────────────────────┘
+
+Result for strategy DC55v21
+                                                   BACKTESTING REPORT                                                   
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃            Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   BTC/USDT:USDT │     40 │         3.58 │       19196.005 │       191.96 │  6 days, 1:44:00 │   11     0    29  27.5 │
+│  DOGE/USDT:USDT │     30 │        17.39 │        8899.360 │        88.99 │ 3 days, 18:24:00 │    8     0    22  26.7 │
+│   LRC/USDT:USDT │     13 │        22.07 │        7634.569 │        76.35 │ 3 days, 12:05:00 │    4     0     9  30.8 │
+│   XRP/USDT:USDT │     33 │         6.03 │        7202.400 │        72.02 │ 2 days, 18:22:00 │    6     0    27  18.2 │
+│   ETC/USDT:USDT │     29 │         7.82 │        7197.109 │        71.97 │  3 days, 8:21:00 │    9     0    20  31.0 │
+│  SAND/USDT:USDT │     26 │          8.3 │        6911.851 │        69.12 │  4 days, 8:58:00 │   11     0    15  42.3 │
+│ 1INCH/USDT:USDT │     17 │         2.33 │        6421.978 │        64.22 │ 5 days, 16:14:00 │    7     0    10  41.2 │
+│   SOL/USDT:USDT │     40 │         3.88 │        5566.846 │        55.67 │ 3 days, 23:48:00 │   12     0    28  30.0 │
+│   ZRX/USDT:USDT │     14 │         8.11 │        4558.132 │        45.58 │ 2 days, 13:00:00 │    3     0    11  21.4 │
+│   STX/USDT:USDT │      9 │         5.19 │        4543.122 │        45.43 │ 4 days, 18:47:00 │    4     0     5  44.4 │
+│  GALA/USDT:USDT │     10 │         1.93 │        3207.213 │        32.07 │ 5 days, 21:48:00 │    5     0     5  50.0 │
+│  PEPE/USDT:USDT │     10 │          4.3 │        2733.830 │        27.34 │  3 days, 0:06:00 │    2     0     8  20.0 │
+│    OP/USDT:USDT │     20 │         2.43 │        2591.397 │        25.91 │  3 days, 0:36:00 │    4     0    16  20.0 │
+│  MANA/USDT:USDT │     18 │         2.63 │        2542.535 │        25.43 │ 5 days, 23:40:00 │    8     0    10  44.4 │
+│  NEAR/USDT:USDT │     21 │         1.69 │        2508.518 │        25.09 │  3 days, 9:57:00 │    6     0    15  28.6 │
+│   ADA/USDT:USDT │     31 │         4.11 │        2479.359 │        24.79 │ 3 days, 14:52:00 │    9     0    22  29.0 │
+│   FIL/USDT:USDT │     18 │         6.77 │        2374.757 │        23.75 │ 4 days, 11:10:00 │    6     0    12  33.3 │
+│  LINK/USDT:USDT │     37 │        -0.53 │        2137.059 │        21.37 │ 2 days, 10:49:00 │    6     0    31  16.2 │
+│   CHZ/USDT:USDT │     14 │        -1.58 │        1643.263 │        16.43 │ 3 days, 16:17:00 │    3     0    11  21.4 │
+│  AAVE/USDT:USDT │     27 │         0.91 │        1272.919 │        12.73 │  3 days, 5:13:00 │    7     0    20  25.9 │
+│   TRX/USDT:USDT │     54 │         1.29 │        1101.938 │        11.02 │ 2 days, 23:12:00 │   12     0    42  22.2 │
+│   KSM/USDT:USDT │     15 │          1.6 │         954.101 │         9.54 │  3 days, 0:56:00 │    6     0     9  40.0 │
+│   AXS/USDT:USDT │     14 │        -0.33 │         946.584 │         9.47 │ 2 days, 22:43:00 │    4     0    10  28.6 │
+│  AVAX/USDT:USDT │     24 │        -0.84 │         776.977 │         7.77 │ 3 days, 16:42:00 │    5     0    19  20.8 │
+│   BNB/USDT:USDT │     13 │         0.27 │         563.381 │         5.63 │ 2 days, 19:00:00 │    3     0    10  23.1 │
+│   WIF/USDT:USDT │      1 │         6.89 │         552.775 │         5.53 │ 6 days, 20:00:00 │    1     0     0   100 │
+│   UNI/USDT:USDT │     26 │         0.04 │         296.125 │         2.96 │ 3 days, 10:55:00 │    7     0    19  26.9 │
+│   GRT/USDT:USDT │     18 │        -1.05 │          70.332 │          0.7 │  2 days, 2:30:00 │    2     0    16  11.1 │
+│   ONE/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   TAO/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   APE/USDT:USDT │      8 │         1.05 │          -8.151 │        -0.08 │  3 days, 4:15:00 │    2     0     6  25.0 │
+│   SUI/USDT:USDT │     12 │         0.14 │          -9.864 │         -0.1 │  2 days, 6:20:00 │    1     0    11   8.3 │
+│   XLM/USDT:USDT │     26 │        -0.77 │         -59.641 │         -0.6 │  2 days, 8:28:00 │    3     0    23  11.5 │
+│   IMX/USDT:USDT │     15 │        -1.01 │        -196.763 │        -1.97 │ 2 days, 12:12:00 │    1     0    14   6.7 │
+│  FLOW/USDT:USDT │      1 │        -3.15 │        -277.253 │        -2.77 │         20:00:00 │    0     0     1     0 │
+│  BONK/USDT:USDT │      3 │        -3.04 │        -305.883 │        -3.06 │  4 days, 0:20:00 │    1     0     2  33.3 │
+│   DOT/USDT:USDT │     27 │        -0.64 │        -342.564 │        -3.43 │ 3 days, 11:22:00 │    6     0    21  22.2 │
+│   SNX/USDT:USDT │     13 │        -0.66 │        -571.143 │        -5.71 │  4 days, 5:00:00 │    3     0    10  23.1 │
+│   ICP/USDT:USDT │     24 │        -0.44 │        -628.339 │        -6.28 │  2 days, 4:38:00 │    5     0    19  20.8 │
+│   INJ/USDT:USDT │      2 │        -4.22 │        -661.882 │        -6.62 │  1 day, 23:00:00 │    0     0     2     0 │
+│   BAT/USDT:USDT │     14 │        -1.12 │        -709.536 │         -7.1 │ 2 days, 14:13:00 │    4     0    10  28.6 │
+│ THETA/USDT:USDT │     23 │         2.62 │        -744.347 │        -7.44 │ 2 days, 12:26:00 │    3     0    20  13.0 │
+│   ENJ/USDT:USDT │      2 │        -5.13 │        -760.557 │        -7.61 │          7:30:00 │    0     0     2     0 │
+│   TIA/USDT:USDT │      5 │        -2.45 │        -784.849 │        -7.85 │ 3 days, 10:36:00 │    1     0     4  20.0 │
+│  ALGO/USDT:USDT │     26 │        -1.21 │       -1227.454 │       -12.27 │  3 days, 5:35:00 │    6     0    20  23.1 │
+│   APT/USDT:USDT │      6 │        -4.37 │       -1516.458 │       -15.16 │         13:10:00 │    0     0     6     0 │
+│   LDO/USDT:USDT │      5 │        -5.32 │       -1592.406 │       -15.92 │         16:36:00 │    0     0     5     0 │
+│   CRV/USDT:USDT │     30 │        -2.58 │       -1631.019 │       -16.31 │  1 day, 18:02:00 │    5     0    25  16.7 │
+│   ETH/USDT:USDT │     45 │         0.12 │       -1709.171 │       -17.09 │ 3 days, 20:01:00 │   12     0    33  26.7 │
+│  SHIB/USDT:USDT │     10 │        -3.54 │       -1781.641 │       -17.82 │  1 day, 20:54:00 │    2     0     8  20.0 │
+│   WLD/USDT:USDT │      7 │        -5.51 │       -2057.098 │       -20.57 │  1 day, 17:09:00 │    0     0     7     0 │
+│  COMP/USDT:USDT │     19 │        -0.36 │       -2289.291 │       -22.89 │  2 days, 9:03:00 │    2     0    17  10.5 │
+│   LTC/USDT:USDT │     42 │        -0.19 │       -2341.160 │       -23.41 │ 2 days, 18:33:00 │    8     0    34  19.0 │
+│    AR/USDT:USDT │     14 │          0.3 │       -2344.350 │       -23.44 │ 3 days, 17:26:00 │    4     0    10  28.6 │
+│   BCH/USDT:USDT │     39 │        -1.03 │       -3067.904 │       -30.68 │ 2 days, 20:00:00 │    8     0    31  20.5 │
+│   YFI/USDT:USDT │     21 │        -2.67 │       -3071.931 │       -30.72 │  1 day, 14:20:00 │    2     0    19   9.5 │
+│  ATOM/USDT:USDT │     35 │        -2.19 │       -3208.216 │       -32.08 │  2 days, 2:57:00 │    4     0    31  11.4 │
+│  DYDX/USDT:USDT │     24 │        -2.16 │       -3276.317 │       -32.76 │  1 day, 22:42:00 │    2     0    22   8.3 │
+│ SUSHI/USDT:USDT │     19 │         -3.6 │       -3467.350 │       -34.67 │  2 days, 4:19:00 │    1     0    18   5.3 │
+│           TOTAL │   1139 │         1.62 │       66241.901 │       662.42 │  3 days, 4:47:00 │  257     0   882  22.6 │
+└─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                LEFT OPEN TRADES REPORT                                                
+┏━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│  CHZ/USDT:USDT │      1 │         7.02 │         738.071 │         7.38 │ 10 days, 8:00:00 │    1     0     0   100 │
+│ PEPE/USDT:USDT │      1 │         5.73 │         548.800 │         5.49 │  4 days, 4:00:00 │    1     0     0   100 │
+│ BONK/USDT:USDT │      1 │         3.43 │         331.714 │         3.32 │  4 days, 4:00:00 │    1     0     0   100 │
+│  ETH/USDT:USDT │      1 │        -2.11 │        -199.876 │         -2.0 │         22:00:00 │    0     0     1     0 │
+│          TOTAL │      4 │         3.52 │        1418.708 │        14.19 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+└────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                 ENTER TAG STATS                                                  
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    1139 │         1.62 │       66241.901 │       662.42 │ 3 days, 4:47:00 │  257     0   882  22.6 │
+│     TOTAL │    1139 │         1.62 │       66241.901 │       662.42 │ 3 days, 4:47:00 │  257     0   882  22.6 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                    EXIT REASON STATS                                                     
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃        Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│        exit_signal │   292 │        18.01 │      244104.003 │      2441.04 │ 9 days, 14:15:00 │  254     0    38  87.0 │
+│         force_exit │     4 │         3.52 │        1418.708 │        14.19 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│          stop_loss │     4 │       -15.08 │       -1122.396 │       -11.22 │          0:30:00 │    0     0     4     0 │
+│ trailing_stop_loss │   839 │        -4.02 │     -178158.414 │     -1781.58 │         23:32:00 │    0     0   839     0 │
+│              TOTAL │  1139 │         1.62 │       66241.901 │       662.42 │  3 days, 4:47:00 │  257     0   882  22.6 │
+└────────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                            MIXED TAG STATS                                                            
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃        Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │        exit_signal │    292 │        18.01 │      244104.003 │      2441.04 │ 9 days, 14:15:00 │  254     0    38  87.0 │
+│           │         force_exit │      4 │         3.52 │        1418.708 │        14.19 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│           │          stop_loss │      4 │       -15.08 │       -1122.396 │       -11.22 │          0:30:00 │    0     0     4     0 │
+│           │ trailing_stop_loss │    839 │        -4.02 │     -178158.414 │     -1781.58 │         23:32:00 │    0     0   839     0 │
+│     TOTAL │                    │   1139 │         1.62 │       66241.901 │       662.42 │  3 days, 4:47:00 │  257     0   882  22.6 │
+└───────────┴────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                   SUMMARY METRICS                                    
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                                 ┃ Value                                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from                       │ 2020-02-07 12:00:00                       │
+│ Backtesting to                         │ 2025-03-01 00:00:00                       │
+│ Trading Mode                           │ Isolated Futures                          │
+│ Max open trades                        │ 6                                         │
+│                                        │                                           │
+│ Total/Daily Avg Trades                 │ 1139 / 0.62                               │
+│ Starting balance                       │ 10000 USDT                                │
+│ Final balance                          │ 76241.901 USDT                            │
+│ Absolute profit                        │ 66241.901 USDT                            │
+│ Total profit %                         │ 662.42%                                   │
+│ CAGR %                                 │ 49.36%                                    │
+│ Sharpe (closed trades)                 │ 0.89                                      │
+│ Sortino (closed trades)                │ 7.03                                      │
+│ Calmar (closed trades)                 │ 22.78                                     │
+│ SQN                                    │ 2.56                                      │
+│ Profit factor                          │ 1.36                                      │
+│ Expectancy (Ratio)                     │ 58.16 (0.28)                              │
+│ Avg. daily profit                      │ 35.845 USDT                               │
+│ Avg. stake amount                      │ 6735.1 USDT                               │
+│ Market change                          │ 259.12%                                   │
+│ Total trade volume                     │ 15390381.921 USDT                         │
+│                                        │                                           │
+│ Long / Short trades                    │ 669 / 470                                 │
+│ Long / Short profit %                  │ 528.51% / 133.91%                         │
+│ Long / Short profit USDT               │ 52851.162 / 13390.739                     │
+│                                        │                                           │
+│ Best Pair                              │ BTC/USDT:USDT 191.96%                     │
+│ Worst Pair                             │ SUSHI/USDT:USDT -34.67%                   │
+│ Best trade                             │ DOGE/USDT:USDT 474.12%                    │
+│ Worst trade                            │ NEAR/USDT:USDT -15.08%                    │
+│ Best day                               │ 11526.146 USDT                            │
+│ Worst day                              │ -2559.925 USDT                            │
+│ Days win/draw/lose                     │ 152 / 1018 / 472                          │
+│ Min/Max/Avg. Duration Winners          │ 3d 21:00 / 47d 17:00 / 10d 05:15          │
+│ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 9d 23:00 / 1d 03:41            │
+│ Max Consecutive Wins / Loss            │ 7 / 27                                    │
+│ Rejected Entry signals                 │ 3164                                      │
+│ Entry/Exit Timeouts                    │ 0 / 0                                     │
+│                                        │                                           │
+│ Min/Max balance (closed trades)        │ 9270.197 USDT / 83437.644 USDT            │
+│ Max % of account underwater            │ 30.06%                                    │
+│ Absolute drawdown                      │ 20554.53 USDT (30.06%)                    │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 58386.523 USDT                            │
+│ Profit at drawdown end                 │ 37831.993 USDT                            │
+│ Drawdown start                         │ 2024-03-21 08:00:00                       │
+│ Drawdown end                           │ 2024-07-31 06:00:00                       │
+│                                        │                                           │
+│ Wallet based Metrics                   │                                           │
+│ Min/Max balance (wallet balance)       │ 9270.197 USDT / 83437.644 USDT            │
+│ Min/Max balance dates (wallet balance) │ 2020-11-14 10:00:00 / 2024-12-09 23:00:00 │
+│ Max % of account underwater (balance)  │ 30.06%                                    │
+│ Absolute drawdown (wallet balance)     │ 20554.53 USDT (30.06%)                    │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 58386.523 USDT                            │
+│ Profit at drawdown end                 │ 37831.993 USDT                            │
+│ Drawdown start                         │ 2024-03-21 09:00:00                       │
+│ Drawdown end                           │ 2024-07-31 07:00:00                       │
+│ Sharpe (daily wallet balance)          │ 1.24                                      │
+│ Sortino (daily wallet balance)         │ 4.28                                      │
+│ Calmar (daily wallet balance)          │ 22.30                                     │
+└────────────────────────────────────────┴───────────────────────────────────────────┘
+
+Result for strategy DC55v22
+                                                   BACKTESTING REPORT                                                   
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃            Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   BTC/USDT:USDT │     35 │         2.14 │       10125.924 │       101.26 │  5 days, 5:58:00 │    7     0    28  20.0 │
+│  SAND/USDT:USDT │     21 │        10.69 │        7363.250 │        73.63 │ 4 days, 17:57:00 │   10     0    11  47.6 │
+│   ETC/USDT:USDT │     26 │         8.97 │        7348.427 │        73.48 │  3 days, 8:58:00 │    8     0    18  30.8 │
+│   LRC/USDT:USDT │     13 │        22.07 │        7341.150 │        73.41 │ 3 days, 12:05:00 │    4     0     9  30.8 │
+│ 1INCH/USDT:USDT │     14 │          3.0 │        5845.756 │        58.46 │  6 days, 6:39:00 │    6     0     8  42.9 │
+│   XRP/USDT:USDT │     27 │          5.6 │        4101.372 │        41.01 │ 2 days, 19:16:00 │    5     0    22  18.5 │
+│  NEAR/USDT:USDT │     17 │          5.3 │        3885.012 │        38.85 │  4 days, 4:49:00 │    6     0    11  35.3 │
+│   STX/USDT:USDT │     10 │         4.13 │        3267.188 │        32.67 │  4 days, 9:24:00 │    4     0     6  40.0 │
+│   ADA/USDT:USDT │     28 │         4.96 │        3046.155 │        30.46 │ 3 days, 23:09:00 │    9     0    19  32.1 │
+│  GALA/USDT:USDT │      9 │         1.79 │        2696.000 │        26.96 │  6 days, 0:07:00 │    4     0     5  44.4 │
+│   SOL/USDT:USDT │     35 │         3.64 │        2476.846 │        24.77 │ 3 days, 16:36:00 │   11     0    24  31.4 │
+│  MANA/USDT:USDT │     17 │         2.97 │        2319.347 │        23.19 │  6 days, 7:35:00 │    8     0     9  47.1 │
+│   TRX/USDT:USDT │     49 │         1.66 │        1898.406 │        18.98 │ 2 days, 18:38:00 │   10     0    39  20.4 │
+│   FIL/USDT:USDT │     15 │         5.91 │        1650.229 │         16.5 │ 3 days, 20:08:00 │    4     0    11  26.7 │
+│    OP/USDT:USDT │     22 │         1.78 │        1608.412 │        16.08 │ 2 days, 18:00:00 │    4     0    18  18.2 │
+│  DOGE/USDT:USDT │     26 │        14.84 │        1542.603 │        15.43 │  3 days, 5:14:00 │    6     0    20  23.1 │
+│   KSM/USDT:USDT │     12 │         2.92 │        1363.879 │        13.64 │ 3 days, 18:25:00 │    6     0     6  50.0 │
+│   ZRX/USDT:USDT │     13 │         3.96 │        1281.560 │        12.82 │  2 days, 8:42:00 │    2     0    11  15.4 │
+│   CRV/USDT:USDT │     28 │        -0.49 │        1274.246 │        12.74 │  1 day, 21:17:00 │    5     0    23  17.9 │
+│   CHZ/USDT:USDT │     15 │        -1.91 │         985.277 │         9.85 │ 3 days, 10:36:00 │    3     0    12  20.0 │
+│   BNB/USDT:USDT │     12 │         0.49 │         875.042 │         8.75 │  4 days, 1:30:00 │    3     0     9  25.0 │
+│   AXS/USDT:USDT │     10 │         0.99 │         795.422 │         7.95 │  4 days, 0:42:00 │    4     0     6  40.0 │
+│  ALGO/USDT:USDT │     24 │          0.4 │         401.083 │         4.01 │  3 days, 2:12:00 │    6     0    18  25.0 │
+│   WIF/USDT:USDT │      1 │         6.89 │         338.695 │         3.39 │ 6 days, 20:00:00 │    1     0     0   100 │
+│  AAVE/USDT:USDT │     23 │         0.21 │         194.764 │         1.95 │  3 days, 0:18:00 │    6     0    17  26.1 │
+│   IMX/USDT:USDT │     14 │        -0.68 │         154.855 │         1.55 │ 2 days, 16:09:00 │    1     0    13   7.1 │
+│ THETA/USDT:USDT │     20 │         3.23 │         149.029 │         1.49 │ 2 days, 21:18:00 │    3     0    17  15.0 │
+│   ONE/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   TAO/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   APE/USDT:USDT │      8 │         1.05 │          -4.644 │        -0.05 │  3 days, 4:15:00 │    2     0     6  25.0 │
+│  BONK/USDT:USDT │      2 │        -0.33 │         -41.370 │        -0.41 │ 2 days, 10:00:00 │    1     0     1  50.0 │
+│   ICP/USDT:USDT │     21 │        -0.33 │         -57.908 │        -0.58 │  2 days, 1:09:00 │    4     0    17  19.0 │
+│   SNX/USDT:USDT │     12 │        -0.35 │        -152.407 │        -1.52 │ 4 days, 11:25:00 │    3     0     9  25.0 │
+│   GRT/USDT:USDT │     19 │        -0.64 │        -164.859 │        -1.65 │ 2 days, 18:47:00 │    3     0    16  15.8 │
+│  FLOW/USDT:USDT │      1 │        -3.15 │        -227.056 │        -2.27 │         20:00:00 │    0     0     1     0 │
+│   INJ/USDT:USDT │      2 │        -4.22 │        -464.428 │        -4.64 │  1 day, 23:00:00 │    0     0     2     0 │
+│   ENJ/USDT:USDT │      2 │        -5.13 │        -465.946 │        -4.66 │          7:30:00 │    0     0     2     0 │
+│   TIA/USDT:USDT │      5 │        -2.45 │        -475.589 │        -4.76 │ 3 days, 10:36:00 │    1     0     4  20.0 │
+│   DOT/USDT:USDT │     23 │        -1.01 │        -543.324 │        -5.43 │ 3 days, 15:23:00 │    5     0    18  21.7 │
+│  SHIB/USDT:USDT │      9 │        -2.35 │        -900.170 │         -9.0 │  2 days, 1:00:00 │    2     0     7  22.2 │
+│   BAT/USDT:USDT │     13 │        -1.82 │       -1081.543 │       -10.82 │  2 days, 4:46:00 │    3     0    10  23.1 │
+│   WLD/USDT:USDT │      8 │         2.82 │       -1089.645 │        -10.9 │ 2 days, 16:38:00 │    1     0     7  12.5 │
+│   UNI/USDT:USDT │     24 │        -1.22 │       -1105.396 │       -11.05 │ 2 days, 22:45:00 │    5     0    19  20.8 │
+│   LDO/USDT:USDT │      5 │        -5.32 │       -1129.979 │        -11.3 │         16:36:00 │    0     0     5     0 │
+│   APT/USDT:USDT │      6 │        -4.37 │       -1162.086 │       -11.62 │         13:10:00 │    0     0     6     0 │
+│   LTC/USDT:USDT │     35 │         -0.3 │       -1374.858 │       -13.75 │ 2 days, 23:02:00 │    7     0    28  20.0 │
+│  PEPE/USDT:USDT │      9 │        -4.46 │       -1468.402 │       -14.68 │  1 day, 21:53:00 │    1     0     8  11.1 │
+│  COMP/USDT:USDT │     17 │        -0.04 │       -1495.104 │       -14.95 │ 2 days, 15:11:00 │    2     0    15  11.8 │
+│ SUSHI/USDT:USDT │     17 │        -2.32 │       -1692.960 │       -16.93 │ 2 days, 18:35:00 │    2     0    15  11.8 │
+│   BCH/USDT:USDT │     33 │        -0.93 │       -1708.608 │       -17.09 │ 2 days, 19:58:00 │    6     0    27  18.2 │
+│    AR/USDT:USDT │     15 │         -2.2 │       -1786.449 │       -17.86 │  3 days, 4:24:00 │    4     0    11  26.7 │
+│  AVAX/USDT:USDT │     22 │        -2.88 │       -1829.161 │       -18.29 │ 2 days, 18:03:00 │    3     0    19  13.6 │
+│   XLM/USDT:USDT │     21 │        -3.89 │       -2023.335 │       -20.23 │  2 days, 5:00:00 │    2     0    19   9.5 │
+│  DYDX/USDT:USDT │     20 │         -1.7 │       -2027.815 │       -20.28 │  1 day, 20:12:00 │    2     0    18  10.0 │
+│   ETH/USDT:USDT │     40 │        -0.11 │       -2063.336 │       -20.63 │ 3 days, 17:09:00 │   11     0    29  27.5 │
+│   SUI/USDT:USDT │     11 │         -5.3 │       -2640.958 │       -26.41 │   1 day, 3:22:00 │    0     0    11     0 │
+│   YFI/USDT:USDT │     18 │        -3.13 │       -2780.377 │        -27.8 │   1 day, 7:47:00 │    1     0    17   5.6 │
+│  ATOM/USDT:USDT │     34 │        -2.18 │       -2787.067 │       -27.87 │  2 days, 4:00:00 │    4     0    30  11.8 │
+│  LINK/USDT:USDT │     29 │         -3.0 │       -2868.669 │       -28.69 │  1 day, 19:02:00 │    2     0    27   6.9 │
+│           TOTAL │   1017 │         1.39 │       36716.479 │       367.16 │  3 days, 3:17:00 │  223     0   794  21.9 │
+└─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                LEFT OPEN TRADES REPORT                                                
+┏━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│  CHZ/USDT:USDT │      1 │         7.02 │         452.230 │         4.52 │ 10 days, 8:00:00 │    1     0     0   100 │
+│ PEPE/USDT:USDT │      1 │         5.73 │         336.315 │         3.36 │  4 days, 4:00:00 │    1     0     0   100 │
+│ BONK/USDT:USDT │      1 │         3.43 │         203.258 │         2.03 │  4 days, 4:00:00 │    1     0     0   100 │
+│  ETH/USDT:USDT │      1 │        -2.11 │        -122.478 │        -1.22 │         22:00:00 │    0     0     1     0 │
+│          TOTAL │      4 │         3.52 │         869.325 │         8.69 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+└────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                 ENTER TAG STATS                                                  
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    1017 │         1.39 │       36716.479 │       367.16 │ 3 days, 3:17:00 │  223     0   794  21.9 │
+│     TOTAL │    1017 │         1.39 │       36716.479 │       367.16 │ 3 days, 3:17:00 │  223     0   794  21.9 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                    EXIT REASON STATS                                                     
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃        Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│        exit_signal │   251 │        18.23 │      171387.235 │      1713.87 │ 9 days, 13:27:00 │  220     0    31  87.6 │
+│         force_exit │     4 │         3.52 │         869.325 │         8.69 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│          stop_loss │     3 │       -15.08 │        -493.767 │        -4.94 │          0:40:00 │    0     0     3     0 │
+│ trailing_stop_loss │   759 │        -4.12 │     -135046.314 │     -1350.46 │   1 day, 0:23:00 │    0     0   759     0 │
+│              TOTAL │  1017 │         1.39 │       36716.479 │       367.16 │  3 days, 3:17:00 │  223     0   794  21.9 │
+└────────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                            MIXED TAG STATS                                                            
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃        Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │        exit_signal │    251 │        18.23 │      171387.235 │      1713.87 │ 9 days, 13:27:00 │  220     0    31  87.6 │
+│           │         force_exit │      4 │         3.52 │         869.325 │         8.69 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│           │          stop_loss │      3 │       -15.08 │        -493.767 │        -4.94 │          0:40:00 │    0     0     3     0 │
+│           │ trailing_stop_loss │    759 │        -4.12 │     -135046.314 │     -1350.46 │   1 day, 0:23:00 │    0     0   759     0 │
+│     TOTAL │                    │   1017 │         1.39 │       36716.479 │       367.16 │  3 days, 3:17:00 │  223     0   794  21.9 │
+└───────────┴────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                   SUMMARY METRICS                                    
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                                 ┃ Value                                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from                       │ 2020-02-07 12:00:00                       │
+│ Backtesting to                         │ 2025-03-01 00:00:00                       │
+│ Trading Mode                           │ Isolated Futures                          │
+│ Max open trades                        │ 6                                         │
+│                                        │                                           │
+│ Total/Daily Avg Trades                 │ 1017 / 0.55                               │
+│ Starting balance                       │ 10000 USDT                                │
+│ Final balance                          │ 46716.479 USDT                            │
+│ Absolute profit                        │ 36716.479 USDT                            │
+│ Total profit %                         │ 367.16%                                   │
+│ CAGR %                                 │ 35.59%                                    │
+│ Sharpe (closed trades)                 │ 0.60                                      │
+│ Sortino (closed trades)                │ 5.36                                      │
+│ Calmar (closed trades)                 │ 12.63                                     │
+│ SQN                                    │ 1.83                                      │
+│ Profit factor                          │ 1.27                                      │
+│ Expectancy (Ratio)                     │ 36.10 (0.21)                              │
+│ Avg. daily profit                      │ 19.868 USDT                               │
+│ Avg. stake amount                      │ 5541.006 USDT                             │
+│ Market change                          │ 259.12%                                   │
+│ Total trade volume                     │ 11296469.324 USDT                         │
+│                                        │                                           │
+│ Long / Short trades                    │ 623 / 394                                 │
+│ Long / Short profit %                  │ 281.99% / 85.17%                          │
+│ Long / Short profit USDT               │ 28199.166 / 8517.313                      │
+│                                        │                                           │
+│ Best Pair                              │ BTC/USDT:USDT 101.26%                     │
+│ Worst Pair                             │ LINK/USDT:USDT -28.69%                    │
+│ Best trade                             │ DOGE/USDT:USDT 474.12%                    │
+│ Worst trade                            │ NEAR/USDT:USDT -15.08%                    │
+│ Best day                               │ 8076.91 USDT                              │
+│ Worst day                              │ -1468.415 USDT                            │
+│ Days win/draw/lose                     │ 130 / 1064 / 428                          │
+│ Min/Max/Avg. Duration Winners          │ 3d 21:00 / 47d 17:00 / 10d 02:54          │
+│ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 13d 06:00 / 1d 04:13           │
+│ Max Consecutive Wins / Loss            │ 6 / 27                                    │
+│ Rejected Entry signals                 │ 2824                                      │
+│ Entry/Exit Timeouts                    │ 0 / 0                                     │
+│                                        │                                           │
+│ Min/Max balance (closed trades)        │ 9316.507 USDT / 55997.014 USDT            │
+│ Max % of account underwater            │ 30.06%                                    │
+│ Absolute drawdown                      │ 16830.998 USDT (30.06%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 45997.014 USDT                            │
+│ Profit at drawdown end                 │ 29166.016 USDT                            │
+│ Drawdown start                         │ 2024-03-21 08:00:00                       │
+│ Drawdown end                           │ 2024-07-31 06:00:00                       │
+│                                        │                                           │
+│ Wallet based Metrics                   │                                           │
+│ Min/Max balance (wallet balance)       │ 9316.507 USDT / 55997.014 USDT            │
+│ Min/Max balance dates (wallet balance) │ 2020-11-14 10:00:00 / 2024-03-21 09:00:00 │
+│ Max % of account underwater (balance)  │ 30.06%                                    │
+│ Absolute drawdown (wallet balance)     │ 16830.998 USDT (30.06%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 45997.014 USDT                            │
+│ Profit at drawdown end                 │ 29166.016 USDT                            │
+│ Drawdown start                         │ 2024-03-21 09:00:00                       │
+│ Drawdown end                           │ 2024-07-31 07:00:00                       │
+│ Sharpe (daily wallet balance)          │ 1.01                                      │
+│ Sortino (daily wallet balance)         │ 3.47                                      │
+│ Calmar (daily wallet balance)          │ 12.33                                     │
+└────────────────────────────────────────┴───────────────────────────────────────────┘
+
+Result for strategy DC55v23
+                                                   BACKTESTING REPORT                                                   
+┏━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃            Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│   BTC/USDT:USDT │     42 │         3.85 │       26109.849 │        261.1 │  6 days, 6:14:00 │   12     0    30  28.6 │
+│  DOGE/USDT:USDT │     30 │        17.39 │       10606.398 │       106.06 │ 3 days, 18:24:00 │    8     0    22  26.7 │
+│   LRC/USDT:USDT │     13 │        22.06 │        9720.170 │         97.2 │ 3 days, 19:37:00 │    4     0     9  30.8 │
+│   XRP/USDT:USDT │     32 │         6.29 │        9373.986 │        93.74 │ 2 days, 20:21:00 │    6     0    26  18.8 │
+│  SAND/USDT:USDT │     25 │         8.78 │        8814.066 │        88.14 │ 4 days, 12:14:00 │   11     0    14  44.0 │
+│   ETC/USDT:USDT │     27 │         8.68 │        8588.998 │        85.89 │ 3 days, 10:51:00 │    9     0    18  33.3 │
+│ 1INCH/USDT:USDT │     17 │         2.33 │        8337.858 │        83.38 │ 5 days, 16:14:00 │    7     0    10  41.2 │
+│   SOL/USDT:USDT │     36 │         4.88 │        6822.499 │        68.22 │  4 days, 7:40:00 │   12     0    24  33.3 │
+│   STX/USDT:USDT │      9 │         5.19 │        6088.791 │        60.89 │ 4 days, 18:47:00 │    4     0     5  44.4 │
+│   ZRX/USDT:USDT │     14 │         8.11 │        6015.547 │        60.16 │ 2 days, 13:00:00 │    3     0    11  21.4 │
+│  NEAR/USDT:USDT │     22 │         3.99 │        5530.374 │         55.3 │ 3 days, 19:52:00 │    7     0    15  31.8 │
+│   ADA/USDT:USDT │     31 │         5.52 │        4046.953 │        40.47 │ 3 days, 23:52:00 │   10     0    21  32.3 │
+│  GALA/USDT:USDT │     11 │         1.44 │        4031.452 │        40.31 │  5 days, 9:27:00 │    5     0     6  45.5 │
+│  PEPE/USDT:USDT │     10 │          4.3 │        3693.530 │        36.94 │  3 days, 0:06:00 │    2     0     8  20.0 │
+│    OP/USDT:USDT │     20 │         2.43 │        3390.815 │        33.91 │  3 days, 0:36:00 │    4     0    16  20.0 │
+│  MANA/USDT:USDT │     19 │          2.3 │        3294.758 │        32.95 │ 5 days, 16:16:00 │    8     0    11  42.1 │
+│  LINK/USDT:USDT │     37 │        -0.38 │        3031.389 │        30.31 │ 2 days, 10:55:00 │    7     0    30  18.9 │
+│   FIL/USDT:USDT │     18 │         5.62 │        2758.512 │        27.59 │ 3 days, 18:53:00 │    5     0    13  27.8 │
+│   CHZ/USDT:USDT │     14 │        -1.58 │        2024.251 │        20.24 │ 3 days, 16:17:00 │    3     0    11  21.4 │
+│   TRX/USDT:USDT │     57 │          1.4 │        1968.810 │        19.69 │ 2 days, 21:27:00 │   13     0    44  22.8 │
+│  AAVE/USDT:USDT │     28 │         0.79 │        1617.296 │        16.17 │  3 days, 3:41:00 │    7     0    21  25.0 │
+│  AVAX/USDT:USDT │     25 │         2.27 │        1516.512 │        15.17 │ 4 days, 13:22:00 │    7     0    18  28.0 │
+│   KSM/USDT:USDT │     15 │          1.6 │        1317.859 │        13.18 │  3 days, 0:56:00 │    6     0     9  40.0 │
+│   AXS/USDT:USDT │     14 │        -0.11 │        1219.753 │         12.2 │  3 days, 7:56:00 │    5     0     9  35.7 │
+│   WIF/USDT:USDT │      1 │         6.89 │         745.318 │         7.45 │ 6 days, 20:00:00 │    1     0     0   100 │
+│   GRT/USDT:USDT │     18 │        -0.37 │         570.924 │         5.71 │ 2 days, 21:17:00 │    3     0    15  16.7 │
+│   UNI/USDT:USDT │     26 │         0.04 │         400.777 │         4.01 │ 3 days, 10:55:00 │    7     0    19  26.9 │
+│   XLM/USDT:USDT │     26 │        -0.77 │         104.207 │         1.04 │  2 days, 8:28:00 │    3     0    23  11.5 │
+│   SUI/USDT:USDT │     12 │         0.14 │           7.880 │         0.08 │  2 days, 6:20:00 │    1     0    11   8.3 │
+│ SUSHI/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   ONE/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   TAO/USDT:USDT │      0 │          0.0 │           0.000 │          0.0 │             0:00 │    0     0     0     0 │
+│   APE/USDT:USDT │      8 │         1.05 │         -17.054 │        -0.17 │  3 days, 4:15:00 │    2     0     6  25.0 │
+│   DOT/USDT:USDT │     27 │        -0.64 │        -353.780 │        -3.54 │ 3 days, 11:22:00 │    6     0    21  22.2 │
+│  FLOW/USDT:USDT │      1 │        -3.15 │        -371.782 │        -3.72 │         20:00:00 │    0     0     1     0 │
+│   ICP/USDT:USDT │     25 │        -0.42 │        -389.989 │         -3.9 │  2 days, 5:22:00 │    5     0    20  20.0 │
+│  BONK/USDT:USDT │      3 │        -3.04 │        -412.364 │        -4.12 │  4 days, 0:20:00 │    1     0     2  33.3 │
+│   IMX/USDT:USDT │     16 │        -1.13 │        -558.514 │        -5.59 │ 2 days, 14:00:00 │    1     0    15   6.2 │
+│   BNB/USDT:USDT │     13 │        -0.31 │        -599.906 │         -6.0 │ 2 days, 17:00:00 │    3     0    10  23.1 │
+│   SNX/USDT:USDT │     13 │        -0.66 │        -812.307 │        -8.12 │  4 days, 5:00:00 │    3     0    10  23.1 │
+│   INJ/USDT:USDT │      2 │        -4.22 │        -892.156 │        -8.92 │  1 day, 23:00:00 │    0     0     2     0 │
+│   BAT/USDT:USDT │     14 │        -1.12 │       -1001.735 │       -10.02 │ 2 days, 14:13:00 │    4     0    10  28.6 │
+│   ENJ/USDT:USDT │      2 │        -5.13 │       -1025.399 │       -10.25 │          7:30:00 │    0     0     2     0 │
+│   TIA/USDT:USDT │      5 │        -2.45 │       -1056.332 │       -10.56 │ 3 days, 10:36:00 │    1     0     4  20.0 │
+│ THETA/USDT:USDT │     24 │         2.42 │       -1337.907 │       -13.38 │ 2 days, 10:08:00 │    3     0    21  12.5 │
+│   ETH/USDT:USDT │     47 │         1.06 │       -1488.137 │       -14.88 │  4 days, 2:52:00 │   14     0    33  29.8 │
+│  ALGO/USDT:USDT │     26 │        -1.21 │       -1698.688 │       -16.99 │  3 days, 5:35:00 │    6     0    20  23.1 │
+│   APT/USDT:USDT │      6 │        -4.37 │       -2024.650 │       -20.25 │         13:10:00 │    0     0     6     0 │
+│   CRV/USDT:USDT │     30 │        -2.58 │       -2102.729 │       -21.03 │  1 day, 18:02:00 │    5     0    25  16.7 │
+│   LDO/USDT:USDT │      5 │        -5.32 │       -2120.646 │       -21.21 │         16:36:00 │    0     0     5     0 │
+│   WLD/USDT:USDT │      6 │        -5.15 │       -2417.375 │       -24.17 │         17:40:00 │    0     0     6     0 │
+│  SHIB/USDT:USDT │     10 │        -3.58 │       -2425.182 │       -24.25 │  1 day, 20:24:00 │    2     0     8  20.0 │
+│  COMP/USDT:USDT │     19 │        -0.36 │       -3116.963 │       -31.17 │  2 days, 9:03:00 │    2     0    17  10.5 │
+│    AR/USDT:USDT │     14 │          0.3 │       -3122.076 │       -31.22 │ 3 days, 17:26:00 │    4     0    10  28.6 │
+│   LTC/USDT:USDT │     44 │        -0.35 │       -3169.216 │       -31.69 │ 2 days, 16:34:00 │    8     0    36  18.2 │
+│   YFI/USDT:USDT │     21 │        -2.67 │       -3907.032 │       -39.07 │  1 day, 14:20:00 │    2     0    19   9.5 │
+│  ATOM/USDT:USDT │     35 │        -2.19 │       -4105.574 │       -41.06 │  2 days, 2:57:00 │    4     0    31  11.4 │
+│   BCH/USDT:USDT │     39 │        -1.03 │       -4127.320 │       -41.27 │ 2 days, 20:00:00 │    8     0    31  20.5 │
+│  DYDX/USDT:USDT │     25 │        -2.22 │       -4304.815 │       -43.05 │  1 day, 21:14:00 │    2     0    23   8.0 │
+│           TOTAL │   1129 │         1.92 │       92789.903 │        927.9 │  3 days, 6:42:00 │  266     0   863  23.6 │
+└─────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                LEFT OPEN TRADES REPORT                                                
+┏━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃           Pair ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│  CHZ/USDT:USDT │      1 │         7.02 │         995.100 │         9.95 │ 10 days, 8:00:00 │    1     0     0   100 │
+│ PEPE/USDT:USDT │      1 │         5.73 │         740.085 │          7.4 │  4 days, 4:00:00 │    1     0     0   100 │
+│ BONK/USDT:USDT │      1 │         3.43 │         447.217 │         4.47 │  4 days, 4:00:00 │    1     0     0   100 │
+│  ETH/USDT:USDT │      1 │        -2.11 │        -269.507 │         -2.7 │         22:00:00 │    0     0     1     0 │
+│          TOTAL │      4 │         3.52 │        1912.894 │        19.13 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+└────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                 ENTER TAG STATS                                                  
+┏━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│     OTHER │    1129 │         1.92 │       92789.903 │        927.9 │ 3 days, 6:42:00 │  266     0   863  23.6 │
+│     TOTAL │    1129 │         1.92 │       92789.903 │        927.9 │ 3 days, 6:42:00 │  266     0   863  23.6 │
+└───────────┴─────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┘
+                                                    EXIT REASON STATS                                                     
+┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃        Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│        exit_signal │   300 │        18.26 │      317917.343 │      3179.17 │ 9 days, 14:53:00 │  263     0    37  87.7 │
+│         force_exit │     4 │         3.52 │        1912.894 │        19.13 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│          stop_loss │     4 │       -15.08 │       -1450.300 │        -14.5 │          0:30:00 │    0     0     4     0 │
+│ trailing_stop_loss │   821 │        -3.98 │     -225590.034 │      -2255.9 │         23:17:00 │    0     0   821     0 │
+│              TOTAL │  1129 │         1.92 │       92789.903 │        927.9 │  3 days, 6:42:00 │  266     0   863  23.6 │
+└────────────────────┴───────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                                            MIXED TAG STATS                                                            
+┏━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Enter Tag ┃        Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
+┡━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│           │        exit_signal │    300 │        18.26 │      317917.343 │      3179.17 │ 9 days, 14:53:00 │  263     0    37  87.7 │
+│           │         force_exit │      4 │         3.52 │        1912.894 │        19.13 │ 4 days, 21:30:00 │    3     0     1  75.0 │
+│           │          stop_loss │      4 │       -15.08 │       -1450.300 │        -14.5 │          0:30:00 │    0     0     4     0 │
+│           │ trailing_stop_loss │    821 │        -3.98 │     -225590.034 │      -2255.9 │         23:17:00 │    0     0   821     0 │
+│     TOTAL │                    │   1129 │         1.92 │       92789.903 │        927.9 │  3 days, 6:42:00 │  266     0   863  23.6 │
+└───────────┴────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
+                                   SUMMARY METRICS                                    
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Metric                                 ┃ Value                                     ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backtesting from                       │ 2020-02-07 12:00:00                       │
+│ Backtesting to                         │ 2025-03-01 00:00:00                       │
+│ Trading Mode                           │ Isolated Futures                          │
+│ Max open trades                        │ 6                                         │
+│                                        │                                           │
+│ Total/Daily Avg Trades                 │ 1129 / 0.61                               │
+│ Starting balance                       │ 10000 USDT                                │
+│ Final balance                          │ 102789.903 USDT                           │
+│ Absolute profit                        │ 92789.903 USDT                            │
+│ Total profit %                         │ 927.90%                                   │
+│ CAGR %                                 │ 58.44%                                    │
+│ Sharpe (closed trades)                 │ 0.96                                      │
+│ Sortino (closed trades)                │ 7.13                                      │
+│ Calmar (closed trades)                 │ 32.24                                     │
+│ SQN                                    │ 2.77                                      │
+│ Profit factor                          │ 1.40                                      │
+│ Expectancy (Ratio)                     │ 82.19 (0.31)                              │
+│ Avg. daily profit                      │ 50.211 USDT                               │
+│ Avg. stake amount                      │ 8698.803 USDT                             │
+│ Market change                          │ 259.12%                                   │
+│ Total trade volume                     │ 19709367.729 USDT                         │
+│                                        │                                           │
+│ Long / Short trades                    │ 665 / 464                                 │
+│ Long / Short profit %                  │ 747.36% / 180.54%                         │
+│ Long / Short profit USDT               │ 74736.223 / 18053.681                     │
+│                                        │                                           │
+│ Best Pair                              │ BTC/USDT:USDT 261.10%                     │
+│ Worst Pair                             │ DYDX/USDT:USDT -43.05%                    │
+│ Best trade                             │ DOGE/USDT:USDT 474.12%                    │
+│ Worst trade                            │ NEAR/USDT:USDT -15.08%                    │
+│ Best day                               │ 15542.849 USDT                            │
+│ Worst day                              │ -4134.382 USDT                            │
+│ Days win/draw/lose                     │ 158 / 1062 / 462                          │
+│ Min/Max/Avg. Duration Winners          │ 3d 21:00 / 47d 17:00 / 10d 05:04          │
+│ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 9d 23:00 / 1d 03:25            │
+│ Max Consecutive Wins / Loss            │ 7 / 28                                    │
+│ Rejected Entry signals                 │ 3136                                      │
+│ Entry/Exit Timeouts                    │ 0 / 0                                     │
+│                                        │                                           │
+│ Min/Max balance (closed trades)        │ 9929.517 USDT / 112492.255 USDT           │
+│ Max % of account underwater            │ 29.76%                                    │
+│ Absolute drawdown                      │ 27276.893 USDT (29.76%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 81670.372 USDT                            │
+│ Profit at drawdown end                 │ 54393.479 USDT                            │
+│ Drawdown start                         │ 2024-03-21 08:00:00                       │
+│ Drawdown end                           │ 2024-07-31 06:00:00                       │
+│                                        │                                           │
+│ Wallet based Metrics                   │                                           │
+│ Min/Max balance (wallet balance)       │ 9929.517 USDT / 112492.255 USDT           │
+│ Min/Max balance dates (wallet balance) │ 2020-07-30 01:00:00 / 2024-12-12 02:00:00 │
+│ Max % of account underwater (balance)  │ 29.76%                                    │
+│ Absolute drawdown (wallet balance)     │ 27276.893 USDT (29.76%)                   │
+│ Drawdown duration                      │ 131 days 22:00:00                         │
+│ Profit at drawdown start               │ 81670.372 USDT                            │
+│ Profit at drawdown end                 │ 54393.479 USDT                            │
+│ Drawdown start                         │ 2024-03-21 09:00:00                       │
+│ Drawdown end                           │ 2024-07-31 07:00:00                       │
+│ Sharpe (daily wallet balance)          │ 1.38                                      │
+│ Sortino (daily wallet balance)         │ 4.72                                      │
+│ Calmar (daily wallet balance)          │ 31.57                                     │
+└────────────────────────────────────────┴───────────────────────────────────────────┘
+
+Backtested 2020-02-07 12:00:00 -> 2025-03-01 00:00:00 | Max open trades : 6
+                                                            STRATEGY SUMMARY                                                             
+┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃               Drawdown ┃
+┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━┩
+│  DC55v20 │   1135 │         1.73 │       84595.161 │       845.95 │ 3 days, 6:22:00 │  261     0   874  23.0 │ 25446.772 USDT  30.04% │
+│  DC55v21 │   1139 │         1.62 │       66241.901 │       662.42 │ 3 days, 4:47:00 │  257     0   882  22.6 │  20554.53 USDT  30.06% │
+│  DC55v22 │   1017 │         1.39 │       36716.479 │       367.16 │ 3 days, 3:17:00 │  223     0   794  21.9 │ 16830.998 USDT  30.06% │
+│  DC55v23 │   1129 │         1.92 │       92789.903 │        927.9 │ 3 days, 6:42:00 │  266     0   863  23.6 │ 27276.893 USDT  29.76% │
+└──────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴────────────────────────┘
+2026-06-11 23:08:54,476 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-11 23:08:54,477 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
