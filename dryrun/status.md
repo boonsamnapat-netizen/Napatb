@@ -1,5 +1,17 @@
-# DC55v24 Dry-Run
+# DC55v24 Dry-Run Status
 
-*2026-06-12 12:24 UTC*
+**อัปเดต:** 2026-06-12 12:42 UTC
 
-Error: no such column: profit_ratio
+## ภาพรวม
+| ตัวชี้วัด | ค่า |
+|---|---|
+| Closed trades | 0 |
+| Total P&L | +0.00 USDT |
+| Win Rate (recent) | — |
+| Open positions | 0 / 6 |
+
+## Open Positions (0)
+*ไม่มี open position*
+
+## Closed Trades ล่าสุด (20 รายการ)
+*ยังไม่มี closed trade*
