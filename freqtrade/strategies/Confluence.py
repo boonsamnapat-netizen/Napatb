@@ -19,6 +19,7 @@ C) DonchianBreak -- Turtle: 4H 20-bar channel break + 1D regime + rel volume
 import numpy as np
 import pandas as pd
 from freqtrade.strategy import IStrategy, merge_informative_pair, stoploss_from_absolute
+from freqtrade.enums import CandleType
 import talib.abstract as ta
 from pandas import DataFrame
 from datetime import datetime
@@ -95,7 +96,8 @@ class ConfluenceBase(IStrategy):
         dataframe["vol_sma20"] = dataframe["volume"].rolling(20).mean()
         dataframe["rel_vol"]   = dataframe["volume"] / dataframe["vol_sma20"]
 
-        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        ct  = self.config.get("candle_type_def", CandleType.SPOT)
+        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe, candle_type=ct)
         inf["ema20"]  = ta.EMA(inf, timeperiod=20)
         inf["ema50"]  = ta.EMA(inf, timeperiod=50)
         inf["atr14"]  = ta.ATR(inf, timeperiod=14)
@@ -117,7 +119,7 @@ class ConfluenceBase(IStrategy):
             dataframe, inf, self.timeframe, self.inf_timeframe, ffill=True
         )
 
-        infd = self.dp.get_pair_dataframe(pair, "1d")
+        infd = self.dp.get_pair_dataframe(pair, "1d", candle_type=ct)
         infd["ema50"]  = ta.EMA(infd, timeperiod=50)
         infd["ema200"] = ta.EMA(infd, timeperiod=200)
         dataframe = merge_informative_pair(
@@ -519,9 +521,10 @@ class DC55v2(DC55combo):
     REL_VOL = 2.0   # was 1.5 — top-quality breakouts only
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        ct = self.config.get("candle_type_def", CandleType.SPOT)
         dataframe = self._base_indicators(dataframe, metadata)
         # BTC 1W macro regime — always BTC regardless of which pair we're on
-        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w", candle_type=ct)
         btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
         dataframe = merge_informative_pair(
             dataframe, btc_w, self.timeframe, "1w", ffill=True
@@ -574,8 +577,9 @@ class DC55v3(DC55v2):
     """
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        ct = self.config.get("candle_type_def", CandleType.SPOT)
         dataframe = self._base_indicators(dataframe, metadata)
-        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w", candle_type=ct)
         btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
         # slope computed on weekly data — diff(4) = change over 4 real weeks
         btc_w["ema50_slope"] = btc_w["ema50"].diff(4) > 0
@@ -621,8 +625,9 @@ class DC55v4(DC55v2):
     """
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        ct = self.config.get("candle_type_def", CandleType.SPOT)
         dataframe = self._base_indicators(dataframe, metadata)
-        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w", candle_type=ct)
         btc_w["ema50"] = ta.EMA(btc_w, timeperiod=50)
         btc_w["atr14"] = ta.ATR(btc_w, timeperiod=14)
         btc_w["atr14_sma20"] = btc_w["atr14"].rolling(20).mean()
@@ -795,7 +800,8 @@ class DC55v9(DC55v7):
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe = super().populate_indicators(dataframe, metadata)
         pair = metadata["pair"]
-        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        ct  = self.config.get("candle_type_def", CandleType.SPOT)
+        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe, candle_type=ct)
         inf_rsi = inf[["date"]].copy()
         inf_rsi["rsi14"] = ta.RSI(inf, timeperiod=14)
         dataframe = merge_informative_pair(
@@ -1092,7 +1098,8 @@ class SupertrendFlip(ConfluenceBase):
         pair = metadata["pair"]
 
         # ---- 4H Supertrend + RSI ------------------------------------------
-        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        ct  = self.config.get("candle_type_def", CandleType.SPOT)
+        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe, candle_type=ct)
         atr = ta.ATR(inf, timeperiod=self.ST_PERIOD)
         atr_vals = atr.values.copy()
         # fill leading NaNs with 0 so _supertrend loop is safe
@@ -1267,7 +1274,8 @@ class HullMACross(ConfluenceBase):
         pair = metadata["pair"]
 
         # ---- 4H HMA + RSI -------------------------------------------------
-        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe)
+        ct  = self.config.get("candle_type_def", CandleType.SPOT)
+        inf = self.dp.get_pair_dataframe(pair, self.inf_timeframe, candle_type=ct)
         rsi14    = ta.RSI(inf, timeperiod=14)
         hma_fast = self._hma(inf["close"], self.HMA_FAST)
         hma_slow = self._hma(inf["close"], self.HMA_SLOW)
@@ -1789,8 +1797,9 @@ class DC55v21(DC55v20):
         return [("BTC/USDT:USDT", "1w")]
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        ct = self.config.get("candle_type_def", CandleType.SPOT)
         dataframe = super().populate_indicators(dataframe, metadata)
-        btc_1w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        btc_1w = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w", candle_type=ct)
         btc_slim = btc_1w[["date"]].copy()
         btc_slim["btc_adx14"] = ta.ADX(btc_1w, timeperiod=14).shift(1)
         dataframe = merge_informative_pair(
@@ -1933,10 +1942,11 @@ class DC55v25(DC55v20):
         return [("BTC/USDT:USDT", "1w")]
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        ct = self.config.get("candle_type_def", CandleType.SPOT)
         dataframe = super().populate_indicators(dataframe, metadata)
         pair     = metadata["pair"]
-        btc_1w   = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
-        pair_1w  = self.dp.get_pair_dataframe(pair, "1w")
+        btc_1w   = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w", candle_type=ct)
+        pair_1w  = self.dp.get_pair_dataframe(pair, "1w", candle_type=ct)
 
         if (btc_1w is not None and not btc_1w.empty
                 and pair_1w is not None and not pair_1w.empty):
