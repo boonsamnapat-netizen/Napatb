@@ -123,90 +123,116 @@ jobs:
       - name: Generate status report
         run: |
           python3 - << 'PYEOF'
-          import sqlite3, os
+          import sqlite3, os, traceback
           from datetime import datetime, timezone
 
           db = 'freqtrade/user_data/tradesv3.sqlite'
           os.makedirs('dryrun', exist_ok=True)
           now = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
 
-          if not os.path.exists(db):
+          try:
+              if not os.path.exists(db):
+                  with open('dryrun/status.md', 'w') as f:
+                      f.write(f"# DC55v24 Dry-Run\n\n*{now}*\n\nBot ยังไม่ได้เริ่ม หรือ database ยังไม่สร้าง\n")
+                  exit(0)
+
+              conn = sqlite3.connect(db)
+              cur  = conn.cursor()
+
+              # Debug: แสดง schema จริงของตาราง trades
+              cur.execute("PRAGMA table_info(trades)")
+              rows = cur.fetchall()
+              cols = {row[1] for row in rows}
+              print(f"DEBUG: trades columns = {sorted(cols)}")
+
+              # หา column ชื่อ profit ที่มีอยู่จริง
+              pabs = None
+              for candidate in ('profit_absolute', 'profit_abs', 'close_profit_abs', 'profit'):
+                  if candidate in cols:
+                      pabs = candidate
+                      break
+              print(f"DEBUG: using profit column = {pabs!r}")
+
+              if pabs:
+                  cur.execute(f"SELECT COUNT(*), COALESCE(SUM({pabs}),0) FROM trades WHERE is_open=0")
+              else:
+                  cur.execute("SELECT COUNT(*), 0.0 FROM trades WHERE is_open=0")
+              total_closed, total_pnl = cur.fetchone()
+
+              cur.execute("""
+                  SELECT pair, open_date, open_rate, stake_amount, is_short
+                  FROM trades WHERE is_open=1 ORDER BY open_date
+              """)
+              open_trades = cur.fetchall()
+
+              if pabs:
+                  cur.execute(f"""
+                      SELECT pair, open_date, close_date, open_rate, close_rate,
+                             profit_ratio, {pabs}, exit_reason, is_short
+                      FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
+                  """)
+              else:
+                  cur.execute("""
+                      SELECT pair, open_date, close_date, open_rate, close_rate,
+                             profit_ratio, NULL, exit_reason, is_short
+                      FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
+                  """)
+              closed = cur.fetchall()
+              conn.close()
+
+              win = sum(1 for r in closed if r[6] and r[6] > 0)
+              wr  = f"{win/len(closed)*100:.1f}%" if closed else "—"
+
+              lines = [
+                  f"# DC55v24 Dry-Run Status",
+                  f"",
+                  f"**อัปเดต:** {now}",
+                  f"",
+                  f"## ภาพรวม",
+                  f"| ตัวชี้วัด | ค่า |",
+                  f"|---|---|",
+                  f"| Closed trades | {total_closed} |",
+                  f"| Total P&L | {total_pnl:+.2f} USDT |",
+                  f"| Win Rate (recent) | {wr} |",
+                  f"| Open positions | {len(open_trades)} / 6 |",
+                  f"",
+                  f"## Open Positions ({len(open_trades)})",
+              ]
+
+              if open_trades:
+                  lines += [
+                      "| Pair | Side | Opened | Entry Price |",
+                      "|------|------|--------|-------------|",
+                  ]
+                  for pair, odate, orate, stake, is_short in open_trades:
+                      side = "SHORT" if is_short else "LONG"
+                      lines.append(f"| {pair} | {side} | {str(odate)[:16]} | {orate:.6f} |")
+              else:
+                  lines.append("*ไม่มี open position*")
+
+              lines += ["", "## Closed Trades ล่าสุด (20 รายการ)"]
+              if closed:
+                  lines += [
+                      "| Pair | Side | P&L% | P&L USDT | Exit |",
+                      "|------|------|------|----------|------|",
+                  ]
+                  for pair, odate, cdate, orate, crate, pct, pnl, reason, is_short in closed:
+                      side = "SHORT" if is_short else "LONG"
+                      pct_s = f"{pct*100:+.2f}%" if pct is not None else "—"
+                      pnl_s = f"{pnl:+.2f}" if pnl is not None else "—"
+                      lines.append(f"| {pair} | {side} | {pct_s} | {pnl_s} | {reason} |")
+              else:
+                  lines.append("*ยังไม่มี closed trade*")
+
               with open('dryrun/status.md', 'w') as f:
-                  f.write(f"# DC55v24 Dry-Run\n\n*{now}*\n\nBot ยังไม่ได้เริ่ม หรือ database ยังไม่สร้าง\n")
-              exit(0)
+                  f.write('\n'.join(lines) + '\n')
+              print("Status report written to dryrun/status.md")
 
-          conn = sqlite3.connect(db)
-          cur  = conn.cursor()
-
-          # ตรวจ schema ก่อน: Freqtrade เก่าใช้ profit_abs, ใหม่ใช้ profit_absolute
-          cur.execute("PRAGMA table_info(trades)")
-          cols = {row[1] for row in cur.fetchall()}
-          pabs = 'profit_absolute' if 'profit_absolute' in cols else 'profit_abs'
-
-          cur.execute(f"SELECT COUNT(*), COALESCE(SUM({pabs}),0) FROM trades WHERE is_open=0")
-          total_closed, total_pnl = cur.fetchone()
-
-          cur.execute("""
-              SELECT pair, open_date, open_rate, stake_amount, is_short
-              FROM trades WHERE is_open=1 ORDER BY open_date
-          """)
-          open_trades = cur.fetchall()
-
-          cur.execute(f"""
-              SELECT pair, open_date, close_date, open_rate, close_rate,
-                     profit_ratio, {pabs}, exit_reason, is_short
-              FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
-          """)
-          closed = cur.fetchall()
-          conn.close()
-
-          win = sum(1 for r in closed if r[6] and r[6] > 0)
-          wr  = f"{win/len(closed)*100:.1f}%" if closed else "—"
-
-          lines = [
-              f"# DC55v24 Dry-Run Status",
-              f"",
-              f"**อัปเดต:** {now}",
-              f"",
-              f"## ภาพรวม",
-              f"| ตัวชี้วัด | ค่า |",
-              f"|---|---|",
-              f"| Closed trades | {total_closed} |",
-              f"| Total P&L | {total_pnl:+.2f} USDT |",
-              f"| Win Rate (recent) | {wr} |",
-              f"| Open positions | {len(open_trades)} / 6 |",
-              f"",
-              f"## Open Positions ({len(open_trades)})",
-          ]
-
-          if open_trades:
-              lines += [
-                  "| Pair | Side | Opened | Entry Price |",
-                  "|------|------|--------|-------------|",
-              ]
-              for pair, odate, orate, stake, is_short in open_trades:
-                  side = "SHORT" if is_short else "LONG"
-                  lines.append(f"| {pair} | {side} | {str(odate)[:16]} | {orate:.6f} |")
-          else:
-              lines.append("*ไม่มี open position*")
-
-          lines += ["", "## Closed Trades ล่าสุด (20 รายการ)"]
-          if closed:
-              lines += [
-                  "| Pair | Side | P&L% | P&L USDT | Exit |",
-                  "|------|------|------|----------|------|",
-              ]
-              for pair, odate, cdate, orate, crate, pct, pnl, reason, is_short in closed:
-                  side = "SHORT" if is_short else "LONG"
-                  pct_s = f"{pct*100:+.2f}%" if pct is not None else "—"
-                  pnl_s = f"{pnl:+.2f}" if pnl is not None else "—"
-                  lines.append(f"| {pair} | {side} | {pct_s} | {pnl_s} | {reason} |")
-          else:
-              lines.append("*ยังไม่มี closed trade*")
-
-          with open('dryrun/status.md', 'w') as f:
-              f.write('\n'.join(lines) + '\n')
-          print("Status report written to dryrun/status.md")
+          except Exception as e:
+              print(f"ERROR generating status: {e}")
+              traceback.print_exc()
+              with open('dryrun/status.md', 'w') as f:
+                  f.write(f"# DC55v24 Dry-Run\n\n*{now}*\n\nError: {e}\n")
           PYEOF
 
       - name: Save state and commit
