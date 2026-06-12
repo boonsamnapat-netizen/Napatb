@@ -1,5 +1,5 @@
 # DC55v24 Dry-Run
 
-*2026-06-12 11:04 UTC*
+*2026-06-12 12:24 UTC*
 
-Bot ยังไม่ได้เริ่ม หรือ database ยังไม่สร้าง
+Error: no such column: profit_ratio
