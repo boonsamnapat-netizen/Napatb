@@ -80,10 +80,11 @@ jobs:
           cfg['exchange']['key']      = key
           cfg['exchange']['secret']   = sec
           cfg['exchange']['password'] = pwd
-          cfg['strategy']             = 'DC55v24'
-          cfg['bot_name']             = 'DC55v24-DryRun'
-          cfg['dry_run']              = True
-          cfg['dry_run_wallet']       = 10000
+          cfg['strategy']                  = 'DC55v24'
+          cfg['bot_name']                  = 'DC55v24-DryRun'
+          cfg['dry_run']                   = True
+          cfg['dry_run_wallet']            = 10000
+          cfg['process_only_new_candles']  = False
           tg_token = os.environ.get('TG_TOKEN', '')
           tg_chat  = os.environ.get('TG_CHAT', '')
           if tg_token and tg_chat:
@@ -105,7 +106,9 @@ jobs:
             --userdir freqtrade/user_data \
             --strategy DC55v24 \
             --strategy-path freqtrade/strategies/ \
-            2>&1 | tail -200 | tee /tmp/dryrun_latest.log || true
+            2>&1 | tee /tmp/dryrun_full.log || true
+          echo "=== Last 300 lines ==="
+          tail -300 /tmp/dryrun_full.log
 
       - name: Generate status report
         run: |
@@ -193,6 +196,8 @@ jobs:
 
       - name: Save state and commit
         run: |
+          echo "=== SQLite files found ==="
+          find freqtrade/user_data -name "*.sqlite" -ls 2>/dev/null || echo "No sqlite files found"
           mkdir -p dryrun
           [ -f freqtrade/user_data/tradesv3.sqlite ] && \
             cp freqtrade/user_data/tradesv3.sqlite dryrun/tradesv3.sqlite
