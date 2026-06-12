@@ -85,6 +85,16 @@ jobs:
           cfg['dry_run']                   = True
           cfg['dry_run_wallet']            = 10000
           cfg['process_only_new_candles']  = False
+          # Dry-run: ลดเหลือ 20 pairs สุด liquid เพื่อลด startup download time
+          # (OKX คืน 100 candle/request; 73 pairs × 3 tf × 3 req = 657 calls ≈ 15 min = timeout)
+          # 20 pairs × 3 tf × 3 req = 183 calls ≈ 3 min → เหลือ ~8 min สำหรับ trading
+          cfg['exchange']['pair_whitelist'] = [
+              "BTC/USDT:USDT", "ETH/USDT:USDT", "BNB/USDT:USDT", "SOL/USDT:USDT",
+              "XRP/USDT:USDT", "DOGE/USDT:USDT", "ADA/USDT:USDT", "MATIC/USDT:USDT",
+              "LINK/USDT:USDT", "DOT/USDT:USDT", "AVAX/USDT:USDT", "LTC/USDT:USDT",
+              "BCH/USDT:USDT", "UNI/USDT:USDT", "ATOM/USDT:USDT", "ETC/USDT:USDT",
+              "FIL/USDT:USDT", "TRX/USDT:USDT", "EOS/USDT:USDT", "XLM/USDT:USDT",
+          ]
           # Pairs with no 4H futures data on OKX — blacklist to avoid startup errors
           cfg['exchange']['pair_blacklist'] = ['SUI/USDT:USDT', 'APT/USDT:USDT', 'SEI/USDT:USDT', 'TIA/USDT:USDT']
           tg_token = os.environ.get('TG_TOKEN', '')
@@ -219,4 +229,5 @@ jobs:
           else:
               print('no db')
           ")"
-          git push
+          git pull --rebase origin claude/claude-code-cloud-github-hokzc8
+          git push origin HEAD:claude/claude-code-cloud-github-hokzc8
