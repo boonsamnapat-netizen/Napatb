@@ -1,0 +1,214 @@
+name: "DC55v24 — OKX Dry-Run Bot"
+
+# รันทุก 4 ชั่วโมงตรงกับ 4H candle close (UTC: 00,04,08,12,16,20)
+# +5 นาทีเผื่อ candle ปิดและ OKX ส่งข้อมูล
+on:
+  schedule:
+    - cron: '5 0,4,8,12,16,20 * * *'
+  workflow_dispatch:
+
+jobs:
+  dryrun:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: claude/claude-code-cloud-github-hokzc8
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Freqtrade
+        run: pip install "freqtrade<2026.5" --quiet
+
+      - name: Patch CCXT keysort (OKX returns None market IDs)
+        run: |
+          python3 << 'PYEOF'
+          import site, os
+          search = site.getsitepackages() + [site.getusersitepackages()]
+          for sp in search:
+              p = os.path.join(sp, 'ccxt/base/exchange.py')
+              if not os.path.exists(p):
+                  continue
+              txt = open(p).read()
+              old = 'return dict(sorted(dictionary.items()))'
+              new = 'return dict(sorted({k: v for k, v in dictionary.items() if k is not None}.items()))'
+              if old in txt:
+                  open(p, 'w').write(txt.replace(old, new, 1))
+                  print('Patched:', p)
+              else:
+                  print('Already patched or not found:', p)
+              break
+          PYEOF
+
+      - name: Create Freqtrade userdir
+        run: freqtrade create-userdir --userdir freqtrade/user_data
+
+      - name: Restore trade database (state ก่อนหน้า)
+        run: |
+          if [ -f dryrun/tradesv3.sqlite ]; then
+            echo "Restoring existing trade database..."
+            cp dryrun/tradesv3.sqlite freqtrade/user_data/tradesv3.sqlite
+          else
+            echo "First run — starting fresh database"
+          fi
+
+      - name: Build live config from GitHub Secrets
+        env:
+          OKX_KEY:    ${{ secrets.OKX_API_KEY }}
+          OKX_SECRET: ${{ secrets.OKX_SECRET_KEY }}
+          OKX_PASS:   ${{ secrets.OKX_PASSPHRASE }}
+          TG_TOKEN:   ${{ secrets.TELEGRAM_TOKEN }}
+          TG_CHAT:    ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python3 - << 'PYEOF'
+          import json, os, sys
+          key  = os.environ.get('OKX_KEY', '')
+          sec  = os.environ.get('OKX_SECRET', '')
+          pwd  = os.environ.get('OKX_PASS', '')
+          if not (key and sec and pwd):
+              print("ERROR: OKX_API_KEY / OKX_SECRET_KEY / OKX_PASSPHRASE secrets not set.")
+              print("Add them in: GitHub repo → Settings → Secrets → Actions")
+              sys.exit(1)
+          cfg = json.load(open('freqtrade/config_okx.json'))
+          cfg['exchange']['key']      = key
+          cfg['exchange']['secret']   = sec
+          cfg['exchange']['password'] = pwd
+          cfg['strategy']             = 'DC55v24'
+          cfg['bot_name']             = 'DC55v24-DryRun'
+          cfg['dry_run']              = True
+          cfg['dry_run_wallet']       = 10000
+          tg_token = os.environ.get('TG_TOKEN', '')
+          tg_chat  = os.environ.get('TG_CHAT', '')
+          if tg_token and tg_chat:
+              cfg['telegram']['enabled']  = True
+              cfg['telegram']['token']    = tg_token
+              cfg['telegram']['chat_id']  = tg_chat
+              print("Telegram notifications: ENABLED")
+          else:
+              cfg['telegram']['enabled'] = False
+              print("Telegram notifications: disabled (secrets not set)")
+          json.dump(cfg, open('/tmp/config_live.json', 'w'), indent=2)
+          print("Live config written OK")
+          PYEOF
+
+      - name: Run dry-run bot (10 นาที)
+        run: |
+          timeout 600 freqtrade trade \
+            --config /tmp/config_live.json \
+            --userdir freqtrade/user_data \
+            --strategy DC55v24 \
+            --strategy-path freqtrade/strategies/ \
+            2>&1 | tail -200 | tee /tmp/dryrun_latest.log || true
+
+      - name: Generate status report
+        run: |
+          python3 - << 'PYEOF'
+          import sqlite3, os
+          from datetime import datetime, timezone
+
+          db = 'freqtrade/user_data/tradesv3.sqlite'
+          os.makedirs('dryrun', exist_ok=True)
+          now = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+
+          if not os.path.exists(db):
+              with open('dryrun/status.md', 'w') as f:
+                  f.write(f"# DC55v24 Dry-Run\n\n*{now}*\n\nBot ยังไม่ได้เริ่ม หรือ database ยังไม่สร้าง\n")
+              exit(0)
+
+          conn = sqlite3.connect(db)
+          cur  = conn.cursor()
+
+          cur.execute("SELECT COUNT(*), COALESCE(SUM(profit_abs),0) FROM trades WHERE is_open=0")
+          total_closed, total_pnl = cur.fetchone()
+
+          cur.execute("""
+              SELECT pair, open_date, open_rate, stake_amount, is_short
+              FROM trades WHERE is_open=1 ORDER BY open_date
+          """)
+          open_trades = cur.fetchall()
+
+          cur.execute("""
+              SELECT pair, open_date, close_date, open_rate, close_rate,
+                     profit_ratio, profit_abs, exit_reason, is_short
+              FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
+          """)
+          closed = cur.fetchall()
+          conn.close()
+
+          win = sum(1 for r in closed if r[6] and r[6] > 0)
+          wr  = f"{win/len(closed)*100:.1f}%" if closed else "—"
+
+          lines = [
+              f"# DC55v24 Dry-Run Status",
+              f"",
+              f"**อัปเดต:** {now}",
+              f"",
+              f"## ภาพรวม",
+              f"| ตัวชี้วัด | ค่า |",
+              f"|---|---|",
+              f"| Closed trades | {total_closed} |",
+              f"| Total P&L | {total_pnl:+.2f} USDT |",
+              f"| Win Rate (recent) | {wr} |",
+              f"| Open positions | {len(open_trades)} / 6 |",
+              f"",
+              f"## Open Positions ({len(open_trades)})",
+          ]
+
+          if open_trades:
+              lines += [
+                  "| Pair | Side | Opened | Entry Price |",
+                  "|------|------|--------|-------------|",
+              ]
+              for pair, odate, orate, stake, is_short in open_trades:
+                  side = "SHORT" if is_short else "LONG"
+                  lines.append(f"| {pair} | {side} | {str(odate)[:16]} | {orate:.6f} |")
+          else:
+              lines.append("*ไม่มี open position*")
+
+          lines += ["", "## Closed Trades ล่าสุด (20 รายการ)"]
+          if closed:
+              lines += [
+                  "| Pair | Side | P&L% | P&L USDT | Exit |",
+                  "|------|------|------|----------|------|",
+              ]
+              for pair, odate, cdate, orate, crate, pct, pnl, reason, is_short in closed:
+                  side = "SHORT" if is_short else "LONG"
+                  pct_s = f"{pct*100:+.2f}%" if pct is not None else "—"
+                  pnl_s = f"{pnl:+.2f}" if pnl is not None else "—"
+                  lines.append(f"| {pair} | {side} | {pct_s} | {pnl_s} | {reason} |")
+          else:
+              lines.append("*ยังไม่มี closed trade*")
+
+          with open('dryrun/status.md', 'w') as f:
+              f.write('\n'.join(lines) + '\n')
+          print("Status report written to dryrun/status.md")
+          PYEOF
+
+      - name: Save state and commit
+        run: |
+          mkdir -p dryrun
+          [ -f freqtrade/user_data/tradesv3.sqlite ] && \
+            cp freqtrade/user_data/tradesv3.sqlite dryrun/tradesv3.sqlite
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dryrun/tradesv3.sqlite dryrun/status.md 2>/dev/null || true
+          git diff --cached --quiet || \
+            git commit -m "Dry-run $(date -u '+%Y-%m-%d %H:%M UTC') — $(python3 -c "
+          import sqlite3, os
+          db='freqtrade/user_data/tradesv3.sqlite'
+          if os.path.exists(db):
+              c=sqlite3.connect(db).cursor()
+              c.execute('SELECT COUNT(*) FROM trades WHERE is_open=1')
+              n=c.fetchone()[0]
+              print(f'{n} open positions')
+          else:
+              print('no db')
+          ")"
+          git push
