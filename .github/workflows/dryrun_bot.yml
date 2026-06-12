@@ -111,6 +111,31 @@ jobs:
           print("Live config written OK")
           PYEOF
 
+      - name: Pre-download historical candles (fast startup)
+        run: |
+          # 1D: 305 วันสำหรับ EMA200 (ต้องการ ≥200 bars)
+          freqtrade download-data \
+            --config /tmp/config_live.json \
+            --userdir freqtrade/user_data \
+            --timerange $(date -u -d '305 days ago' '+%Y%m%d')-$(date -u '+%Y%m%d') \
+            --timeframes 1d \
+            --data-format-ohlcv json 2>&1 | tail -10 || true
+          # 4H: 60 วันสำหรับ DC55 channel (55 bars × 4H)
+          freqtrade download-data \
+            --config /tmp/config_live.json \
+            --userdir freqtrade/user_data \
+            --timerange $(date -u -d '60 days ago' '+%Y%m%d')-$(date -u '+%Y%m%d') \
+            --timeframes 4h \
+            --data-format-ohlcv json 2>&1 | tail -10 || true
+          # 1H: 15 วันสำหรับ startup_candle_count=300 ที่ 1H
+          freqtrade download-data \
+            --config /tmp/config_live.json \
+            --userdir freqtrade/user_data \
+            --timerange $(date -u -d '15 days ago' '+%Y%m%d')-$(date -u '+%Y%m%d') \
+            --timeframes 1h \
+            --data-format-ohlcv json 2>&1 | tail -10 || true
+          echo "=== Pre-download complete ==="
+
       - name: Run dry-run bot (15 นาที)
         run: |
           timeout 900 freqtrade trade \
