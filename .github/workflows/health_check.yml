@@ -1,0 +1,13 @@
+name: "Health Check (runner test)"
+
+# Workflow ทดสอบขั้นต่ำสุด — ใช้วินิจฉัยว่า GitHub assign runner ได้หรือไม่
+# ถ้า job นี้ fail ทันทีโดย runner_id=0 → ปัญหาอยู่ระดับ account/GitHub ไม่ใช่โค้ดเรา
+on:
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo
+        run: echo "runner OK — $(date -u)"
