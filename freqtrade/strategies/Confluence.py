@@ -41,7 +41,7 @@ class ConfluenceBase(IStrategy):
     use_exit_signal            = True
     exit_profit_only           = False
     ignore_roi_if_entry_signal = False
-    startup_candle_count       = 900
+    startup_candle_count       = 300
     can_short                  = True
 
     position_adjustment_enable = True    # split TP partial closes

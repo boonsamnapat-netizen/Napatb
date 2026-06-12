@@ -85,6 +85,8 @@ jobs:
           cfg['dry_run']                   = True
           cfg['dry_run_wallet']            = 10000
           cfg['process_only_new_candles']  = False
+          # Pairs with no 4H futures data on OKX — blacklist to avoid startup errors
+          cfg['exchange']['pair_blacklist'] = ['SUI/USDT:USDT', 'APT/USDT:USDT', 'SEI/USDT:USDT', 'TIA/USDT:USDT']
           tg_token = os.environ.get('TG_TOKEN', '')
           tg_chat  = os.environ.get('TG_CHAT', '')
           if tg_token and tg_chat:
@@ -99,9 +101,9 @@ jobs:
           print("Live config written OK")
           PYEOF
 
-      - name: Run dry-run bot (10 นาที)
+      - name: Run dry-run bot (15 นาที)
         run: |
-          timeout 600 freqtrade trade \
+          timeout 900 freqtrade trade \
             --config /tmp/config_live.json \
             --userdir freqtrade/user_data \
             --strategy DC55v24 \
