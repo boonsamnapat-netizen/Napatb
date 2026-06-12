@@ -2076,3 +2076,87 @@ class DC55v27(DC55v24):
             return min(stake, max_stake)
         except Exception:
             return proposed_stake
+
+
+# ============================================================================
+# C.19 experiments: Progressive Trailing Stop
+#
+# C.18 results (final):
+#   DC55v24 (blacklist): IS +1112%  DD27.78%  OOS +273% DD 7.86%  Hold +13.26%
+#   DC55v27 (ATR size):  IS +1365%  DD33.54%  OOS +550% DD11.53%  Hold  +9.53%
+#
+# C.18 lesson: Inverse-ATR sizing WRONG for momentum systems.
+#   High ATR at entry = genuine breakout (already gated by ATR expansion filter).
+#   Inverse-ATR under-sizes the best trades and over-sizes the quiet periods.
+#   OOS improvement was a compounding timing artifact, not structural.
+#   Holdout (most honest forward test) was clearly worse: +9.53% vs +13.26%.
+#
+# Remaining problem: IS DD ~27.78% — largely from trades that reach 2-3R then
+# give back gains during the 2024 sideways chop period. The Donchian 20-bar
+# exit is slow (3.3 days minimum); sharp reversals give back significant open P&L.
+#
+# Hypothesis: Progressive Trailing Stop reduces giveback without cutting winners.
+#   - Stage 0 (profit < 1R): fixed stop at entry - 2×ATR (unchanged)
+#   - Stage 1 (profit ≥ 1R): stop moves to breakeven (lock initial risk away)
+#   - Stage 2 (profit ≥ 2R): trail stop at peak - 1×ATR (lock half of 2R gain)
+#   - Stage 3 (profit ≥ 3R): trail stop at peak - 0.5×ATR (let winner run tight)
+#
+# Key design decision: does NOT change entry logic or Donchian channel exit.
+# Progressive stop is an ADDITIONAL protective layer — it fires only if price
+# reverses sharply after achieving meaningful profit (Stage 1+). If price never
+# reverses, the Donchian exit or Donchian TP fires as before.
+#
+# Expected outcome: winners that run to 5-10R are largely unaffected (tight
+# trail just locks in more profit). Losers that recover to 1R then fall back
+# exit at breakeven instead of at -2R → fewer "W then loss" outcomes.
+# ============================================================================
+
+
+class DC55v28(DC55v24):
+    """
+    DC55v24 + 4-stage Progressive Trailing Stop (C.19).
+
+    Overrides ConfluenceBase.custom_stoploss with a progressive system that
+    locks in profit as trades move favorably, reducing giveback on reversals:
+
+    Stage 0 (profit < 1R):  stop = open_rate - 2×ATR  (same initial risk)
+    Stage 1 (profit ≥ 1R):  stop = open_rate           (breakeven, risk gone)
+    Stage 2 (profit ≥ 2R):  stop = peak   - 1×ATR     (trail, lock half of 2R)
+    Stage 3 (profit ≥ 3R):  stop = peak   - 0.5×ATR   (tight trail for big runs)
+
+    R = SL_ATR × ATR14(1H) at entry price (same unit as base stoploss).
+    For shorts: all directions inverted (peak → trough = trade.min_rate).
+    """
+
+    def custom_stoploss(self, pair: str, trade: 'Trade', current_time: datetime,
+                        current_rate: float, current_profit: float, **kwargs) -> float:
+        r = self._r_dist(trade)
+        if r is None or r <= 0 or trade.open_rate <= 0 or current_rate <= 0:
+            return None
+
+        one_r_pct = r / trade.open_rate   # 1R expressed as fraction of entry price
+
+        if trade.is_short:
+            # For shorts: profit means price fell; peak = lowest price seen
+            peak = getattr(trade, 'min_rate', None) or trade.open_rate
+            if current_profit >= 3.0 * one_r_pct:
+                stop_price = peak + r * 0.5          # tight trail above trough
+            elif current_profit >= 2.0 * one_r_pct:
+                stop_price = peak + r                # normal trail above trough
+            elif current_profit >= one_r_pct:
+                stop_price = trade.open_rate         # breakeven
+            else:
+                stop_price = trade.open_rate + r     # fixed initial stop
+        else:
+            # For longs: profit means price rose; peak = highest price seen
+            peak = getattr(trade, 'max_rate', None) or trade.open_rate
+            if current_profit >= 3.0 * one_r_pct:
+                stop_price = peak - r * 0.5          # tight trail below peak
+            elif current_profit >= 2.0 * one_r_pct:
+                stop_price = peak - r                # normal trail below peak
+            elif current_profit >= one_r_pct:
+                stop_price = trade.open_rate         # breakeven
+            else:
+                stop_price = trade.open_rate - r     # fixed initial stop
+
+        return stoploss_from_absolute(stop_price, current_rate, is_short=trade.is_short)
