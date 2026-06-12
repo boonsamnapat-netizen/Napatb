@@ -145,18 +145,24 @@ jobs:
               cols = {row[1] for row in rows}
               print(f"DEBUG: trades columns = {sorted(cols)}")
 
-              # หา column ชื่อ profit ที่มีอยู่จริง
+              # หา column absolute P&L (ใหม่=close_profit_abs, เก่า=profit_abs)
               pabs = None
-              for candidate in ('profit_absolute', 'profit_abs', 'close_profit_abs', 'profit'):
+              for candidate in ('close_profit_abs', 'profit_absolute', 'profit_abs', 'profit'):
                   if candidate in cols:
                       pabs = candidate
                       break
-              print(f"DEBUG: using profit column = {pabs!r}")
+              # หา column ratio P&L (ใหม่=close_profit, เก่า=profit_ratio)
+              prat = None
+              for candidate in ('close_profit', 'profit_ratio', 'profit_factor'):
+                  if candidate in cols:
+                      prat = candidate
+                      break
+              print(f"DEBUG: pabs={pabs!r}  prat={prat!r}")
 
-              if pabs:
-                  cur.execute(f"SELECT COUNT(*), COALESCE(SUM({pabs}),0) FROM trades WHERE is_open=0")
-              else:
-                  cur.execute("SELECT COUNT(*), 0.0 FROM trades WHERE is_open=0")
+              pabs_expr = pabs if pabs else 'NULL'
+              prat_expr = prat if prat else 'NULL'
+
+              cur.execute(f"SELECT COUNT(*), COALESCE(SUM({pabs_expr}),0) FROM trades WHERE is_open=0")
               total_closed, total_pnl = cur.fetchone()
 
               cur.execute("""
@@ -165,18 +171,11 @@ jobs:
               """)
               open_trades = cur.fetchall()
 
-              if pabs:
-                  cur.execute(f"""
-                      SELECT pair, open_date, close_date, open_rate, close_rate,
-                             profit_ratio, {pabs}, exit_reason, is_short
-                      FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
-                  """)
-              else:
-                  cur.execute("""
-                      SELECT pair, open_date, close_date, open_rate, close_rate,
-                             profit_ratio, NULL, exit_reason, is_short
-                      FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
-                  """)
+              cur.execute(f"""
+                  SELECT pair, open_date, close_date, open_rate, close_rate,
+                         {prat_expr}, {pabs_expr}, exit_reason, is_short
+                  FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
+              """)
               closed = cur.fetchall()
               conn.close()
 
