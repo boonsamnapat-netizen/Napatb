@@ -2160,3 +2160,106 @@ class DC55v28(DC55v24):
                 stop_price = trade.open_rate - r     # fixed initial stop
 
         return stoploss_from_absolute(stop_price, current_rate, is_short=trade.is_short)
+
+
+# ============================================================================
+# C.19 v2: Progressive Trailing Stop + Re-entry Cooldown (DC55v29)
+#
+# DC55v28 post-mortem:
+#   2,862 trades vs 1,080 for DC55v24 — 2.65× trade inflation.
+#   Avg duration: 11h26m vs 3 days 8h → all trades were immediate re-entries.
+#   Result: IS -86%, OOS -55%, Holdout -5%   → catastrophic failure.
+#
+# Root cause — Whipsaw Re-entry Bug:
+#   Donchian entry signal: enter_long=1 whenever close > dc_entry_high_4h.
+#   After a genuine breakout, this stays "1" for many bars even after minor
+#   pullbacks (the 55-bar high is well below current price during a trend).
+#   So when the progressive stop fires at breakeven, Freqtrade sees:
+#     exit_reason="stop_loss" + enter_long=1 (next bar) → immediately re-enters.
+#   Each breakout generates 2-3 stop-enter-stop cycles → pure fee destruction.
+#
+# Fix 1 — Raise thresholds: breakeven at 2R (not 1R), trail at 3R (not 2R).
+#   For crypto 4H: R = 2×ATR ≈ 4% of price. 2R ≈ 8% profit.
+#   At 8% profit, price is well above any micro-oscillation zone — fewer triggers.
+#
+# Fix 2 — confirm_trade_entry cooldown: after ANY stop-loss exit, block new
+#   entries on the SAME PAIR for TRAIL_COOLDOWN_BARS × 4H.
+#   10-bar cooldown (40H): enough time for a genuine trend to re-establish or
+#   a false breakout to unwind the entry signal (price falls below dc_entry_high).
+#   The cooldown uses Trade.get_trades_proxy (available in Freqtrade backtesting
+#   and live) to check the most recent closed trade on the pair.
+# ============================================================================
+
+
+class DC55v29(DC55v24):
+    """
+    DC55v24 + Progressive Trailing Stop with re-entry cooldown (C.19 v2).
+
+    Raised thresholds vs DC55v28 to reduce breakeven trigger frequency:
+      Stage 0 (< 2R  ≈  8%): fixed stop at open - 2×ATR (same as base)
+      Stage 1 (≥ 2R  ≈  8%): stop = breakeven (lock initial risk)
+      Stage 2 (≥ 3R  ≈ 12%): trail at peak - 1×ATR
+      Stage 3 (≥ 5R  ≈ 20%): trail at peak - 0.5×ATR (tight for big runners)
+
+    confirm_trade_entry cooldown: 10 bars (40H) after any stop-loss exit on
+    the same pair — prevents whipsaw re-entries that destroyed DC55v28.
+    Genuine re-entries are preserved; the cooldown is shorter than the typical
+    signal-reset cycle (55-bar DC high takes ~10+ bars to update after a trend).
+    """
+
+    TRAIL_COOLDOWN_BARS = 10  # 10 × 4H = 40H re-entry cooldown after stop exit
+
+    def custom_stoploss(self, pair: str, trade: 'Trade', current_time: datetime,
+                        current_rate: float, current_profit: float, **kwargs) -> float:
+        r = self._r_dist(trade)
+        if r is None or r <= 0 or trade.open_rate <= 0 or current_rate <= 0:
+            return None
+
+        one_r_pct = r / trade.open_rate
+
+        if trade.is_short:
+            peak = getattr(trade, 'min_rate', None) or trade.open_rate
+            if current_profit >= 5.0 * one_r_pct:
+                stop_price = peak + r * 0.5          # tight trail above trough
+            elif current_profit >= 3.0 * one_r_pct:
+                stop_price = peak + r                # trail above trough
+            elif current_profit >= 2.0 * one_r_pct:
+                stop_price = trade.open_rate         # breakeven
+            else:
+                stop_price = trade.open_rate + r     # fixed initial stop
+        else:
+            peak = getattr(trade, 'max_rate', None) or trade.open_rate
+            if current_profit >= 5.0 * one_r_pct:
+                stop_price = peak - r * 0.5          # tight trail below peak
+            elif current_profit >= 3.0 * one_r_pct:
+                stop_price = peak - r                # trail below peak
+            elif current_profit >= 2.0 * one_r_pct:
+                stop_price = trade.open_rate         # breakeven
+            else:
+                stop_price = trade.open_rate - r     # fixed initial stop
+
+        return stoploss_from_absolute(stop_price, current_rate, is_short=trade.is_short)
+
+    def confirm_trade_entry(self, pair: str, order_type: str, amount: float,
+                            rate: float, time_in_force: str, entry_tag: Optional[str],
+                            side: str, **kwargs) -> bool:
+        from freqtrade.persistence import Trade as FtTrade
+        try:
+            closed = FtTrade.get_trades_proxy(pair=pair, is_open=False)
+            if not closed:
+                return True
+            last = max(closed, key=lambda t: t.close_date_utc)
+            stop_exits = {
+                'stop_loss', 'custom_stoploss',
+                'stoploss_on_exchange', 'trailing_stop_loss',
+            }
+            if last.exit_reason in stop_exits:
+                current_time = kwargs.get('current_time')
+                if current_time is None:
+                    return True
+                hours_since = (current_time - last.close_date_utc).total_seconds() / 3600
+                if hours_since < self.TRAIL_COOLDOWN_BARS * 4:
+                    return False
+        except Exception:
+            pass
+        return True
