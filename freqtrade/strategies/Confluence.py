@@ -1985,3 +1985,94 @@ class DC55v26(DC55v25):
         if metadata["pair"] in self.BLACKLIST:
             return dataframe
         return super().populate_entry_trend(dataframe, metadata)
+
+
+# ============================================================================
+# C.18 experiments: ATR volatility-normalized position sizing
+#
+# C.17 results (final):
+#   DC55v20 (baseline):  IS +846%   DD30.04%  OOS +218% DD10.88%  Hold +13.17%
+#   DC55v24 (blacklist): IS +1112%  DD27.78%  OOS +273% DD 7.86%  Hold +13.26%
+#   DC55v25 (RS filter): IS +390%   DD28.00%  OOS +105% DD14.25%  → FAILED
+#   DC55v26 (RS+BL):     IS +540%   DD25.68%  OOS +143% DD12.66%  → FAILED
+#
+# Observation: RS dynamic filter is too blunt (blocks bear recovery rotations).
+# Static blacklist is more surgical for known structural losers.
+# Remaining IS DD of ~27.78% is largely from 2024 sideways chop where many
+# 73-pair universe alts produced false breakouts simultaneously.
+#
+# Root cause analysis of residual DD:
+#   Equal-weight sizing means a cluster of 6 open positions all taking losses
+#   simultaneously causes ~6× the drawdown of a single loss.
+#   The 73-pair universe has heterogeneous volatility: PEPE/BONK/WIF can have
+#   4-10× the 4H ATR% of BTC or ETH. Equal-weight over-allocates to high-vol
+#   pairs and under-allocates to stable large-caps in terms of risk contribution.
+#
+# Hypothesis: cross-sectional ATR-normalized sizing reduces portfolio DD by
+# giving low-vol pairs more weight (more stable, more reliable signals) and
+# high-vol pairs less weight (noisier breakouts, larger adverse excursions).
+#
+# Implementation:
+#   Reference ATR% = 3% of price in 4H (typical crypto 4H volatility)
+#   scale = reference_atr_pct / pair_atr_pct
+#   stake = proposed_stake × clip(scale, 0.33, 1.50)
+#
+# This means:
+#   BTC/ETH  (4H ATR ~1.5%): scale = 3/1.5 = 2.0 → capped at 1.50× equal weight
+#   SOL/BNB  (4H ATR ~3.0%): scale = 3/3.0 = 1.0 → equal weight (neutral)
+#   WIF/PEPE (4H ATR ~6.0%): scale = 3/6.0 = 0.5 → half weight
+#   BONK     (4H ATR ~9.0%): scale = 3/9.0 = 0.33 → floored at 0.33× equal weight
+#
+# Uses 4H ATR (same timeframe as entry signals) for consistency.
+# The existing ConfluenceBase custom_stake_amount uses 1H ATR — this overrides it.
+# ============================================================================
+
+
+class DC55v27(DC55v24):
+    """
+    DC55v24 + cross-sectional 4H ATR volatility-normalized position sizing.
+
+    Equal-weight sizing over-allocates to high-volatility meme/small-cap pairs
+    whose 4H ATR can be 3-6× larger than BTC/ETH, compressing Sharpe and
+    inflating drawdowns during simultaneous false-breakout clusters.
+
+    Scale each trade inversely to its 4H ATR as % of price, normalized to a
+    3% reference (neutral = equal weight). Low-vol pairs get larger allocations,
+    high-vol pairs smaller, within [0.33×, 1.50×] of the equal-weight baseline.
+
+    Uses same 4H ATR14 as the Donchian entry filter for timeframe consistency.
+    Overrides ConfluenceBase.custom_stake_amount (which used 1H ATR).
+    """
+
+    ATR_REFERENCE_PCT = 0.030  # 3% 4H ATR → neutral (equal weight)
+    ATR_SCALE_MIN     = 0.33   # floor: never less than 1/3 of equal weight
+    ATR_SCALE_MAX     = 1.50   # cap:   never more than 1.5× equal weight
+
+    def custom_stake_amount(self, pair: str, current_time,
+                            current_rate: float, current_profit: float,
+                            proposed_stake: float, min_stake,
+                            max_stake: float, leverage: float,
+                            entry_tag, side: str, **kwargs) -> float:
+        try:
+            df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+            if df is None or df.empty:
+                return proposed_stake
+            past = df[df["date"] < current_time]
+            if past.empty:
+                return proposed_stake
+            row     = past.iloc[-1]
+            atr_col = f"atr14_{self.inf_timeframe}"  # "atr14_4h"
+            atr_4h  = row.get(atr_col)
+            if atr_4h is None or pd.isna(atr_4h) or current_rate <= 0:
+                return proposed_stake
+            atr_pct = float(atr_4h) / float(current_rate)
+            if atr_pct <= 0:
+                return proposed_stake
+            scale = self.ATR_REFERENCE_PCT / atr_pct
+            scale = max(self.ATR_SCALE_MIN, min(self.ATR_SCALE_MAX, scale))
+            stake = proposed_stake * scale
+            if min_stake is not None:
+                stake = max(stake, float(min_stake))
+            return min(stake, max_stake)
+        except Exception:
+            return proposed_stake
