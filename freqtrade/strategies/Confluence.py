@@ -1884,3 +1884,104 @@ class DC55v24(DC55v23):
         "YFI/USDT:USDT",
         "CRV/USDT:USDT",
     ])
+
+
+# ============================================================================
+# C.17 experiments: dynamic Relative Strength vs BTC filter
+#
+# C.16 results:
+#   DC55v20 (baseline):  IS +846%   DD30.04%  OOS +218% DD10.88%  Hold +13.17%
+#   DC55v24 (blacklist): IS +1112%  DD27.78%  OOS +273% DD 7.86%  Hold +13.26%
+#
+# Problem with static blacklist: identifies structural losers retrospectively.
+# If BNB or INJ start to structurally decline, we won't know until too late.
+#
+# Hypothesis: structural losers (SUSHI, ATOM, YFI, CRV) were all in sustained
+# relative decline vs BTC *before* they started generating false breakouts.
+# A dynamic filter on pair/BTC weekly ratio should detect this proactively:
+#
+#   rs_ratio  = pair weekly close / BTC weekly close
+#   rs_ema26  = EMA(26) of rs_ratio  (≈ 6-month relative trend)
+#   long gate = rs_ratio >= rs_ema26 × RS_THRESHOLD
+#
+# If ratio is >= 85% of its own 6-month EMA: pair is keeping up with BTC → OK to Long.
+# If ratio falls > 15% below its EMA: pair is in structural relative decline → skip Long.
+# SHORT entries are unaffected — relative weakness is a VALID short signal.
+#
+# Experimental design (2×2):
+#   DC55v20: no blacklist, no RS filter  (baseline)
+#   DC55v24: static blacklist, no RS filter
+#   DC55v25: RS filter only, no static blacklist  ← can RS replace blacklist?
+#   DC55v26: RS filter + static blacklist          ← does combining help?
+# ============================================================================
+
+
+class DC55v25(DC55v20):
+    """
+    DC55v20 + dynamic Relative Strength vs BTC weekly filter (Long only).
+
+    pair/BTC ratio < EMA(26) × RS_THRESHOLD → skip LONG entries.
+    Rationale: structural losers lose ground vs BTC for months before their
+    breakouts start failing. A 6-month EMA on the ratio captures this lag.
+    SHORT unblocked — relative weakness is valid for short entries.
+    BTC/USDT:USDT is its own reference (ratio = 1.0) → filter never triggers.
+    NaN (insufficient history, first 26 weeks) → treated as OK (allow entries).
+    """
+    RS_THRESHOLD = 0.85
+
+    def informative_pairs(self):
+        return [("BTC/USDT:USDT", "1w")]
+
+    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_indicators(dataframe, metadata)
+        pair     = metadata["pair"]
+        btc_1w   = self.dp.get_pair_dataframe("BTC/USDT:USDT", "1w")
+        pair_1w  = self.dp.get_pair_dataframe(pair, "1w")
+
+        if (btc_1w is not None and not btc_1w.empty
+                and pair_1w is not None and not pair_1w.empty):
+            rs  = pair_1w[["date", "close"]].copy().rename(columns={"close": "pair_close"})
+            btc = btc_1w[["date", "close"]].copy().rename(columns={"close": "btc_close"})
+            rs  = pd.merge_asof(
+                rs.sort_values("date"), btc.sort_values("date"),
+                on="date", direction="backward",
+            )
+            rs["rs_ratio"]   = rs["pair_close"] / rs["btc_close"]
+            rs["rs_ema26"]   = rs["rs_ratio"].ewm(span=26, adjust=False).mean()
+            # shift(1): only completed weekly candles → no lookahead
+            rs["rs_ok_long"] = (
+                (rs["rs_ratio"] >= rs["rs_ema26"] * self.RS_THRESHOLD)
+                .shift(1).fillna(True).astype(int)
+            )
+            dataframe = merge_informative_pair(
+                dataframe, rs[["date", "rs_ok_long"]], self.timeframe, "1w", ffill=True
+            )
+        return dataframe
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        dataframe = super().populate_entry_trend(dataframe, metadata)
+        if "rs_ok_long_1w" in dataframe.columns:
+            dataframe.loc[dataframe["rs_ok_long_1w"] == 0, "enter_long"] = 0
+        return dataframe
+
+
+class DC55v26(DC55v25):
+    """
+    DC55v25 (dynamic RS filter) + static blacklist of confirmed structural losers.
+
+    Tests whether combining the dynamic filter with explicit blacklist of known-bad
+    pairs outperforms either approach alone. If DC55v26 ≈ DC55v25, the dynamic
+    filter already handles what the blacklist was doing (ideal outcome).
+    If DC55v26 > DC55v25, the blacklist adds value on top of the filter.
+    """
+    BLACKLIST = frozenset([
+        "SUSHI/USDT:USDT",
+        "ATOM/USDT:USDT",
+        "YFI/USDT:USDT",
+        "CRV/USDT:USDT",
+    ])
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if metadata["pair"] in self.BLACKLIST:
+            return dataframe
+        return super().populate_entry_trend(dataframe, metadata)
