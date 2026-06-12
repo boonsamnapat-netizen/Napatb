@@ -1,4 +1,4 @@
-name: "Backtest C.19v2 - progressive trailing stop + cooldown 73 pairs"
+name: "Backtest C.20 - max_open_trades=4 position concentration 73 pairs"
 
 on:
   push:
@@ -99,10 +99,10 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v20 DC55v24 DC55v29 \
+            --strategy-list DC55v20 DC55v24 DC55v30 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${{ github.event.inputs.timerange || '20200101-20250301' }} \
-            2>&1 | tee results/c19v2_insample.txt
+            2>&1 | tee results/c20_insample.txt
 
       - name: Run OOS backtest — 2021-2023 (bear market reference)
         if: ${{ github.event.inputs.run_oos != 'false' }}
@@ -110,29 +110,29 @@ jobs:
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v20 DC55v24 DC55v29 \
+            --strategy-list DC55v20 DC55v24 DC55v30 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20210101-20230101 \
-            2>&1 | tee results/c19v2_oos.txt
+            2>&1 | tee results/c20_oos.txt
 
       - name: Run holdout backtest — 2025-03 to 2025-06 (untouched)
         run: |
           freqtrade backtesting \
             --config freqtrade/config_okx.json \
             --userdir freqtrade/user_data \
-            --strategy-list DC55v20 DC55v24 DC55v29 \
+            --strategy-list DC55v20 DC55v24 DC55v30 \
             --strategy-path freqtrade/strategies/ \
             --timerange 20250301-20250601 \
-            2>&1 | tee results/c19v2_holdout.txt
+            2>&1 | tee results/c20_holdout.txt
 
       - name: Commit results
         run: |
-          for f in results/c19v2_insample.txt results/c19v2_oos.txt; do
+          for f in results/c20_insample.txt results/c20_oos.txt; do
             [ -f "$f" ] && tail -1000 "$f" > /tmp/_t.txt && mv /tmp/_t.txt "$f"
           done
-          [ -f results/c19v2_holdout.txt ] && tail -500 results/c19v2_holdout.txt > /tmp/_t.txt && mv /tmp/_t.txt results/c19v2_holdout.txt
+          [ -f results/c20_holdout.txt ] && tail -500 results/c20_holdout.txt > /tmp/_t.txt && mv /tmp/_t.txt results/c20_holdout.txt
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/c19v2_insample.txt results/c19v2_oos.txt results/c19v2_holdout.txt 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "C.19v2 progressive trailing stop + cooldown backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add results/c20_insample.txt results/c20_oos.txt results/c20_holdout.txt 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "C.20 max_open_trades=4 position concentration backtest: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push

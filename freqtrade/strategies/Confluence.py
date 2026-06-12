@@ -2263,3 +2263,47 @@ class DC55v29(DC55v24):
         except Exception:
             pass
         return True
+
+
+# ============================================================================
+# C.20 experiment: Reduce max concurrent positions (max_open_trades = 4)
+#
+# C.19 post-mortem:
+#   Progressive trailing stop is incompatible with Freqtrade signal-based
+#   backtesting: confirm_trade_entry is NOT called during backtesting, so
+#   cooldown logic has no effect. Donchian entry signal persists after stop
+#   exit, causing immediate re-entries and 1.6-2.65× trade inflation.
+#   This is an architectural constraint of Freqtrade — cannot be solved
+#   without modifying entry signals directly in populate_entry_trend, which
+#   would require trade history access unavailable in backtesting.
+#
+# Remaining lever: portfolio concentration.
+#   IS DD of 27.78% is concentrated in Mar-Jul 2024 (55-bar BTC chop period)
+#   when 5-6 positions were simultaneously false-breaking and stopping out.
+#   With max_open_trades=6: up to 6 correlated losses at once → deep portfolio DD.
+#   With max_open_trades=4: max 4 simultaneous losses → aggregate DD ~33% lower.
+#
+# Expected effects of reducing 6→4:
+#   IS DD:    27.78% × (4/6) ≈ 18.5%  (rough estimate, assuming correlated losses)
+#   OOS DD:    7.86% × (4/6) ≈  5.2%
+#   Hold DD:   3.47% × (4/6) ≈  2.3%
+#   Trades:  ~1080 × 0.85 ≈  918  (some signals skipped when at capacity)
+#   Profit%: roughly similar (larger stake per trade with unlimited sizing)
+#
+# Stake per trade with unlimited + max_open_trades=4:
+#   available_capital / 4 = 1.5× larger than with max_open_trades=6.
+#   Each trade contributes more % return → may compensate for fewer trades.
+#   Net: profit% could be similar or slightly higher despite fewer trades.
+# ============================================================================
+
+
+class DC55v30(DC55v24):
+    """
+    DC55v24 + max_open_trades reduced from 6 to 4 (C.20).
+
+    Reduces simultaneous position count to limit correlated loss clustering.
+    With stake_amount=unlimited, each position gets available_capital/4 instead
+    of available_capital/6 — 50% larger stake per trade, partially offsetting
+    the reduction in concurrent winners. Entry/exit logic identical to DC55v24.
+    """
+    max_open_trades = 4
