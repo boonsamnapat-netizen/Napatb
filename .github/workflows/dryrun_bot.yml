@@ -2,6 +2,7 @@ name: "DC55v24 — OKX Dry-Run Bot"
 
 # รันทุก 4 ชั่วโมงตรงกับ 4H candle close (UTC: 00,04,08,12,16,20)
 # +5 นาทีเผื่อ candle ปิดและ OKX ส่งข้อมูล
+# v2: informative_pairs() fix + column name detection (2026-06-12)
 on:
   schedule:
     - cron: '5 0,4,8,12,16,20 * * *'
