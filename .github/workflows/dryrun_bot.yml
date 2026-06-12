@@ -138,7 +138,12 @@ jobs:
           conn = sqlite3.connect(db)
           cur  = conn.cursor()
 
-          cur.execute("SELECT COUNT(*), COALESCE(SUM(profit_abs),0) FROM trades WHERE is_open=0")
+          # ตรวจ schema ก่อน: Freqtrade เก่าใช้ profit_abs, ใหม่ใช้ profit_absolute
+          cur.execute("PRAGMA table_info(trades)")
+          cols = {row[1] for row in cur.fetchall()}
+          pabs = 'profit_absolute' if 'profit_absolute' in cols else 'profit_abs'
+
+          cur.execute(f"SELECT COUNT(*), COALESCE(SUM({pabs}),0) FROM trades WHERE is_open=0")
           total_closed, total_pnl = cur.fetchone()
 
           cur.execute("""
@@ -147,9 +152,9 @@ jobs:
           """)
           open_trades = cur.fetchall()
 
-          cur.execute("""
+          cur.execute(f"""
               SELECT pair, open_date, close_date, open_rate, close_rate,
-                     profit_ratio, profit_abs, exit_reason, is_short
+                     profit_ratio, {pabs}, exit_reason, is_short
               FROM trades WHERE is_open=0 ORDER BY close_date DESC LIMIT 20
           """)
           closed = cur.fetchall()
@@ -205,6 +210,7 @@ jobs:
           PYEOF
 
       - name: Save state and commit
+        if: always()
         run: |
           echo "=== SQLite files found (all locations) ==="
           find . -name "*.sqlite" -ls 2>/dev/null || echo "No sqlite files found anywhere"
