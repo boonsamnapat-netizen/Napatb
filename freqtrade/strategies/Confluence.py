@@ -87,6 +87,13 @@ class ConfluenceBase(IStrategy):
             out_idx[i] = last_idx
         return out_val, out_idx
 
+    # ---- informative timeframes (pre-download at startup) --------------------
+
+    def informative_pairs(self):
+        whitelist = self.dp.current_whitelist()
+        return ([(pair, self.inf_timeframe) for pair in whitelist]
+                + [(pair, "1d") for pair in whitelist])
+
     # ---- shared indicator scaffold -------------------------------------------
 
     def _base_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -1794,7 +1801,7 @@ class DC55v21(DC55v20):
     BTC_ADX_MIN = 15
 
     def informative_pairs(self):
-        return [("BTC/USDT:USDT", "1w")]
+        return super().informative_pairs() + [("BTC/USDT:USDT", "1w")]
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         ct = self.config.get("candle_type_def", CandleType.SPOT)
@@ -1939,7 +1946,7 @@ class DC55v25(DC55v20):
     RS_THRESHOLD = 0.85
 
     def informative_pairs(self):
-        return [("BTC/USDT:USDT", "1w")]
+        return super().informative_pairs() + [("BTC/USDT:USDT", "1w")]
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         ct = self.config.get("candle_type_def", CandleType.SPOT)
