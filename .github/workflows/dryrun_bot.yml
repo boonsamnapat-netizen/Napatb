@@ -86,12 +86,15 @@ jobs:
           cfg['dry_run']                   = True
           cfg['dry_run_wallet']            = 10000
           cfg['process_only_new_candles']  = False
-          # 10 pairs สุด liquid เพื่อให้ startup download เสร็จใน ~7 นาที
-          # (10 pairs × 3 tf × 3 pages × 5 sec/req = 450 sec = 7.5 min → เหลือ ~7.5 min trading)
+          # 20 pairs = top 10 liquid + top 10 backtest performers (ตาม holdout 2025-03-01→06-01)
+          # (20 pairs × 3 tf × 3 pages × 5 sec/req ≈ 900 sec startup → เหลือ ~10 min trading)
           cfg['exchange']['pair_whitelist'] = [
               "BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT", "BNB/USDT:USDT",
               "XRP/USDT:USDT", "DOGE/USDT:USDT", "ADA/USDT:USDT", "LINK/USDT:USDT",
               "DOT/USDT:USDT", "AVAX/USDT:USDT",
+              "AXS/USDT:USDT", "LDO/USDT:USDT", "APE/USDT:USDT", "GRT/USDT:USDT",
+              "TRX/USDT:USDT", "1INCH/USDT:USDT", "MANA/USDT:USDT", "SAND/USDT:USDT",
+              "BCH/USDT:USDT", "PEPE/USDT:USDT",
           ]
           cfg['exchange']['pair_blacklist'] = []
           # บังคับ db path ให้ตรงกับ restore/save step (dry-run default คือ tradesv3.dryrun.sqlite)
@@ -112,7 +115,7 @@ jobs:
 
       - name: Run dry-run bot (15 นาที)
         run: |
-          timeout 1200 freqtrade trade \
+          timeout 1500 freqtrade trade \
             --config /tmp/config_live.json \
             --userdir freqtrade/user_data \
             --strategy DC55v24 \
