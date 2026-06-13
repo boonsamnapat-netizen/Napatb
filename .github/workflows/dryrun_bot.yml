@@ -5,7 +5,7 @@ name: "DC55v24 — OKX Dry-Run Bot"
 # v2: informative_pairs() fix + column name detection (2026-06-12)
 on:
   schedule:
-    - cron: '5 0,4,8,12,16,20 * * *'
+    - cron: '5 0,8,16 * * *'
   workflow_dispatch:
 
 jobs:
@@ -112,7 +112,7 @@ jobs:
 
       - name: Run dry-run bot (15 นาที)
         run: |
-          timeout 900 freqtrade trade \
+          timeout 1200 freqtrade trade \
             --config /tmp/config_live.json \
             --userdir freqtrade/user_data \
             --strategy DC55v24 \
