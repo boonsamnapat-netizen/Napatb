@@ -1,12 +1,12 @@
 # DC55v24 Health Check
 
-**อัปเดต:** 2026-06-14 17:28 UTC
+**อัปเดต:** 2026-06-14 17:48 UTC
 
 ## ผลรวม: ❌ ERROR
 
 | รายการตรวจ | ผล |
 |---|---|
-| OKX API / Data download | ❌ FAIL |
+| OKX API / Data download | ✅ OK |
 | Strategy load (DC55v24) | ❌ FAIL |
 | Signal generation (60 วัน, 10 pairs) | 0 trades |
 
