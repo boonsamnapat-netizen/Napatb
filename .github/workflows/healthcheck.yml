@@ -71,6 +71,10 @@ jobs:
           ]
           cfg['exchange']['pair_whitelist'] = CHECK_PAIRS
           cfg['exchange']['pair_blacklist'] = []
+          # jwt_secret_key ต้องยาว ≥32 chars (Freqtrade validation)
+          if 'api_server' in cfg:
+              cfg['api_server']['jwt_secret_key'] = 'healthcheck_jwt_secret_key_for_backtest_only'
+              cfg['api_server']['enabled'] = False
           json.dump(cfg, open('/tmp/config_check.json', 'w'), indent=2)
           print("Config written — pairs:", len(CHECK_PAIRS))
           PYEOF
