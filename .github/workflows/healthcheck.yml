@@ -1,0 +1,208 @@
+name: Strategy Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'   # ทุกวัน 06:00 UTC
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: claude/claude-code-cloud-github-hokzc8
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Freqtrade
+        run: pip install freqtrade
+
+      - name: Patch CCXT keysort (OKX returns None market IDs)
+        run: |
+          python3 - << 'PYEOF'
+          import site, os
+          search = site.getsitepackages() + [site.getusersitepackages()]
+          for sp in search:
+              p = os.path.join(sp, 'ccxt/base/exchange.py')
+              if not os.path.exists(p):
+                  continue
+              txt = open(p).read()
+              old = 'return dict(sorted(dictionary.items()))'
+              new = 'return dict(sorted({k: v for k, v in dictionary.items() if k is not None}.items()))'
+              if old in txt:
+                  open(p, 'w').write(txt.replace(old, new, 1))
+                  print('Patched:', p)
+              else:
+                  print('Already patched or not found:', p)
+              break
+          PYEOF
+
+      - name: Create Freqtrade userdir
+        run: freqtrade create-userdir --userdir freqtrade/user_data
+
+      - name: Build check config (inject API keys + 10-pair whitelist)
+        env:
+          OKX_API_KEY:    ${{ secrets.OKX_API_KEY }}
+          OKX_SECRET_KEY: ${{ secrets.OKX_SECRET_KEY }}
+          OKX_PASSPHRASE: ${{ secrets.OKX_PASSPHRASE }}
+        run: |
+          python3 - << 'PYEOF'
+          import json, os
+          cfg = json.load(open('freqtrade/config_okx.json'))
+          cfg['exchange']['key']      = os.environ['OKX_API_KEY']
+          cfg['exchange']['secret']   = os.environ['OKX_SECRET_KEY']
+          cfg['exchange']['password'] = os.environ['OKX_PASSPHRASE']
+          cfg['dry_run']              = True
+          # ใช้แค่ 10 pairs หลัก (top backtest performers) เพื่อให้เร็ว
+          CHECK_PAIRS = [
+              "BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT",
+              "AXS/USDT:USDT", "LDO/USDT:USDT", "APE/USDT:USDT",
+              "GRT/USDT:USDT", "TRX/USDT:USDT", "MANA/USDT:USDT", "SAND/USDT:USDT",
+          ]
+          cfg['exchange']['pair_whitelist'] = CHECK_PAIRS
+          cfg['exchange']['pair_blacklist'] = []
+          json.dump(cfg, open('/tmp/config_check.json', 'w'), indent=2)
+          print("Config written — pairs:", len(CHECK_PAIRS))
+          PYEOF
+
+      - name: Download 75-day data (startup_candle 200 + 60-day test window)
+        run: |
+          freqtrade download-data \
+            --config /tmp/config_check.json \
+            --userdir freqtrade/user_data \
+            --timeframes 4h 1d \
+            --days 75 \
+            --trading-mode futures \
+            2>&1 | tee /tmp/download.log
+          echo "=== Download summary ==="
+          grep -E "(Downloaded|pairs|ERROR|error)" /tmp/download.log || true
+
+      - name: Run 60-day backtest (verify signal generation)
+        run: |
+          START=$(date -u -d "60 days ago" '+%Y%m%d')
+          END=$(date -u '+%Y%m%d')
+          echo "Backtest: ${START} → ${END} (10 pairs)"
+          freqtrade backtesting \
+            --config /tmp/config_check.json \
+            --userdir freqtrade/user_data \
+            --strategy DC55v24 \
+            --strategy-path freqtrade/strategies/ \
+            --timerange ${START}-${END} \
+            2>&1 | tee /tmp/backtest_health.txt || true
+          echo "=== Backtest output (tail) ==="
+          tail -60 /tmp/backtest_health.txt
+
+      - name: Generate health report
+        if: always()
+        run: |
+          python3 - << 'PYEOF'
+          import re, datetime, os
+
+          now = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')
+
+          try:
+              bt = open('/tmp/backtest_health.txt').read()
+          except FileNotFoundError:
+              bt = ''
+
+          try:
+              dl = open('/tmp/download.log').read()
+              api_ok = 'error' not in dl.lower() and 'ERROR' not in dl
+          except FileNotFoundError:
+              dl = ''
+              api_ok = False
+
+          has_error = bool(re.search(r'(Traceback|ERROR -|CRITICAL)', bt))
+          strategy_ok = not has_error and 'backtesting' in bt.lower()
+
+          # parse total trades
+          total_trades = 0
+          m = re.search(r'Total trades\s*\|?\s*(\d+)', bt)
+          if m:
+              total_trades = int(m.group(1))
+
+          # parse total profit %
+          profit_pct = None
+          m = re.search(r'Profit factor.*?\|(.*?)\|', bt)
+          mp = re.search(r'Total profit %\s*\|?\s*([\d\.\-]+)', bt)
+          if mp:
+              profit_pct = mp.group(1)
+
+          # verdict
+          if has_error:
+              overall  = '❌ ERROR'
+              verdict  = 'Strategy หรือ data pipeline มีปัญหา — ดู log ด้านล่าง'
+              action   = 'ต้องตรวจสอบ error ใน backtest output'
+          elif not api_ok:
+              overall  = '❌ API ERROR'
+              verdict  = 'OKX API หรือ data download มีปัญหา'
+              action   = 'ตรวจสอบ OKX secrets และ network'
+          elif total_trades == 0:
+              overall  = '⚠️ NO SIGNAL'
+              verdict  = 'Strategy ทำงานได้ แต่ไม่มี signal ใน 60 วันล่าสุด (อาจเป็นสภาพตลาด)'
+              action   = 'ถ้าเกิน 14 วัน ควรทบทวน ADX/Vol threshold'
+          else:
+              overall  = '✅ HEALTHY'
+              verdict  = f'Strategy ทำงานปกติ — generate {total_trades} trades ใน 60 วัน'
+              action   = 'Dry-run live อาจยังไม่เจอ breakout — รอ cron รอบถัดไป'
+
+          profit_row = f'| Backtest profit | {profit_pct}% |' if profit_pct else ''
+
+          report = f"""# DC55v24 Health Check
+
+**อัปเดต:** {now}
+
+## ผลรวม: {overall}
+
+| รายการตรวจ | ผล |
+|---|---|
+| OKX API / Data download | {'✅ OK' if api_ok else '❌ FAIL'} |
+| Strategy load (DC55v24) | {'✅ OK' if strategy_ok else '❌ FAIL'} |
+| Signal generation (60 วัน, 10 pairs) | {total_trades} trades |
+{profit_row}
+
+## วิเคราะห์
+{verdict}
+
+## แนวทาง
+{action}
+
+## หมายเหตุ
+- ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND
+- ช่วงเวลา: 60 วันล่าสุด (timerange {datetime.datetime.utcnow().strftime('%Y%m%d')})
+- หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout ที่เกิดจาก candle 4H)
+- หาก NO SIGNAL นาน >14 วัน = ควรปรึกษาเรื่องปรับ threshold
+"""
+          os.makedirs('healthcheck', exist_ok=True)
+          with open('healthcheck/report.md', 'w') as f:
+              f.write(report)
+          print(report)
+          # exit code สะท้อน health
+          if has_error or not api_ok:
+              exit(1)
+          PYEOF
+
+      - name: Save health report
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cp healthcheck/report.md /tmp/healthcheck_report.md 2>/dev/null || true
+          git fetch origin claude/claude-code-cloud-github-hokzc8
+          git reset --hard origin/claude/claude-code-cloud-github-hokzc8
+          mkdir -p healthcheck
+          cp /tmp/healthcheck_report.md healthcheck/report.md 2>/dev/null || true
+          git add healthcheck/report.md
+          git diff --cached --quiet || \
+            git commit -m "healthcheck: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push origin HEAD:claude/claude-code-cloud-github-hokzc8
