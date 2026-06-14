@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repo
@@ -262,6 +264,16 @@ jobs:
           fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # บันทึกไฟล์ที่ generate ไว้ก่อน แล้ว sync remote เพื่อหลีกเลี่ยง conflict
+          mkdir -p /tmp/dryrun_save
+          cp dryrun/status.md /tmp/dryrun_save/status.md 2>/dev/null || true
+          cp dryrun/tradesv3.sqlite /tmp/dryrun_save/tradesv3.sqlite 2>/dev/null || true
+          # Sync latest remote (ป้องกัน binary conflict เมื่อ run พร้อมกัน)
+          git fetch origin claude/claude-code-cloud-github-hokzc8
+          git reset --hard origin/claude/claude-code-cloud-github-hokzc8
+          mkdir -p dryrun
+          cp /tmp/dryrun_save/status.md dryrun/status.md 2>/dev/null || true
+          cp /tmp/dryrun_save/tradesv3.sqlite dryrun/tradesv3.sqlite 2>/dev/null || true
           git add dryrun/tradesv3.sqlite 2>/dev/null || true
           git add dryrun/status.md 2>/dev/null || true
           git diff --cached --quiet || \
@@ -276,5 +288,4 @@ jobs:
           else:
               print('no db')
           ")"
-          git pull --rebase origin claude/claude-code-cloud-github-hokzc8
           git push origin HEAD:claude/claude-code-cloud-github-hokzc8
