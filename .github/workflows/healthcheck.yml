@@ -157,37 +157,46 @@ jobs:
               action   = 'Dry-run live อาจยังไม่เจอ breakout — รอ cron รอบถัดไป'
 
           profit_row = f'| Backtest profit | {profit_pct}% |' if profit_pct else ''
+          api_str     = '✅ OK' if api_ok     else '❌ FAIL'
+          strat_str   = '✅ OK' if strategy_ok else '❌ FAIL'
+          today       = datetime.datetime.utcnow().strftime('%Y%m%d')
 
-          report = f"""# DC55v24 Health Check
+          lines = [
+              '# DC55v24 Health Check',
+              '',
+              f'**อัปเดต:** {now}',
+              '',
+              f'## ผลรวม: {overall}',
+              '',
+              '| รายการตรวจ | ผล |',
+              '|---|---|',
+              f'| OKX API / Data download | {api_str} |',
+              f'| Strategy load (DC55v24) | {strat_str} |',
+              f'| Signal generation (60 วัน, 10 pairs) | {total_trades} trades |',
+          ]
+          if profit_row:
+              lines.append(profit_row)
+          lines += [
+              '',
+              '## วิเคราะห์',
+              verdict,
+              '',
+              '## แนวทาง',
+              action,
+              '',
+              '## หมายเหตุ',
+              '- ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND',
+              f'- ช่วงเวลา: 60 วันล่าสุด (timerange {today})',
+              '- หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout candle 4H)',
+              '- หาก NO SIGNAL นาน >14 วัน = ควรทบทวน ADX/Vol threshold',
+              '',
+          ]
+          report = '\n'.join(lines)
 
-**อัปเดต:** {now}
-
-## ผลรวม: {overall}
-
-| รายการตรวจ | ผล |
-|---|---|
-| OKX API / Data download | {'✅ OK' if api_ok else '❌ FAIL'} |
-| Strategy load (DC55v24) | {'✅ OK' if strategy_ok else '❌ FAIL'} |
-| Signal generation (60 วัน, 10 pairs) | {total_trades} trades |
-{profit_row}
-
-## วิเคราะห์
-{verdict}
-
-## แนวทาง
-{action}
-
-## หมายเหตุ
-- ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND
-- ช่วงเวลา: 60 วันล่าสุด (timerange {datetime.datetime.utcnow().strftime('%Y%m%d')})
-- หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout ที่เกิดจาก candle 4H)
-- หาก NO SIGNAL นาน >14 วัน = ควรปรึกษาเรื่องปรับ threshold
-"""
           os.makedirs('healthcheck', exist_ok=True)
           with open('healthcheck/report.md', 'w') as f:
               f.write(report)
           print(report)
-          # exit code สะท้อน health
           if has_error or not api_ok:
               exit(1)
           PYEOF
