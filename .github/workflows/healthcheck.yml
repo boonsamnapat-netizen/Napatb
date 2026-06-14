@@ -99,7 +99,7 @@ jobs:
           freqtrade backtesting \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
-            --strategy DC55v24 \
+            --strategy DC55v31 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_health.txt || true
