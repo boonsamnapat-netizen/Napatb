@@ -1,20 +1,20 @@
 # DC55v24 Health Check
 
-**อัปเดต:** 2026-06-14 17:48 UTC
+อัปเดต: 2026-06-14 18:13 UTC
 
-## ผลรวม: ❌ ERROR
+## ผลรวม: NO SIGNAL
 
 | รายการตรวจ | ผล |
 |---|---|
-| OKX API / Data download | ✅ OK |
-| Strategy load (DC55v24) | ❌ FAIL |
+| OKX API / Data download | OK |
+| Strategy load (DC55v24) | OK |
 | Signal generation (60 วัน, 10 pairs) | 0 trades |
 
 ## วิเคราะห์
-Strategy หรือ data pipeline มีปัญหา — ดู log ด้านล่าง
+Strategy ทำงานได้ แต่ไม่มี signal ใน 60 วันล่าสุด (อาจเป็นสภาพตลาด)
 
 ## แนวทาง
-ต้องตรวจสอบ error ใน backtest output
+ถ้าเกิน 14 วัน ควรทบทวน ADX/Vol threshold
 
 ## หมายเหตุ
 - ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND
