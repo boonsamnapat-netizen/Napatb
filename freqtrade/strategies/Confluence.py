@@ -2387,3 +2387,74 @@ class DC55v31(DC55v24):
             "enter_short",
         ] = 1
         return dataframe
+
+
+# ============================================================================
+# C.22 diagnostic: remove ATR expansion gate to locate signal drought cause
+#
+# DC55v31 (C.21, relaxed 1D filter) still produced 0 trades in 60 days.
+# Next hypothesis: 4H ATR contraction during consolidation blocks all entries.
+# atr_expand = atr14_4h > atr14_sma20_4h — if market is in low-vol sideways,
+# 4H ATR stays BELOW its 20-bar SMA and this gate fires on every bar.
+#
+# DC55v32 removes the ATR expansion gate to test this hypothesis.
+# If DC55v32 produces trades → ATR gate was the primary blocker.
+# If DC55v32 still 0 trades → REL_VOL=2.0 or 55-bar Donchian is the issue.
+# ============================================================================
+
+
+class DC55v32(DC55v31):
+    """
+    DC55v31 without ATR expansion gate (C.22 diagnostic).
+
+    Removes atr14_4h > atr14_sma20_4h requirement to test whether ATR
+    contraction during consolidation is causing the 60-day signal drought.
+    Keeps: ADX>15, REL_VOL>=2.0, golden/death cross, 55-bar DC, RSI<45 shorts.
+    If this generates signals where DC55v31 generates none, the ATR gate
+    is the primary blocker and should be removed or softened in production.
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if metadata["pair"] in self.BLACKLIST:
+            return dataframe
+        itf        = self.inf_timeframe
+        live       = dataframe["volume"] > 0
+        vol_ok     = dataframe["rel_vol"] >= self.REL_VOL
+        bull_1d    = dataframe["ema50_1d"] > dataframe["ema200_1d"]
+        bear_1d    = dataframe["ema50_1d"] < dataframe["ema200_1d"]
+        adx_ok     = dataframe[f"adx_{itf}"] > self.ADX_THRESHOLD     # 15
+        rsi_short  = dataframe[f"rsi14_{itf}"] < 45
+
+        dataframe.loc[
+            live & vol_ok & bull_1d & adx_ok
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & adx_ok & rsi_short
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
+
+
+# ============================================================================
+# C.22b diagnostic: remove ATR gate + lower REL_VOL to 1.5
+#
+# DC55v33 tests both relaxations simultaneously — if DC55v32 (no ATR gate,
+# REL_VOL=2.0) still yields 0 trades, then the 2× volume requirement is also
+# blocking during consolidation when volume is naturally suppressed.
+# REL_VOL=1.5 is the original DC55combo level (proved sufficient for quality).
+# ============================================================================
+
+
+class DC55v33(DC55v32):
+    """
+    DC55v32 (no ATR gate) + REL_VOL lowered from 2.0 to 1.5.
+
+    If REL_VOL=2.0 + no ATR gate still yields 0 trades, then volume itself
+    is suppressed during consolidation (less common 2× spikes).
+    REL_VOL=1.5 was the original DC55combo threshold. This is the most
+    permissive C.22 variant while still requiring above-average volume.
+    """
+    REL_VOL = 1.5
