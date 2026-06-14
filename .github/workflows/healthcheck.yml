@@ -71,7 +71,7 @@ jobs:
           ]
           cfg['exchange']['pair_whitelist'] = CHECK_PAIRS
           cfg['exchange']['pair_blacklist'] = []
-          # jwt_secret_key ต้องยาว ≥32 chars (Freqtrade validation)
+          # jwt_secret_key ต้องยาว >= 32 chars (Freqtrade validation)
           if 'api_server' in cfg:
               cfg['api_server']['jwt_secret_key'] = 'healthcheck_jwt_secret_key_for_backtest_only'
               cfg['api_server']['enabled'] = False
@@ -79,13 +79,13 @@ jobs:
           print("Config written — pairs:", len(CHECK_PAIRS))
           PYEOF
 
-      - name: Download 75-day data (startup_candle 200 + 60-day test window)
+      - name: Download 100-day data (1h startup_candle 200 + 60-day test window)
         run: |
           freqtrade download-data \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
-            --timeframes 4h 1d \
-            --days 75 \
+            --timeframes 1h 4h 1d \
+            --days 100 \
             --trading-mode futures \
             2>&1 | tee /tmp/download.log
           echo "=== Download summary ==="
@@ -144,39 +144,39 @@ jobs:
 
           # verdict
           if has_error:
-              overall  = '❌ ERROR'
+              overall  = 'ERROR'
               verdict  = 'Strategy หรือ data pipeline มีปัญหา — ดู log ด้านล่าง'
               action   = 'ต้องตรวจสอบ error ใน backtest output'
           elif not api_ok:
-              overall  = '❌ API ERROR'
+              overall  = 'API ERROR'
               verdict  = 'OKX API หรือ data download มีปัญหา'
               action   = 'ตรวจสอบ OKX secrets และ network'
           elif total_trades == 0:
-              overall  = '⚠️ NO SIGNAL'
+              overall  = 'NO SIGNAL'
               verdict  = 'Strategy ทำงานได้ แต่ไม่มี signal ใน 60 วันล่าสุด (อาจเป็นสภาพตลาด)'
               action   = 'ถ้าเกิน 14 วัน ควรทบทวน ADX/Vol threshold'
           else:
-              overall  = '✅ HEALTHY'
-              verdict  = f'Strategy ทำงานปกติ — generate {total_trades} trades ใน 60 วัน'
+              overall  = 'HEALTHY'
+              verdict  = 'Strategy ทำงานปกติ — generate ' + str(total_trades) + ' trades ใน 60 วัน'
               action   = 'Dry-run live อาจยังไม่เจอ breakout — รอ cron รอบถัดไป'
 
-          profit_row = f'| Backtest profit | {profit_pct}% |' if profit_pct else ''
-          api_str     = '✅ OK' if api_ok     else '❌ FAIL'
-          strat_str   = '✅ OK' if strategy_ok else '❌ FAIL'
+          profit_row = '| Backtest profit | ' + profit_pct + '% |' if profit_pct else ''
+          api_str     = 'OK' if api_ok     else 'FAIL'
+          strat_str   = 'OK' if strategy_ok else 'FAIL'
           today       = datetime.datetime.utcnow().strftime('%Y%m%d')
 
           lines = [
               '# DC55v24 Health Check',
               '',
-              f'**อัปเดต:** {now}',
+              'อัปเดต: ' + now,
               '',
-              f'## ผลรวม: {overall}',
+              '## ผลรวม: ' + overall,
               '',
               '| รายการตรวจ | ผล |',
               '|---|---|',
-              f'| OKX API / Data download | {api_str} |',
-              f'| Strategy load (DC55v24) | {strat_str} |',
-              f'| Signal generation (60 วัน, 10 pairs) | {total_trades} trades |',
+              '| OKX API / Data download | ' + api_str + ' |',
+              '| Strategy load (DC55v24) | ' + strat_str + ' |',
+              '| Signal generation (60 วัน, 10 pairs) | ' + str(total_trades) + ' trades |',
           ]
           if profit_row:
               lines.append(profit_row)
@@ -190,7 +190,7 @@ jobs:
               '',
               '## หมายเหตุ',
               '- ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND',
-              f'- ช่วงเวลา: 60 วันล่าสุด (timerange {today})',
+              '- ช่วงเวลา: 60 วันล่าสุด (timerange ' + today + ')',
               '- หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout candle 4H)',
               '- หาก NO SIGNAL นาน >14 วัน = ควรทบทวน ADX/Vol threshold',
               '',
