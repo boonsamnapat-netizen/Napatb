@@ -140,18 +140,27 @@ jobs:
           has_error = bool(re.search(r'(Traceback|ERROR -|CRITICAL)', bt))
           strategy_ok = not has_error and 'backtesting' in bt.lower()
 
-          # parse total trades
+          # parse total trades — handle both "Total trades | N" and "Total/Daily Avg Trades | N / x"
           total_trades = 0
-          m = re.search(r'Total trades\s*\|?\s*(\d+)', bt)
-          if m:
-              total_trades = int(m.group(1))
+          for pat in [
+              r'Total/Daily Avg Trades\s*\|\s*(\d+)',   # modern Freqtrade
+              r'Total trades\s*\|?\s*(\d+)',             # older format
+          ]:
+              m = re.search(pat, bt, re.IGNORECASE)
+              if m:
+                  total_trades = int(m.group(1))
+                  break
 
-          # parse total profit %
+          # parse total profit % — handle "15.15%" or bare "15.15"
           profit_pct = None
-          m = re.search(r'Profit factor.*?\|(.*?)\|', bt)
-          mp = re.search(r'Total profit %\s*\|?\s*([\d\.\-]+)', bt)
-          if mp:
-              profit_pct = mp.group(1)
+          for pat in [
+              r'Total profit %\s*\|\s*([\d\.\-]+\s*%?)',  # table format
+              r'Total profit\s*:\s*([\d\.\-]+\s*%?)',      # inline format
+          ]:
+              mp = re.search(pat, bt, re.IGNORECASE)
+              if mp:
+                  profit_pct = mp.group(1).strip().rstrip('%')
+                  break
 
           # verdict
           if has_error:
@@ -177,7 +186,7 @@ jobs:
           today       = datetime.datetime.utcnow().strftime('%Y%m%d')
 
           lines = [
-              '# DC55v24 Health Check',
+              '# DC55v35 Health Check',
               '',
               'อัปเดต: ' + now,
               '',
@@ -186,7 +195,7 @@ jobs:
               '| รายการตรวจ | ผล |',
               '|---|---|',
               '| OKX API / Data download | ' + api_str + ' |',
-              '| Strategy load (DC55v24) | ' + strat_str + ' |',
+              '| Strategy load (DC55v35) | ' + strat_str + ' |',
               '| Signal generation (60 วัน, 10 pairs) | ' + str(total_trades) + ' trades |',
           ]
           if profit_row:
