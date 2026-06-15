@@ -25,7 +25,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Freqtrade
-        run: pip install freqtrade
+        run: pip install "freqtrade<2026.5" --quiet
 
       - name: Patch CCXT keysort (OKX returns None market IDs)
         run: |
@@ -113,7 +113,9 @@ jobs:
             --strategy-path freqtrade/strategies/ \
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_v35.txt || true
-          tail -20 /tmp/backtest_v35.txt
+          tail -30 /tmp/backtest_v35.txt
+          echo "=== DEBUG: trade-count lines in v35 output ==="
+          grep -iE '(total|trades?|signal|profit).*\|.*[0-9]' /tmp/backtest_v35.txt | tail -30 || true
           # รายงานหลักจาก DC55v35 (production strategy — DC_ENTRY=20, no ADX gate)
           cp /tmp/backtest_v35.txt /tmp/backtest_health.txt
 
@@ -140,26 +142,32 @@ jobs:
           has_error = bool(re.search(r'(Traceback|ERROR -|CRITICAL)', bt))
           strategy_ok = not has_error and 'backtesting' in bt.lower()
 
-          # parse total trades — handle both "Total trades | N" and "Total/Daily Avg Trades | N / x"
+          # parse total trades — try every known Freqtrade format
           total_trades = 0
           for pat in [
-              r'Total/Daily Avg Trades\s*\|\s*(\d+)',   # modern Freqtrade
-              r'Total trades\s*\|?\s*(\d+)',             # older format
+              r'Total/Daily Avg Trades\s*\|\s*(\d+)',        # modern: "| 52 / 0.87 |"
+              r'Total trades\s*\|?\s*(\d+)',                  # old: "Total trades | 52"
+              r'Trades\s*\(Long/Short\)\s*\|\s*(\d+)',        # alternate modern
+              r'Nr\. of trades\s*\|?\s*(\d+)',                # some versions
+              r'Total profit.*?(\d+)\s+(?:trade|win)',        # inline summary
+              r'(?<!\w)(\d+)\s*/\s*[\d\.]+\s*\|',            # "52 / 0.87 |" standalone
           ]:
               m = re.search(pat, bt, re.IGNORECASE)
               if m:
                   total_trades = int(m.group(1))
-                  break
+                  if total_trades > 0:
+                      break
 
-          # parse total profit % — handle "15.15%" or bare "15.15"
+          # parse total profit %
           profit_pct = None
           for pat in [
-              r'Total profit %\s*\|\s*([\d\.\-]+\s*%?)',  # table format
-              r'Total profit\s*:\s*([\d\.\-]+\s*%?)',      # inline format
+              r'Total profit %\s*\|\s*([\d\.\-]+)',
+              r'Total profit\s*:\s*([\d\.\-]+)',
+              r'Absolute profit\s*%\s*\|\s*([\d\.\-]+)',
           ]:
               mp = re.search(pat, bt, re.IGNORECASE)
               if mp:
-                  profit_pct = mp.group(1).strip().rstrip('%')
+                  profit_pct = mp.group(1).strip()
                   break
 
           # verdict
