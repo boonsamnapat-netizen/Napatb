@@ -1,6 +1,6 @@
 # DC55v24 Health Check
 
-อัปเดต: 2026-06-14 23:38 UTC
+อัปเดต: 2026-06-15 00:08 UTC
 
 ## ผลรวม: NO SIGNAL
 
@@ -18,6 +18,6 @@ Strategy ทำงานได้ แต่ไม่มี signal ใน 60 ว�
 
 ## หมายเหตุ
 - ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND
-- ช่วงเวลา: 60 วันล่าสุด (timerange 20260614)
+- ช่วงเวลา: 60 วันล่าสุด (timerange 20260615)
 - หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout candle 4H)
 - หาก NO SIGNAL นาน >14 วัน = ควรทบทวน ADX/Vol threshold
