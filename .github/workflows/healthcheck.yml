@@ -265,12 +265,14 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          cp healthcheck/report.md /tmp/healthcheck_report.md 2>/dev/null || true
+          cp healthcheck/report.md    /tmp/healthcheck_report.md 2>/dev/null || true
+          cp healthcheck/debug_v35.txt /tmp/debug_v35.txt        2>/dev/null || true
           git fetch origin claude/claude-code-cloud-github-hokzc8
           git reset --hard origin/claude/claude-code-cloud-github-hokzc8
           mkdir -p healthcheck
-          cp /tmp/healthcheck_report.md healthcheck/report.md 2>/dev/null || true
-          git add healthcheck/report.md
+          cp /tmp/healthcheck_report.md healthcheck/report.md     2>/dev/null || true
+          cp /tmp/debug_v35.txt         healthcheck/debug_v35.txt 2>/dev/null || true
+          git add healthcheck/report.md healthcheck/debug_v35.txt
           git diff --cached --quiet || \
             git commit -m "healthcheck: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push origin HEAD:claude/claude-code-cloud-github-hokzc8
