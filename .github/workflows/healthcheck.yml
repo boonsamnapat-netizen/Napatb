@@ -91,30 +91,12 @@ jobs:
           echo "=== Download summary ==="
           grep -E "(Downloaded|pairs|ERROR|error)" /tmp/download.log || true
 
-      - name: Run 60-day backtest (diagnostic — v31/v32/v33 comparison)
+      - name: Run 60-day backtest (diagnostic — v33/v34 comparison)
         run: |
           START=$(date -u -d "60 days ago" '+%Y%m%d')
           END=$(date -u '+%Y%m%d')
           echo "Backtest: ${START} → ${END} (10 pairs)"
-          echo "=== DC55v31 (relaxed 1D, ATR gate ON, REL_VOL=2.0) ==="
-          freqtrade backtesting \
-            --config /tmp/config_check.json \
-            --userdir freqtrade/user_data \
-            --strategy DC55v31 \
-            --strategy-path freqtrade/strategies/ \
-            --timerange ${START}-${END} \
-            2>&1 | tee /tmp/backtest_v31.txt || true
-          tail -20 /tmp/backtest_v31.txt
-          echo "=== DC55v32 (relaxed 1D, ATR gate OFF, REL_VOL=2.0) ==="
-          freqtrade backtesting \
-            --config /tmp/config_check.json \
-            --userdir freqtrade/user_data \
-            --strategy DC55v32 \
-            --strategy-path freqtrade/strategies/ \
-            --timerange ${START}-${END} \
-            2>&1 | tee /tmp/backtest_v32.txt || true
-          tail -20 /tmp/backtest_v32.txt
-          echo "=== DC55v33 (relaxed 1D, ATR gate OFF, REL_VOL=1.5) ==="
+          echo "=== DC55v33 (no ATR gate, REL_VOL=1.5, DC=55bar) ==="
           freqtrade backtesting \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
@@ -123,8 +105,17 @@ jobs:
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_v33.txt || true
           tail -20 /tmp/backtest_v33.txt
-          # ใช้ผลของ DC55v33 (ผ่อนปรนที่สุด) สำหรับ report หลัก
-          cp /tmp/backtest_v33.txt /tmp/backtest_health.txt
+          echo "=== DC55v34 (no ATR gate, REL_VOL=1.5, DC=20bar) ==="
+          freqtrade backtesting \
+            --config /tmp/config_check.json \
+            --userdir freqtrade/user_data \
+            --strategy DC55v34 \
+            --strategy-path freqtrade/strategies/ \
+            --timerange ${START}-${END} \
+            2>&1 | tee /tmp/backtest_v34.txt || true
+          tail -20 /tmp/backtest_v34.txt
+          # ใช้ผลของ DC55v34 (shorter channel) สำหรับ report หลัก
+          cp /tmp/backtest_v34.txt /tmp/backtest_health.txt
 
       - name: Generate health report
         if: always()

@@ -2458,3 +2458,30 @@ class DC55v33(DC55v32):
     permissive C.22 variant while still requiring above-average volume.
     """
     REL_VOL = 1.5
+
+
+# ============================================================================
+# C.23: Shorter Donchian channel — DC_ENTRY=20, DC_EXIT=10
+#
+# DC55v33 (most permissive: no ATR gate, REL_VOL=1.5, golden/death cross only)
+# still yields 0 trades in 60 days (Apr-Jun 2026). Root cause confirmed:
+# 55-bar 4H Donchian = 220 hours ≈ 9.2 days. In sideways/consolidating markets,
+# price never sets a new 9-day extreme. The channel itself is too long.
+#
+# DC55v34 uses DC_ENTRY=20 (80 hours ≈ 3.3 days) and DC_EXIT=10 (40 hours).
+# This fires 3-5× more frequently while still capturing meaningful breakouts.
+# Base: DC55v33 (no ATR gate, REL_VOL=1.5) to isolate the channel length effect.
+# ============================================================================
+
+
+class DC55v34(DC55v33):
+    """
+    DC55v33 + shorter Donchian channel: DC_ENTRY=20 bars (3.3 days on 4H),
+    DC_EXIT=10 bars.
+
+    Confirmed root cause: 55-bar 4H DC never fires in Apr-Jun 2026 sideways
+    market. 20-bar channel (3.3 days) catches breakouts 3-5× more frequently
+    while retaining all other quality filters from DC55v33.
+    """
+    DC_ENTRY = 20
+    DC_EXIT  = 10
