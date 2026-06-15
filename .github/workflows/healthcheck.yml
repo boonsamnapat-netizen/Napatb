@@ -112,18 +112,14 @@ jobs:
             --strategy DC55v35 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${START}-${END} \
-            --print-json \
             2>&1 | tee /tmp/backtest_v35.txt || true
           tail -30 /tmp/backtest_v35.txt
-          echo "=== DEBUG: JSON line from v35 ==="
-          grep '^{' /tmp/backtest_v35.txt | tail -1 || echo "(no JSON line found)"
-          echo "=== DEBUG: trade-count lines in v35 output ==="
-          grep -iE '(total|trades?|signal|profit).*\|.*[0-9]' /tmp/backtest_v35.txt | tail -30 || true
+          echo "=== DEBUG: trade/profit lines in v35 output ==="
+          grep -iE '(total|trades?|profit|signal)' /tmp/backtest_v35.txt | tail -30 || true
           # save excerpt for debug (readable via git without MCP)
           mkdir -p healthcheck
           { echo "=== DC55v35 backtest tail (last 80 lines) ==="; tail -80 /tmp/backtest_v35.txt; \
-            echo; echo "=== JSON line ==="; grep '^{' /tmp/backtest_v35.txt | tail -1 || echo "(none)"; \
-            echo; echo "=== trade/profit lines ==="; grep -iE '(total|trades?|profit)' /tmp/backtest_v35.txt | tail -20 || echo "(none)"; \
+            echo; echo "=== trade/profit lines ==="; grep -iE '(total|trades?|profit)' /tmp/backtest_v35.txt | tail -30 || echo "(none)"; \
           } > healthcheck/debug_v35.txt
           # รายงานหลักจาก DC55v35 (production strategy — DC_ENTRY=20, no ADX gate)
           cp /tmp/backtest_v35.txt /tmp/backtest_health.txt
