@@ -172,25 +172,25 @@ jobs:
                       print(f"JSON parse error: {e}")
 
           if not json_parsed:
-              # fallback: regex on text output
+              # Freqtrade ≥2024 uses box-drawing │ (U+2502) not ASCII |
+              # Match both: [│|] covers both characters
               for pat in [
-                  r'Total/Daily Avg Trades\s*\|\s*(\d+)',
-                  r'Total trades\s*\|?\s*(\d+)',
-                  r'Trades\s*\(Long/Short\)\s*\|\s*(\d+)',
-                  r'Nr\. of trades\s*\|?\s*(\d+)',
-                  r'(?<!\w)(\d+)\s*/\s*[\d\.]+\s*\|',
+                  r'Total/Daily Avg Trades\s*[│|]\s*(\d+)',   # modern box-drawing
+                  r'Total trades\s*[│|]?\s*(\d+)',             # old ASCII pipe
+                  r'TOTAL\s*[│|][^│|]*[│|]\s*(\d+)\s*[│|]',  # TOTAL row col 3
+                  r'Trades\s*\(Long/Short\)\s*[│|]\s*(\d+)',
               ]:
                   m = re.search(pat, bt, re.IGNORECASE)
                   if m:
                       total_trades = int(m.group(1))
                       if total_trades > 0: break
               for pat in [
-                  r'Total profit %\s*\|\s*([\d\.\-]+)',
+                  r'Total profit %\s*[│|]\s*([\d\.\-]+)',
                   r'Total profit\s*:\s*([\d\.\-]+)',
               ]:
                   mp = re.search(pat, bt, re.IGNORECASE)
                   if mp:
-                      profit_pct = mp.group(1).strip(); break
+                      profit_pct = mp.group(1).strip().rstrip('%'); break
           print(f"Result: total_trades={total_trades} profit_pct={profit_pct} json={json_parsed}")
 
           # verdict
