@@ -79,33 +79,33 @@ jobs:
           print("Config written — pairs:", len(CHECK_PAIRS))
           PYEOF
 
-      - name: Download 100-day data (1h startup_candle 200 + 60-day test window)
+      - name: Download 310-day data (EMA200 1D warmup + 60-day test window)
         run: |
           freqtrade download-data \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
             --timeframes 1h 4h 1d \
-            --days 100 \
+            --days 310 \
             --trading-mode futures \
             2>&1 | tee /tmp/download.log
           echo "=== Download summary ==="
           grep -E "(Downloaded|pairs|ERROR|error)" /tmp/download.log || true
 
-      - name: Run 60-day backtest (diagnostic — v34/v35 comparison)
+      - name: Run 60-day backtest (DC55v31 production + DC55v35 diagnostic)
         run: |
           START=$(date -u -d "60 days ago" '+%Y%m%d')
           END=$(date -u '+%Y%m%d')
           echo "Backtest: ${START} → ${END} (10 pairs)"
-          echo "=== DC55v34 (no ATR, REL_VOL=1.5, DC=20bar, ADX>15) ==="
+          echo "=== DC55v31 (production: relaxed 1D, ATR ON, ADX>15, DC=55bar) ==="
           freqtrade backtesting \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
-            --strategy DC55v34 \
+            --strategy DC55v31 \
             --strategy-path freqtrade/strategies/ \
             --timerange ${START}-${END} \
-            2>&1 | tee /tmp/backtest_v34.txt || true
-          tail -20 /tmp/backtest_v34.txt
-          echo "=== DC55v35 (no ATR, no ADX, REL_VOL=1.5, DC=20bar) ==="
+            2>&1 | tee /tmp/backtest_v31.txt || true
+          tail -20 /tmp/backtest_v31.txt
+          echo "=== DC55v35 (diagnostic: no ATR, no ADX, REL_VOL=1.5, DC=20bar) ==="
           freqtrade backtesting \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
@@ -114,8 +114,8 @@ jobs:
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_v35.txt || true
           tail -20 /tmp/backtest_v35.txt
-          # ใช้ผลของ DC55v35 (no ADX gate) สำหรับ report หลัก
-          cp /tmp/backtest_v35.txt /tmp/backtest_health.txt
+          # รายงานหลักจาก DC55v31 (production strategy)
+          cp /tmp/backtest_v31.txt /tmp/backtest_health.txt
 
       - name: Generate health report
         if: always()
