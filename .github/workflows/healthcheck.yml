@@ -91,21 +91,12 @@ jobs:
           echo "=== Download summary ==="
           grep -E "(Downloaded|pairs|ERROR|error)" /tmp/download.log || true
 
-      - name: Run 60-day backtest (diagnostic — v33/v34 comparison)
+      - name: Run 60-day backtest (diagnostic — v34/v35 comparison)
         run: |
           START=$(date -u -d "60 days ago" '+%Y%m%d')
           END=$(date -u '+%Y%m%d')
           echo "Backtest: ${START} → ${END} (10 pairs)"
-          echo "=== DC55v33 (no ATR gate, REL_VOL=1.5, DC=55bar) ==="
-          freqtrade backtesting \
-            --config /tmp/config_check.json \
-            --userdir freqtrade/user_data \
-            --strategy DC55v33 \
-            --strategy-path freqtrade/strategies/ \
-            --timerange ${START}-${END} \
-            2>&1 | tee /tmp/backtest_v33.txt || true
-          tail -20 /tmp/backtest_v33.txt
-          echo "=== DC55v34 (no ATR gate, REL_VOL=1.5, DC=20bar) ==="
+          echo "=== DC55v34 (no ATR, REL_VOL=1.5, DC=20bar, ADX>15) ==="
           freqtrade backtesting \
             --config /tmp/config_check.json \
             --userdir freqtrade/user_data \
@@ -114,8 +105,17 @@ jobs:
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_v34.txt || true
           tail -20 /tmp/backtest_v34.txt
-          # ใช้ผลของ DC55v34 (shorter channel) สำหรับ report หลัก
-          cp /tmp/backtest_v34.txt /tmp/backtest_health.txt
+          echo "=== DC55v35 (no ATR, no ADX, REL_VOL=1.5, DC=20bar) ==="
+          freqtrade backtesting \
+            --config /tmp/config_check.json \
+            --userdir freqtrade/user_data \
+            --strategy DC55v35 \
+            --strategy-path freqtrade/strategies/ \
+            --timerange ${START}-${END} \
+            2>&1 | tee /tmp/backtest_v35.txt || true
+          tail -20 /tmp/backtest_v35.txt
+          # ใช้ผลของ DC55v35 (no ADX gate) สำหรับ report หลัก
+          cp /tmp/backtest_v35.txt /tmp/backtest_health.txt
 
       - name: Generate health report
         if: always()

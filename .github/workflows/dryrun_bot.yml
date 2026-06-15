@@ -83,8 +83,8 @@ jobs:
           cfg['exchange']['key']      = key
           cfg['exchange']['secret']   = sec
           cfg['exchange']['password'] = pwd
-          cfg['strategy']                  = 'DC55v34'
-          cfg['bot_name']                  = 'DC55v34-DryRun'
+          cfg['strategy']                  = 'DC55v35'
+          cfg['bot_name']                  = 'DC55v35-DryRun'
           cfg['dry_run']                   = True
           cfg['dry_run_wallet']            = 10000
           cfg['process_only_new_candles']  = False
@@ -120,7 +120,7 @@ jobs:
           timeout 1500 freqtrade trade \
             --config /tmp/config_live.json \
             --userdir freqtrade/user_data \
-            --strategy DC55v34 \
+            --strategy DC55v35 \
             --strategy-path freqtrade/strategies/ \
             2>&1 | tee /tmp/dryrun_full.log || true
           echo "=== Last 300 lines ==="

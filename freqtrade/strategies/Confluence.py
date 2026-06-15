@@ -2485,3 +2485,54 @@ class DC55v34(DC55v33):
     """
     DC_ENTRY = 20
     DC_EXIT  = 10
+
+
+# ============================================================================
+# C.24 diagnostic: remove ADX gate
+#
+# DC55v34 (no ATR gate, REL_VOL=1.5, DC_ENTRY=20) still yields 0 trades.
+# Remaining filters: bull/bear 1D EMA cross, ADX 4H > 15, RSI<45 (shorts),
+# REL_VOL >= 1.5, 20-bar DC breakout.
+#
+# Hypothesis: ADX 4H is consistently < 15 in the current sideways market
+# (Apr-Jun 2026). ADX < 15 = "no directional trend" on 4H. In a prolonged
+# range-bound regime, ADX can stay suppressed for weeks while individual
+# Donchian breakouts still occur (channel captures the breakout edge).
+#
+# DC55v35 removes ADX gate to test whether ADX alone is the final blocker.
+# If DC55v35 generates signals where DC55v34 generates none → ADX is confirmed
+# as the blocker and should be removed for sideways-market compatibility.
+# ============================================================================
+
+
+class DC55v35(DC55v34):
+    """
+    DC55v34 without ADX gate (C.24 diagnostic).
+
+    DC55v34 (no ATR, REL_VOL=1.5, DC_ENTRY=20) still yields 0 trades.
+    Removing ADX > 15 tests if ADX suppression in sideways markets
+    is the final blocker. Keeps: 1D golden/death cross, REL_VOL>=1.5,
+    20-bar DC breakout, RSI<45 for shorts.
+    """
+
+    def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        if metadata["pair"] in self.BLACKLIST:
+            return dataframe
+        itf       = self.inf_timeframe
+        live      = dataframe["volume"] > 0
+        vol_ok    = dataframe["rel_vol"] >= self.REL_VOL   # 1.5
+        bull_1d   = dataframe["ema50_1d"] > dataframe["ema200_1d"]
+        bear_1d   = dataframe["ema50_1d"] < dataframe["ema200_1d"]
+        rsi_short = dataframe[f"rsi14_{itf}"] < 45
+
+        dataframe.loc[
+            live & vol_ok & bull_1d
+            & (dataframe["close"] > dataframe[f"dc_entry_high_{itf}"]),
+            "enter_long",
+        ] = 1
+        dataframe.loc[
+            live & vol_ok & bear_1d & rsi_short
+            & (dataframe["close"] < dataframe[f"dc_entry_low_{itf}"]),
+            "enter_short",
+        ] = 1
+        return dataframe
