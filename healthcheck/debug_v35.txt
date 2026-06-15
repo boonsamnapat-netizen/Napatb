@@ -77,8 +77,8 @@ Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
 ┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
 │  DC55v35 │     52 │         0.43 │        1514.696 │        15.15 │ 2 days, 10:10:00 │   10     0    42  19.2 │ 987.526 USDT  9.88% │
 └──────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴─────────────────────┘
-2026-06-15 15:47:43,514 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-06-15 15:47:43,515 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-06-15 15:57:02,319 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-15 15:57:02,320 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
 
 === trade/profit lines ===
 ┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
@@ -109,5 +109,5 @@ Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
 │ Profit at drawdown end                 │ -987.526 USDT                             │
 Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃            Drawdown ┃
-2026-06-15 15:47:43,514 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-06-15 15:47:43,515 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-06-15 15:57:02,319 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-15 15:57:02,320 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
