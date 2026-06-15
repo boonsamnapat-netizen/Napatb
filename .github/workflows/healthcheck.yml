@@ -114,8 +114,8 @@ jobs:
             --timerange ${START}-${END} \
             2>&1 | tee /tmp/backtest_v35.txt || true
           tail -20 /tmp/backtest_v35.txt
-          # รายงานหลักจาก DC55v31 (production strategy)
-          cp /tmp/backtest_v31.txt /tmp/backtest_health.txt
+          # รายงานหลักจาก DC55v35 (production strategy — DC_ENTRY=20, no ADX gate)
+          cp /tmp/backtest_v35.txt /tmp/backtest_health.txt
 
       - name: Generate health report
         if: always()
