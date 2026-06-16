@@ -7,8 +7,8 @@
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Metric                                 ┃ Value                                     ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ Backtesting from                       │ 2026-04-16 00:00:00                       │
-│ Backtesting to                         │ 2026-06-15 00:00:00                       │
+│ Backtesting from                       │ 2026-04-17 00:00:00                       │
+│ Backtesting to                         │ 2026-06-16 00:00:00                       │
 │ Trading Mode                           │ Isolated Futures                          │
 │ Max open trades                        │ 6                                         │
 │                                        │                                           │
@@ -26,7 +26,7 @@
 │ Expectancy (Ratio)                     │ 29.13 (0.93)                              │
 │ Avg. daily profit                      │ 25.245 USDT                               │
 │ Avg. stake amount                      │ 1937.852 USDT                             │
-│ Market change                          │ -14.05%                                   │
+│ Market change                          │ -16.76%                                   │
 │ Total trade volume                     │ 201403.437 USDT                           │
 │                                        │                                           │
 │ Long / Short trades                    │ 5 / 47                                    │
@@ -60,25 +60,25 @@
 │ Min/Max balance dates (wallet balance) │ 2026-05-16 16:00:00 / 2026-06-11 17:00:00 │
 │ Max % of account underwater (balance)  │ 9.88%                                     │
 │ Absolute drawdown (wallet balance)     │ 987.526 USDT (9.88%)                      │
-│ Drawdown duration                      │ 30 days 15:00:00                          │
+│ Drawdown duration                      │ 29 days 15:00:00                          │
 │ Profit at drawdown start               │ 0 USDT                                    │
 │ Profit at drawdown end                 │ -987.526 USDT                             │
-│ Drawdown start                         │ 2026-04-16 01:00:00                       │
+│ Drawdown start                         │ 2026-04-17 01:00:00                       │
 │ Drawdown end                           │ 2026-05-16 16:00:00                       │
 │ Sharpe (daily wallet balance)          │ 2.42                                      │
 │ Sortino (daily wallet balance)         │ 6.38                                      │
 │ Calmar (daily wallet balance)          │ 49.67                                     │
 └────────────────────────────────────────┴───────────────────────────────────────────┘
 
-Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
+Backtested 2026-04-17 00:00:00 -> 2026-06-16 00:00:00 | Max open trades : 6
                                                            STRATEGY SUMMARY                                                            
 ┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃            Drawdown ┃
 ┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩
 │  DC55v35 │     52 │         0.43 │        1514.696 │        15.15 │ 2 days, 10:10:00 │   10     0    42  19.2 │ 987.526 USDT  9.88% │
 └──────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┴─────────────────────┘
-2026-06-15 15:57:02,319 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-06-15 15:57:02,320 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-06-16 11:06:51,808 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-16 11:06:51,808 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
 
 === trade/profit lines ===
 ┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
@@ -107,7 +107,7 @@ Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
 │ Profit at drawdown end                 │ -987.526 USDT                             │
 │ Profit at drawdown start               │ 0 USDT                                    │
 │ Profit at drawdown end                 │ -987.526 USDT                             │
-Backtested 2026-04-16 00:00:00 -> 2026-06-15 00:00:00 | Max open trades : 6
+Backtested 2026-04-17 00:00:00 -> 2026-06-16 00:00:00 | Max open trades : 6
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃            Drawdown ┃
-2026-06-15 15:57:02,319 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-06-15 15:57:02,320 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-06-16 11:06:51,808 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-06-16 11:06:51,808 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
