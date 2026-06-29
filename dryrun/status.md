@@ -1,23 +1,22 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-06-29 13:05 UTC
+**อัปเดต:** 2026-06-29 18:38 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 9 |
-| Total P&L | -364.92 USDT |
-| Win Rate (recent) | 22.2% |
-| Open positions | 1 / 6 |
+| Closed trades | 10 |
+| Total P&L | -377.68 USDT |
+| Win Rate (recent) | 20.0% |
+| Open positions | 0 / 6 |
 
-## Open Positions (1)
-| Pair | Side | Opened | Entry Price |
-|------|------|--------|-------------|
-| ADA/USDT:USDT | SHORT | 2026-06-24 11:00 | 0.146900 |
+## Open Positions (0)
+*ไม่มี open position*
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| ADA/USDT:USDT | SHORT | -0.64% | -12.76 | exit_signal |
 | PEPE/USDT:USDT | SHORT | +7.51% | +196.30 | exit_signal |
 | XRP/USDT:USDT | SHORT | +1.90% | +65.16 | exit_signal |
 | ETH/USDT:USDT | SHORT | -3.84% | -0.18 | trailing_stop_loss |
