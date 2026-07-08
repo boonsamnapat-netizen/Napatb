@@ -1,6 +1,6 @@
 # DC55v35 Health Check
 
-อัปเดต: 2026-07-07 09:37 UTC
+อัปเดต: 2026-07-08 08:22 UTC
 
 ## ผลรวม: HEALTHY
 
@@ -9,7 +9,7 @@
 | OKX API / Data download | OK |
 | Strategy load (DC55v35) | OK |
 | Signal generation (60 วัน, 10 pairs) | 63 trades |
-| Backtest profit | 3.80% |
+| Backtest profit | 5.99% |
 
 ## วิเคราะห์
 Strategy ทำงานปกติ — generate 63 trades ใน 60 วัน
@@ -19,6 +19,6 @@ Dry-run live อาจยังไม่เจอ breakout — รอ cron ร�
 
 ## หมายเหตุ
 - ตรวจสอบ 10 pairs: BTC ETH SOL AXS LDO APE GRT TRX MANA SAND
-- ช่วงเวลา: 60 วันล่าสุด (timerange 20260707)
+- ช่วงเวลา: 60 วันล่าสุด (timerange 20260708)
 - หาก HEALTHY แต่ live dry-run ไม่มี trade = ปกติ (bot รัน 25 นาที/ครั้ง รอ breakout candle 4H)
 - หาก NO SIGNAL นาน >14 วัน = ควรทบทวน ADX/Vol threshold
