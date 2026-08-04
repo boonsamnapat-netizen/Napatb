@@ -1,6 +1,6 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-08-04 11:10 UTC
+**อัปเดต:** 2026-08-04 18:20 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
@@ -8,13 +8,14 @@
 | Closed trades | 26 |
 | Total P&L | -1037.20 USDT |
 | Win Rate (recent) | 20.0% |
-| Open positions | 2 / 6 |
+| Open positions | 3 / 6 |
 
-## Open Positions (2)
+## Open Positions (3)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
 | AXS/USDT:USDT | SHORT | 2026-07-17 10:07 | 0.942300 |
 | LDO/USDT:USDT | SHORT | 2026-07-31 17:47 | 0.348500 |
+| TRX/USDT:USDT | LONG | 2026-08-04 17:57 | 0.329380 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
