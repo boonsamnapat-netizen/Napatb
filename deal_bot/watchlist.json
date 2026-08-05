@@ -1,0 +1,59 @@
+{
+  "_readme": [
+    "รายการสินค้าที่บอทเฝ้าราคา",
+    "",
+    "กติกาเลือกสินค้า (สำคัญกว่าโค้ดทั้งหมดรวมกัน):",
+    "  1. commission_pct ต้อง >= 8 — หมวด 2-5% ต้องมี volume ที่เราไม่มี",
+    "  2. เลือกหมวดแคบ ๆ หมวดเดียวก่อน คนตามช่องเพราะช่องนั้นรู้ลึกเรื่องเดียว",
+    "  3. ราคาต่อชิ้นควรเกิน 500 บาท ไม่งั้นค่าคอมต่อออเดอร์ไม่คุ้มพื้นที่ในช่อง",
+    "  4. เริ่ม 20-40 ชิ้นพอ มากกว่านี้ดูแลลิงก์เสียไม่ไหว",
+    "",
+    "source: 'http' = ดึงราคาจากหน้าสินค้าจริง, 'mock' = ราคาสังเคราะห์ไว้ทดสอบ",
+    "price_regex: ใส่เฉพาะเว็บที่ไม่มี JSON-LD (ตั้ง capture group ไว้ที่ตัวเลข)",
+    "enabled: false = เก็บไว้ในไฟล์แต่ยังไม่เฝ้า",
+    "",
+    "รายการ example-* ข้างล่างปิดไว้ทั้งหมด เป็นแค่ตัวอย่างรูปแบบ",
+    "ให้ลบทิ้งแล้วใส่สินค้าจริงเมื่อเลือกหมวดได้แล้ว"
+  ],
+  "products": [
+    {
+      "id": "example-serum-01",
+      "name": "ตัวอย่าง: เซรั่มแบรนด์ A ขนาด 30ml",
+      "url": "https://example.com/product/serum-a-30ml",
+      "category": "skincare",
+      "commission_pct": 12.0,
+      "source": "http",
+      "currency": "THB",
+      "enabled": false
+    },
+    {
+      "id": "example-airfryer-01",
+      "name": "ตัวอย่าง: หม้อทอดไร้น้ำมัน 5.5L",
+      "url": "https://example.com/product/airfryer-55l",
+      "category": "appliance",
+      "commission_pct": 8.0,
+      "source": "http",
+      "price_regex": "\"salePrice\"\\s*:\\s*\"?([0-9,.]+)",
+      "currency": "THB",
+      "enabled": false
+    },
+    {
+      "id": "mock-steady-01",
+      "name": "[MOCK] สินค้าราคานิ่ง",
+      "url": "https://example.com/mock/steady",
+      "category": "test",
+      "commission_pct": 10.0,
+      "source": "mock",
+      "enabled": false
+    },
+    {
+      "id": "mock-bargain-deal",
+      "name": "[MOCK] สินค้าที่กำลังลดหนัก",
+      "url": "https://example.com/mock/bargain",
+      "category": "test",
+      "commission_pct": 10.0,
+      "source": "mock",
+      "enabled": false
+    }
+  ]
+}
