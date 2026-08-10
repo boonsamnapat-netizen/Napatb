@@ -43,20 +43,31 @@ class Thresholds:
     เราเชื่อเฉพาะ **ประวัติราคาที่เราเก็บเอง** เท่านั้น
     """
     # --- หน้าต่างข้อมูล ---
-    window_days: int = 60            # ช่วงที่ใช้คำนวณราคาอ้างอิง
+    window_days: int = 90            # หน้าต่างยาว: ใช้หา percentile + เส้นแนวโน้ม
+    ref_window_days: int = 21        # หน้าต่างสั้น: ใช้คำนวณราคาอ้างอิง
     min_history_days: int = 14       # ต้องมีข้อมูลอย่างน้อยกี่วันถึงจะกล้าตัดสิน
     min_observations: int = 10       # จำนวนจุดราคาขั้นต่ำในหน้าต่าง
     exclude_recent_hours: int = 24   # ไม่เอาราคา 24 ชม.ล่าสุดมาคิดเป็นฐาน
+
+    # --- กันการเข้าใจผิดว่า "ของเสื่อมราคา" คือ "ดีล" (สำคัญมากกับ electronics) ---
+    # สินค้าอิเล็กทรอนิกส์ราคาลดลงเรื่อย ๆ ตามอายุรุ่นอยู่แล้ว ถ้าเทียบกับ median
+    # 90 วันเฉย ๆ จะเห็นเป็น "ส่วนลด" ตลอดเวลาทั้งที่ไม่มีอะไรเกิดขึ้น
+    # เราจึงลากเส้นแนวโน้มการเสื่อมราคาของสินค้าชิ้นนั้นเอง แล้วถามว่า
+    # "วันนี้ถูกกว่าที่ควรจะเป็นตามแนวโน้มไหม" ไม่ใช่ "ถูกกว่าเมื่อก่อนไหม"
+    min_off_trend_pct: float = 8.0   # ต้องต่ำกว่าเส้นแนวโน้มอย่างน้อยกี่ %
 
     # --- กันเล่ห์ "ขึ้นราคาแล้วลด" ---
     inflate_lookback_days: int = 7   # นับ 7 วันล่าสุดเป็น "ช่วงที่อาจโดนปั่น"
     inflate_tol_pct: float = 5.0     # ถ้า median 7 วันสูงกว่าของเก่าเกิน 5% = สงสัย
 
     # --- เกณฑ์ผ่าน ---
-    min_discount_pct: float = 15.0   # ลดจากราคาอ้างอิงอย่างน้อยกี่ %
+    min_discount_pct: float = 12.0   # ลดจากราคาอ้างอิงอย่างน้อยกี่ %
     max_percentile: float = 10.0     # ราคาต้องอยู่ใน 10% ล่างสุดของประวัติ
     min_saving: float = 150.0        # ประหยัดขั้นต่ำ (บาท) — กัน 20% ของ 60 บาท
-    min_commission: float = 20.0     # ค่าคอมคาดหวังขั้นต่ำต่อออเดอร์ (บาท)
+    # วัดเป็น "บาทต่อออเดอร์" ไม่ใช่ % — สำหรับ electronics ค่าคอมมี %ต่ำ (1-3%)
+    # แต่ราคาต่อชิ้นสูง 2% ของจอ 15,000 = 300 บาท ซึ่งดีกว่า 12% ของครีม 800 = 96 บาท
+    # เกณฑ์ที่ถูกต้องจึงเป็นเงินต่อออเดอร์ ไม่ใช่อัตรา
+    min_commission: float = 100.0    # ค่าคอมคาดหวังขั้นต่ำต่อออเดอร์ (บาท)
 
     # --- กันสแปมช่อง ---
     cooldown_days: int = 14          # ไม่ยิงสินค้าเดิมซ้ำภายในกี่วัน
@@ -72,16 +83,18 @@ class Thresholds:
             return int(os.environ.get(name, default))
 
         return cls(
-            window_days=i("DEAL_WINDOW_DAYS", 60),
+            window_days=i("DEAL_WINDOW_DAYS", 90),
+            ref_window_days=i("DEAL_REF_WINDOW_DAYS", 21),
             min_history_days=i("DEAL_MIN_HISTORY_DAYS", 14),
             min_observations=i("DEAL_MIN_OBS", 10),
             exclude_recent_hours=i("DEAL_EXCLUDE_RECENT_HOURS", 24),
             inflate_lookback_days=i("DEAL_INFLATE_LOOKBACK_DAYS", 7),
             inflate_tol_pct=f("DEAL_INFLATE_TOL_PCT", 5.0),
-            min_discount_pct=f("DEAL_MIN_DISCOUNT_PCT", 15.0),
+            min_off_trend_pct=f("DEAL_MIN_OFF_TREND_PCT", 8.0),
+            min_discount_pct=f("DEAL_MIN_DISCOUNT_PCT", 12.0),
             max_percentile=f("DEAL_MAX_PERCENTILE", 10.0),
             min_saving=f("DEAL_MIN_SAVING", 150.0),
-            min_commission=f("DEAL_MIN_COMMISSION", 20.0),
+            min_commission=f("DEAL_MIN_COMMISSION", 100.0),
             cooldown_days=i("DEAL_COOLDOWN_DAYS", 14),
             re_alert_improve_pct=f("DEAL_RE_ALERT_IMPROVE_PCT", 5.0),
             max_alerts_per_run=i("DEAL_MAX_ALERTS", 3),

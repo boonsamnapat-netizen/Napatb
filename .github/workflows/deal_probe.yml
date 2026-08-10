@@ -1,0 +1,54 @@
+name: "Deal Bot — Probe URLs"
+
+# ตรวจว่าดึงราคาจากแต่ละ URL ใน watchlist ได้จริงไหม
+# แยกจาก workflow หลักเพราะรันตามต้องการ ไม่ใช่ตามเวลา
+# ใช้ที่นี่แทนการรันบนเครื่อง เพราะ runner ของ GitHub เน็ตเปิดเต็ม
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'URL ที่อยากตรวจ (คั่นด้วยช่องว่าง) — เว้นว่างเพื่อตรวจทั้ง watchlist'
+        required: false
+        default: ''
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: claude/affiliate-market-automation-y043jn
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r deal_bot/requirements.txt --quiet
+
+      - name: Probe
+        continue-on-error: true    # ❌ บางรายการเป็นข้อมูล ไม่ใช่ความล้มเหลวของ job
+        run: python -m deal_bot.probe ${{ inputs.urls }}
+
+      - name: Show report
+        run: cat deal_bot/probe_report.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit report
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/probe_save
+          cp deal_bot/probe_report.md /tmp/probe_save/ 2>/dev/null || true
+          git fetch origin claude/affiliate-market-automation-y043jn
+          git reset --hard origin/claude/affiliate-market-automation-y043jn
+          cp /tmp/probe_save/probe_report.md deal_bot/ 2>/dev/null || true
+          git add deal_bot/probe_report.md 2>/dev/null || true
+          git diff --cached --quiet || \
+            git commit -m "Probe report $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push origin HEAD:claude/affiliate-market-automation-y043jn
