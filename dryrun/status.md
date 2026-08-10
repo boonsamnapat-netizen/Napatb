@@ -1,23 +1,24 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-08-09 17:08 UTC
+**อัปเดต:** 2026-08-10 02:44 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 29 |
-| Total P&L | -839.79 USDT |
-| Win Rate (recent) | 15.0% |
+| Closed trades | 30 |
+| Total P&L | -575.88 USDT |
+| Win Rate (recent) | 20.0% |
 | Open positions | 1 / 6 |
 
 ## Open Positions (1)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
-| LDO/USDT:USDT | SHORT | 2026-07-31 17:47 | 0.348500 |
+| TRX/USDT:USDT | LONG | 2026-08-10 02:21 | 0.330060 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| LDO/USDT:USDT | SHORT | +15.21% | +263.91 | exit_signal |
 | XRP/USDT:USDT | SHORT | -0.23% | -9.26 | exit_signal |
 | AXS/USDT:USDT | SHORT | +10.36% | +253.89 | exit_signal |
 | TRX/USDT:USDT | LONG | -1.01% | -47.23 | trailing_stop_loss |
@@ -37,4 +38,3 @@
 | AVAX/USDT:USDT | SHORT | -4.41% | -84.84 | trailing_stop_loss |
 | SAND/USDT:USDT | SHORT | -3.62% | -0.03 | trailing_stop_loss |
 | APE/USDT:USDT | SHORT | -3.54% | -77.46 | trailing_stop_loss |
-| ADA/USDT:USDT | SHORT | -0.64% | -12.76 | exit_signal |
