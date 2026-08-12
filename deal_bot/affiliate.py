@@ -31,15 +31,26 @@ TIMEOUT = int(os.environ.get("DEAL_HTTP_TIMEOUT", "20"))
 SUBID_PARAM = os.environ.get("DEAL_SUBID_PARAM", "aff_sub")
 
 
-def make_tag(product: Product, when: datetime | None = None) -> str:
+CHANNEL = os.environ.get("DEAL_CHANNEL", "fbreel")
+
+
+def make_tag(product: Product, when: datetime | None = None,
+             channel: str | None = None) -> str:
     """
     tag สั้น ๆ ที่ unique พอ และอ่านออกด้วยตาเวลา debug
-    รูปแบบ: <category>-<yymmdd>-<hash6>   เช่น  skincare-260805-a3f9c1
+    รูปแบบ: <category>-<channel>-<yymmdd>-<hash6>
+    เช่น  monitor-fbreel-260810-a3f9c1
+
+    channel อยู่ใน tag ตั้งแต่วันแรกเพราะการเติมทีหลังแปลว่าข้อมูลเก่าใช้ไม่ได้
+    ตอนนี้มีช่องทางเดียว (FB Reels) แต่ถ้าวันหนึ่งเพิ่มช่องทาง เราจะตอบได้ทันที
+    ว่าช่องไหนทำเงิน โดยไม่ต้องเริ่มนับใหม่
     """
     when = when or datetime.now(timezone.utc)
+    channel = (channel or CHANNEL).lower()
     digest = hashlib.sha1(f"{product.id}{when.isoformat()}".encode()).hexdigest()[:6]
     category = "".join(c for c in product.category.lower() if c.isalnum())[:12] or "misc"
-    return f"{category}-{when.strftime('%y%m%d')}-{digest}"
+    channel = "".join(c for c in channel if c.isalnum())[:10] or "direct"
+    return f"{category}-{channel}-{when.strftime('%y%m%d')}-{digest}"
 
 
 def _append_param(url: str, key: str, value: str) -> str:

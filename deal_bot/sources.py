@@ -1,24 +1,31 @@
 """
 Price sources — ที่มาของราคา
 
-ออกแบบเป็น adapter เพราะแหล่งราคาจะเปลี่ยนแน่นอน (เว็บเปลี่ยน layout, ได้ API key
-เพิ่ม, ย้าย marketplace) แต่ตัว detector ไม่ควรต้องรู้เรื่องพวกนี้เลย
+ออกแบบเป็น adapter เพราะแหล่งราคาจะเปลี่ยนแน่นอน แต่ detector ไม่ต้องรู้เลย
 
-ตอนนี้มี 2 ตัว:
+  FeedSource — อ่านราคาจาก datafeed ของ advertiser  ← ทางหลักตอนนี้ (Lazada)
   HttpSource — ดึงหน้าเว็บแล้วอ่านราคา (JSON-LD ก่อน แล้วค่อย regex)
-  MockSource — ราคาสังเคราะห์แบบ deterministic ไว้ทดสอบ logic โดยไม่แตะเน็ต
+  MockSource — ราคาสังเคราะห์แบบ deterministic ไว้ทดสอบโดยไม่แตะเน็ต
+
+ทำไม FeedSource เป็นทางหลัก: Lazada หน้าสินค้าเป็น JS ล้วนและกัน scrape
+การดึงราคาจากหน้าเว็บจึงไม่ใช่แค่ยาก แต่เปราะและผิดเจตนาของแพลตฟอร์ม
+datafeed เป็นช่องทางที่ advertiser ตั้งใจให้ publisher ใช้ — เสถียรกว่ามาก
+และให้ทั้ง catalog แทนที่จะต้องไล่ใส่ URL ทีละตัว
 """
 
+import csv
 import hashlib
+import io
 import json
 import math
 import os
 import re
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
-from deal_bot.config import Product
+from deal_bot.config import FeedConfig, Product
 from deal_bot.store import PricePoint
 
 USER_AGENT = os.environ.get(
@@ -93,6 +100,99 @@ def extract_regex_price(html: str, pattern: str) -> float | None:
         return None
 
 
+class FeedSource:
+    """
+    อ่านราคาจาก datafeed ของ advertiser (CSV หรือ JSON)
+
+    โหลดไฟล์ครั้งเดียวต่อรอบแล้วทำ index ไว้ — ไม่ใช่ยิงเน็ตต่อสินค้าหนึ่งชิ้น
+    path เป็นได้ทั้งไฟล์ในเครื่องและ URL (network บางเจ้าให้ลิงก์ดาวน์โหลด)
+    """
+
+    name = "feed"
+
+    def __init__(self, cfg: FeedConfig, session: requests.Session | None = None):
+        self.cfg = cfg
+        self.session = session or requests.Session()
+        self._index: dict[str, dict] | None = None
+
+    # --- โหลด + index ---------------------------------------------------
+
+    def _read_raw(self) -> str:
+        path = self.cfg.path
+        if not path:
+            raise PriceUnavailable("ไม่ได้ตั้ง feed.path ใน watchlist.json")
+
+        if path.startswith("http://") or path.startswith("https://"):
+            try:
+                resp = self.session.get(path, timeout=TIMEOUT * 3)
+                resp.raise_for_status()
+            except requests.RequestException as e:
+                raise PriceUnavailable(f"โหลด feed ไม่ได้: {e}") from e
+            return resp.text
+
+        f = Path(path)
+        if not f.exists():
+            raise PriceUnavailable(f"ไม่พบไฟล์ feed: {f}")
+        return f.read_text(encoding="utf-8")
+
+    def _parse(self, raw: str) -> list[dict]:
+        if self.cfg.format == "json":
+            data = json.loads(raw)
+            if isinstance(data, dict):
+                # feed หลายเจ้าห่อ list ไว้ใน key เดียว หาอันแรกที่เป็น list
+                for value in data.values():
+                    if isinstance(value, list):
+                        return value
+                return []
+            return data
+        return list(csv.DictReader(io.StringIO(raw)))
+
+    def load(self) -> dict[str, dict]:
+        if self._index is not None:
+            return self._index
+
+        rows = self._parse(self._read_raw())
+        key = self.cfg.key_field
+        index = {}
+        for row in rows:
+            k = str(row.get(key, "")).strip()
+            if k:
+                index[k] = row
+
+        print(f"[feed] โหลด {len(index)} แถวจาก {self.cfg.path}")
+        self._index = index
+        return index
+
+    # --- ดึงราคา --------------------------------------------------------
+
+    @staticmethod
+    def _to_float(value) -> float | None:
+        if value is None:
+            return None
+        text = str(value).replace(",", "").replace("฿", "").strip()
+        # feed บางเจ้าใส่สกุลเงินมาด้วย เช่น "THB 1290.00"
+        m = re.search(r"[0-9]+(?:\.[0-9]+)?", text)
+        return float(m.group()) if m else None
+
+    def fetch(self, product: Product) -> PricePoint:
+        row = self.load().get(product.lookup_key)
+        if row is None:
+            raise PriceUnavailable(f"ไม่พบ {product.lookup_key} ใน feed")
+
+        price = self._to_float(self.cfg.get(row, "price"))
+        if price is None or price <= 0:
+            raise PriceUnavailable(f"ราคาใน feed อ่านไม่ออก: {self.cfg.get(row, 'price')!r}")
+
+        availability = str(self.cfg.get(row, "availability", "")).strip().lower()
+        out_of_stock = availability in {"0", "false", "no", "outofstock", "out of stock", "sold out"}
+
+        return PricePoint(
+            ts=datetime.now(timezone.utc),
+            price=price,
+            in_stock=not out_of_stock,
+        )
+
+
 class HttpSource:
     """ดึงราคาจากหน้าสินค้าโดยตรง"""
 
@@ -149,7 +249,13 @@ class MockSource:
         return PricePoint(ts=datetime.now(timezone.utc), price=round(price, 2), in_stock=True)
 
 
-def get_source(name: str) -> HttpSource | MockSource:
-    if name == "mock" or os.environ.get("DEAL_DRY_RUN") == "1":
-        return MockSource()
-    return HttpSource()
+def build_sources(feed_cfg: FeedConfig) -> dict:
+    """
+    สร้าง source ทุกตัวครั้งเดียวต่อรอบ แล้วให้ main เลือกใช้ตาม product.source
+    สำคัญกับ FeedSource เพราะมันโหลดไฟล์ทั้งก้อน ไม่ควรสร้างใหม่ต่อสินค้าหนึ่งชิ้น
+    """
+    dry_run = os.environ.get("DEAL_DRY_RUN") == "1"
+    mock = MockSource()
+    if dry_run:
+        return {"feed": mock, "http": mock, "mock": mock}
+    return {"feed": FeedSource(feed_cfg), "http": HttpSource(), "mock": mock}

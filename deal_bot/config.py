@@ -23,10 +23,15 @@ class Product:
     url: str
     category: str
     commission_pct: float       # ค่าคอมที่เราได้จริงจาก advertiser (%)
-    source: str = "http"        # http | mock
-    price_regex: str = ""       # fallback ถ้าเว็บไม่มี JSON-LD
+    source: str = "feed"        # feed | http | mock
+    feed_id: str = ""           # คีย์ที่ใช้หาแถวใน datafeed (ถ้า source=feed)
+    price_regex: str = ""       # fallback ถ้าเว็บไม่มี JSON-LD (ถ้า source=http)
     currency: str = "THB"
     enabled: bool = True
+
+    @property
+    def lookup_key(self) -> str:
+        return self.feed_id or self.id
 
     @property
     def merchant(self) -> str:
@@ -99,6 +104,36 @@ class Thresholds:
             re_alert_improve_pct=f("DEAL_RE_ALERT_IMPROVE_PCT", 5.0),
             max_alerts_per_run=i("DEAL_MAX_ALERTS", 3),
         )
+
+
+@dataclass
+class FeedConfig:
+    """
+    ตั้งค่าการอ่าน datafeed ของ advertiser
+
+    Involve Asia (และ network อื่นแทบทุกเจ้า) ให้ datafeed เป็นไฟล์ที่มี
+    ชื่อสินค้า / ราคา / URL / รูป / คำอธิบาย — ซึ่งเป็นทางการและไม่ต้อง scrape
+
+    ชื่อคอลัมน์ต่างกันไปตาม advertiser เลยทำเป็น mapping แทนที่จะ hardcode
+    ถ้า Lazada เปลี่ยนชื่อคอลัมน์ แก้ที่ watchlist.json ไฟล์เดียวจบ
+    """
+    enabled: bool = False
+    path: str = ""
+    format: str = "csv"          # csv | json
+    key_field: str = "sku"       # คอลัมน์ที่ใช้เป็นคีย์สินค้า
+    fields: dict = field(default_factory=dict)
+
+    def get(self, row: dict, logical: str, default=None):
+        """อ่านค่าจากแถวโดยใช้ mapping — logical คือชื่อที่โค้ดเราใช้"""
+        column = self.fields.get(logical, logical)
+        return row.get(column, default)
+
+
+def load_feed_config(path: Path = WATCHLIST_PATH) -> FeedConfig:
+    if not path.exists():
+        return FeedConfig()
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return FeedConfig(**raw.get("feed", {}))
 
 
 def load_watchlist(path: Path = WATCHLIST_PATH) -> list[Product]:

@@ -1,15 +1,17 @@
-name: "Deal Bot — Price Watch"
+name: "Deal Bot — Price Watch (Lazada / FB Reels)"
 
 # รันวันละ 2 ครั้ง (UTC 02:00 / 14:00 = 09:00 / 21:00 เวลาไทย)
 # ราคาสินค้าไม่ได้ขยับทุกชั่วโมงเหมือนคริปโต วันละ 2 จุดพอสำหรับ median
 # และประหยัดโควตา Actions ไว้ให้บอทเทรด
+#
+# ผลลัพธ์คือ deal_bot/content_queue.md = คิวถ่ายคลิป Reels ประจำรอบ
 on:
   schedule:
     - cron: '0 2,14 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'รันแบบซ้อม (ราคาสังเคราะห์ ไม่ส่ง Telegram)'
+        description: 'รันแบบซ้อม (ราคาสังเคราะห์ ไม่แตะ feed จริง)'
         type: boolean
         default: false
 
@@ -38,11 +40,10 @@ jobs:
 
       - name: Run deal bot
         env:
-          TELEGRAM_TOKEN:        ${{ secrets.TELEGRAM_TOKEN }}
-          DEAL_TELEGRAM_CHAT_ID: ${{ secrets.DEAL_TELEGRAM_CHAT_ID }}
-          INVOLVE_API_KEY:       ${{ secrets.INVOLVE_API_KEY }}
-          INVOLVE_API_SECRET:    ${{ secrets.INVOLVE_API_SECRET }}
-          DEAL_DRY_RUN:          ${{ inputs.dry_run && '1' || '0' }}
+          INVOLVE_API_KEY:    ${{ secrets.INVOLVE_API_KEY }}
+          INVOLVE_API_SECRET: ${{ secrets.INVOLVE_API_SECRET }}
+          DEAL_CHANNEL:       fbreel
+          DEAL_DRY_RUN:       ${{ inputs.dry_run && '1' || '0' }}
         run: python -m deal_bot.main
 
       - name: Commit price history
@@ -53,16 +54,18 @@ jobs:
 
           # เก็บผลไว้ก่อน sync remote (กัน binary conflict แบบเดียวกับ dryrun_bot)
           mkdir -p /tmp/deal_save
-          cp deal_bot/prices.sqlite /tmp/deal_save/ 2>/dev/null || true
-          cp deal_bot/status.md     /tmp/deal_save/ 2>/dev/null || true
+          cp deal_bot/prices.sqlite     /tmp/deal_save/ 2>/dev/null || true
+          cp deal_bot/status.md         /tmp/deal_save/ 2>/dev/null || true
+          cp deal_bot/content_queue.md  /tmp/deal_save/ 2>/dev/null || true
 
           git fetch origin claude/affiliate-market-automation-y043jn
           git reset --hard origin/claude/affiliate-market-automation-y043jn
 
-          cp /tmp/deal_save/prices.sqlite deal_bot/ 2>/dev/null || true
-          cp /tmp/deal_save/status.md     deal_bot/ 2>/dev/null || true
+          cp /tmp/deal_save/prices.sqlite     deal_bot/ 2>/dev/null || true
+          cp /tmp/deal_save/status.md         deal_bot/ 2>/dev/null || true
+          cp /tmp/deal_save/content_queue.md  deal_bot/ 2>/dev/null || true
 
-          git add deal_bot/prices.sqlite deal_bot/status.md 2>/dev/null || true
+          git add deal_bot/prices.sqlite deal_bot/status.md deal_bot/content_queue.md 2>/dev/null || true
           git diff --cached --quiet || \
             git commit -m "Deal watch $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push origin HEAD:claude/affiliate-market-automation-y043jn

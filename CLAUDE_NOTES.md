@@ -50,3 +50,24 @@
 - watchlist ใส่ URL จริงจาก advice.co.th 8 รายการ (จอ 27" 5 + SSD 1TB 3)
 - **ยังไม่ได้ verify ว่าดึงราคาได้จริง** — sandbox โดน network policy บล็อกเว็บไทย
   ต้องกด workflow "Deal Bot — Probe URLs" บน GitHub ก่อนเป็นอย่างแรก
+
+### 2026-08-12 — ตัด advice ออก เปลี่ยนเป็น Lazada + Facebook Reels
+
+- ผู้ใช้ตัดสินใจ: **แปะลิงก์ affiliate Lazada ในคลิปสั้น Facebook Reels เท่านั้น**
+  (ตัด TikTok / LINE MAN / Telegram ออกทั้งหมด) แล้วสั่งเลิกยุ่งกับ advice.co.th
+- ที่แก้ในโค้ด:
+  - ลบสินค้า advice ออกจาก watchlist ทั้งหมด — เหลือ template ของ Lazada feed
+  - เพิ่ม `FeedSource` อ่านราคาจาก datafeed (CSV/JSON) แทนการ scrape
+    เพราะ Lazada หน้าเว็บเป็น JS ล้วน + กัน scrape และ datafeed เป็นช่องทางทางการ
+    ชื่อคอลัมน์ทำเป็น mapping ใน watchlist.json ไม่ hardcode
+  - เพิ่ม `feed_import.py` สร้าง watchlist จาก feed (กรอง --min-price 5000
+    เพราะค่าคอม 1-3% ของถูกกว่านั้นไม่ผ่านเกณฑ์ 100 บาท/ออเดอร์อยู่ดี)
+  - เพิ่ม `content_queue.py` — **ผลลัพธ์หลักเปลี่ยนจากแจ้งเตือน Telegram
+    เป็นคิวถ่ายคลิป** พร้อมประโยคเปิดคลิปและตัวเลขที่พูดได้
+  - tag ฝัง channel แล้ว: `electronics-fbreel-260812-66ea90`
+  - Telegram ปิดไว้ ไม่ลบ (เปิดด้วย DEAL_TELEGRAM_ENABLED=1)
+- ทดสอบแล้ว: selftest 13/13 + e2e กับ feed ปลอมที่ตั้งชื่อคอลัมน์ไม่ตรง
+  (`item_id`/`title`/`sale_price`, ราคาแบบ "THB 14,900.00") ผ่านครบ
+  ราคานิ่ง→ไม่เข้าคิว, ของหมด→ตัดออก, ต่ำกว่าแนวโน้ม 14%→เข้าคิว
+- **ยังติดที่ผู้ใช้:** สมัคร LazAffiliate (lzd.co/LAZAFFREGISTER ไม่มีขั้นต่ำผู้ติดตาม)
+  → ขอ datafeed → เอาหัวตารางจริงมาแก้ feed.fields ก่อนรันจริง

@@ -1,115 +1,40 @@
 {
   "_readme": [
-    "หมวดที่เลือก: ELECTRONICS (ไอที) — ร้านตั้งต้นคือ advice.co.th",
+    "หมวด: ELECTRONICS (ไอที)  ·  advertiser: Lazada  ·  ช่องทาง: Facebook Reels เท่านั้น",
     "",
-    "กติกาที่แก้ใหม่สำหรับหมวดนี้:",
-    "  เดิมเขียนไว้ว่า commission_pct ต้อง >= 8% — ใช้กับ electronics ไม่ได้",
-    "  เพราะทั้งหมวดจ่าย 1-3% ไม่มีข้อยกเว้น",
-    "  เกณฑ์ที่ถูกต้องคือ *ค่าคอมเป็นบาทต่อออเดอร์* (min_commission = 100 บาท)",
-    "  2% ของจอ 15,000 = 300 บาท ชนะ 12% ของครีม 800 = 96 บาท",
-    "  ผลที่ตามมา: ของต่ำกว่า ~5,000 บาท จะเก็บประวัติราคาไว้แต่ไม่ยิงแจ้งเตือน",
-    "  ซึ่งถูกแล้ว — ไม่ใช่บั๊ก",
+    "ที่มาของราคา = datafeed ของ Lazada ผ่าน network (ไม่ scrape หน้าเว็บ)",
+    "หน้าสินค้า Lazada เป็น JS ล้วนและกัน scrape การดึงจากหน้าเว็บจึงทั้งเปราะ",
+    "และผิดเจตนาแพลตฟอร์ม — datafeed เป็นช่องทางที่เขาตั้งใจให้ publisher ใช้",
     "",
-    "commission_pct ด้านล่างเป็น *ค่าประมาณ* ยังไม่ได้ยืนยัน",
-    "ต้องเปิด dashboard ของ network แล้วแก้ให้ตรงก่อนเชื่อตัวเลขค่าคอม",
+    "ขั้นตอน:",
+    "  1. สมัคร LazAffiliate แล้วขอสิทธิ์ datafeed",
+    "  2. ตั้ง feed.path ข้างล่าง (ไฟล์ในเครื่อง หรือ URL ดาวน์โหลดก็ได้)",
+    "  3. แก้ feed.fields ให้ตรงกับชื่อคอลัมน์จริงในไฟล์",
+    "  4. python -m deal_bot.feed_import --min-price 5000 --limit 40",
     "",
-    "URL ทั้งหมดเป็นของจริงจากหน้าเว็บ advice.co.th แต่ยังไม่ได้ทดสอบว่าดึงราคาได้",
-    "(sandbox ที่สร้างไฟล์นี้ถูก network policy บล็อกเว็บไทย)",
-    "รัน `python -m deal_bot.probe` หรือกด workflow 'Deal Bot — Probe URLs' บน GitHub",
-    "แล้วดูผลที่ deal_bot/probe_report.md ก่อนไว้ใจตัวเลขราคา",
+    "feed.fields คือ mapping จากชื่อที่โค้ดเราใช้ -> ชื่อคอลัมน์จริงใน feed",
+    "ค่าที่ใส่ไว้เป็นการเดาจากชื่อที่ network ใช้กันทั่วไป ยังไม่ได้เห็นไฟล์จริง",
+    "เปิดไฟล์ feed ดูหัวตารางแล้วแก้ให้ตรงก่อนรันจริง",
     "",
-    "เปิด enabled ไว้แล้วเพื่อให้เริ่มสะสมประวัติราคาตั้งแต่วันนี้ —",
-    "การอุ่นเครื่อง 14 วันเดินคู่ไปกับการ verify ได้ ไม่ต้องรอให้เสร็จก่อน"
+    "เกณฑ์เลือกสินค้า: ค่าคอมคาดหวัง >= 100 บาท/ออเดอร์",
+    "ที่อัตรา 1-3% แปลว่าของต้องเกิน ~5,000 บาท — จอใหญ่ โน้ตบุ๊ก การ์ดจอ",
+    "ไม่ใช่เมาส์ สาย หรือแฟลชไดรฟ์"
   ],
-  "products": [
-    {
-      "id": "adv-mon-dahua-lm27c301b",
-      "name": "จอ 27\" Dahua LM27-C301B 2K 100Hz IPS",
-      "url": "https://www.advice.co.th/product/A0168110",
-      "category": "monitor",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-mon-aoc-27g11ze2",
-      "name": "จอ 27\" AOC 27G11ZE2 IPS 240Hz",
-      "url": "https://www.advice.co.th/product/monitor/monitor-27-29-/monitor-27-aoc-27g11ze2-67-ips-hdmi-dp-240hz",
-      "category": "monitor",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-mon-aoc-q27g42ze",
-      "name": "จอ 27\" AOC Q27G42ZE IPS 2K 260Hz",
-      "url": "https://www.advice.co.th/product/monitor/monitor-27-29-/monitor-27-aoc-q27g42ze-67-ips-hdmi-dp-2k-260hz",
-      "category": "monitor",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-mon-xiaomi-g27i",
-      "name": "จอ 27\" Xiaomi Gaming G27i IPS 200Hz",
-      "url": "https://www.advice.co.th/product/monitor/monitor-27-29-/monitor-27-xiaomi-gaming-g27i-ips-hdmi-dp-200hz",
-      "category": "monitor",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-mon-lg-27u511sa",
-      "name": "LG Smart Monitor 27\" 27U511SA-W IPS 100Hz",
-      "url": "https://www.advice.co.th/product/smart-monitor/smart-monitor/smart-monitor-27-lg-27u511sa-w-ips-hdmi-usb-100hz",
-      "category": "monitor",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-ssd-wd-sn5000-1tb",
-      "name": "SSD M.2 NVMe 1TB WD Blue SN5000 PCIe 4.0",
-      "url": "https://www.advice.co.th/product/ssd-solid-state-drive-/ssd-m-2-pcie-nvme-1-tb/1-tb-ssd-m-2-pcie-4-0-wd-sn5000-blue-wds100t4b0e-nvme-m-2-2280",
-      "category": "storage",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-ssd-kingston-nv3-1tb",
-      "name": "SSD M.2 NVMe 1TB Kingston NV3 PCIe 4.0",
-      "url": "https://www.advice.co.th/product/ssd-solid-state-drive-/ssd-m-2-pcie-nvme-1-tb/1-tb-ssd-m-2-pcie-4-0-kingston-nv3-snv3s-1000g-nvme-m-2-2280",
-      "category": "storage",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "adv-ssd-wd-black-sn770-1tb",
-      "name": "SSD M.2 NVMe 1TB WD Black SN770 PCIe 4.0",
-      "url": "https://www.advice.co.th/product/ssd-solid-state-drive-/ssd-m-2-pcie-nvme-1-tb/1-tb-ssd-m-2-pcie-4-0-wd-black-sn770-wds100t3x0e-nvme",
-      "category": "storage",
-      "commission_pct": 2.0,
-      "source": "http",
-      "currency": "THB",
-      "enabled": true
-    },
-    {
-      "id": "mock-bargain-deal",
-      "name": "[MOCK] สินค้าที่กำลังลดหนัก (ไว้ทดสอบ pipeline)",
-      "url": "https://example.com/mock/bargain",
-      "category": "test",
-      "commission_pct": 10.0,
-      "source": "mock",
-      "enabled": false
+
+  "feed": {
+    "enabled": false,
+    "path": "",
+    "format": "csv",
+    "key_field": "sku",
+    "fields": {
+      "id": "sku",
+      "name": "product_name",
+      "url": "product_url",
+      "price": "price",
+      "availability": "in_stock",
+      "category": "category"
     }
-  ]
+  },
+
+  "products": []
 }
