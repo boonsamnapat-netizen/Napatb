@@ -1,6 +1,6 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-08-12 17:27 UTC
+**อัปเดต:** 2026-08-13 02:53 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
@@ -8,12 +8,13 @@
 | Closed trades | 31 |
 | Total P&L | -575.91 USDT |
 | Win Rate (recent) | 20.0% |
-| Open positions | 1 / 6 |
+| Open positions | 2 / 6 |
 
-## Open Positions (1)
+## Open Positions (2)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
 | TRX/USDT:USDT | LONG | 2026-08-10 02:21 | 0.330060 |
+| MANA/USDT:USDT | SHORT | 2026-08-13 02:30 | 0.063910 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
