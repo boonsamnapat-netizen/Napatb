@@ -1,6 +1,6 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-09-21 04:54 UTC
+**อัปเดต:** 2026-09-21 15:25 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
@@ -8,12 +8,15 @@
 | Closed trades | 54 |
 | Total P&L | -1634.08 USDT |
 | Win Rate (recent) | 10.0% |
-| Open positions | 1 / 6 |
+| Open positions | 4 / 6 |
 
-## Open Positions (1)
+## Open Positions (4)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
 | BNB/USDT:USDT | LONG | 2026-09-18 04:17 | 749.300000 |
+| BTC/USDT:USDT | LONG | 2026-09-21 15:02 | 85918.900000 |
+| ETH/USDT:USDT | LONG | 2026-09-21 15:02 | 2738.540000 |
+| SOL/USDT:USDT | LONG | 2026-09-21 15:02 | 118.290000 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
