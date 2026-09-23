@@ -1,26 +1,25 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-09-23 13:57 UTC
+**อัปเดต:** 2026-09-23 20:01 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 54 |
-| Total P&L | -1634.08 USDT |
-| Win Rate (recent) | 10.0% |
-| Open positions | 4 / 6 |
+| Closed trades | 58 |
+| Total P&L | -1677.52 USDT |
+| Win Rate (recent) | 15.0% |
+| Open positions | 0 / 6 |
 
-## Open Positions (4)
-| Pair | Side | Opened | Entry Price |
-|------|------|--------|-------------|
-| BNB/USDT:USDT | LONG | 2026-09-18 04:17 | 749.300000 |
-| BTC/USDT:USDT | LONG | 2026-09-21 15:02 | 85918.900000 |
-| ETH/USDT:USDT | LONG | 2026-09-21 15:02 | 2738.540000 |
-| SOL/USDT:USDT | LONG | 2026-09-21 15:02 | 118.290000 |
+## Open Positions (0)
+*ไม่มี open position*
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| BTC/USDT:USDT | LONG | -1.84% | -45.92 | exit_signal |
+| BNB/USDT:USDT | LONG | +2.11% | +68.61 | exit_signal |
+| ETH/USDT:USDT | LONG | -2.44% | -49.29 | exit_signal |
+| SOL/USDT:USDT | LONG | -3.31% | -16.85 | exit_signal |
 | DOGE/USDT:USDT | SHORT | -4.18% | -66.96 | exit_signal |
 | ADA/USDT:USDT | SHORT | -2.02% | -25.45 | exit_signal |
 | BCH/USDT:USDT | SHORT | +5.35% | +101.39 | exit_signal |
@@ -37,7 +36,3 @@
 | PEPE/USDT:USDT | SHORT | -7.62% | -92.33 | trailing_stop_loss |
 | ADA/USDT:USDT | SHORT | -6.05% | -86.17 | trailing_stop_loss |
 | DOGE/USDT:USDT | SHORT | -6.11% | -101.50 | trailing_stop_loss |
-| XRP/USDT:USDT | SHORT | -4.72% | -62.06 | trailing_stop_loss |
-| TRX/USDT:USDT | LONG | -1.45% | -110.32 | exit_signal |
-| AXS/USDT:USDT | SHORT | -3.51% | -133.51 | exit_signal |
-| DOT/USDT:USDT | SHORT | -1.85% | -63.88 | trailing_stop_loss |
