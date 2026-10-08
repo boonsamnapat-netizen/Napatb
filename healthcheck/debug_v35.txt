@@ -7,8 +7,8 @@
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Metric                                 ┃ Value                                     ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ Backtesting from                       │ 2026-08-08 00:00:00                       │
-│ Backtesting to                         │ 2026-10-07 00:00:00                       │
+│ Backtesting from                       │ 2026-08-09 00:00:00                       │
+│ Backtesting to                         │ 2026-10-08 00:00:00                       │
 │ Trading Mode                           │ Isolated Futures                          │
 │ Max open trades                        │ 6                                         │
 │                                        │                                           │
@@ -26,7 +26,7 @@
 │ Expectancy (Ratio)                     │ -14.46 (-0.37)                            │
 │ Avg. daily profit                      │ -14.461 USDT                              │
 │ Avg. stake amount                      │ 2667.699 USDT                             │
-│ Market change                          │ 49.17%                                    │
+│ Market change                          │ 46.27%                                    │
 │ Total trade volume                     │ 320708.801 USDT                           │
 │                                        │                                           │
 │ Long / Short trades                    │ 37 / 23                                   │
@@ -57,28 +57,28 @@
 │                                        │                                           │
 │ Wallet based Metrics                   │                                           │
 │ Min/Max balance (wallet balance)       │ 8917.181 USDT / 10000 USDT                │
-│ Min/Max balance dates (wallet balance) │ 2026-09-17 13:00:00 / 2026-08-08 01:00:00 │
+│ Min/Max balance dates (wallet balance) │ 2026-09-17 13:00:00 / 2026-08-09 01:00:00 │
 │ Max % of account underwater (balance)  │ 10.83%                                    │
 │ Absolute drawdown (wallet balance)     │ 1082.819 USDT (10.83%)                    │
-│ Drawdown duration                      │ 40 days 12:00:00                          │
+│ Drawdown duration                      │ 39 days 12:00:00                          │
 │ Profit at drawdown start               │ 0 USDT                                    │
 │ Profit at drawdown end                 │ -1082.819 USDT                            │
-│ Drawdown start                         │ 2026-08-08 01:00:00                       │
+│ Drawdown start                         │ 2026-08-09 01:00:00                       │
 │ Drawdown end                           │ 2026-09-17 13:00:00                       │
 │ Sharpe (daily wallet balance)          │ -2.91                                     │
 │ Sortino (daily wallet balance)         │ -5.43                                     │
 │ Calmar (daily wallet balance)          │ -25.95                                    │
 └────────────────────────────────────────┴───────────────────────────────────────────┘
 
-Backtested 2026-08-08 00:00:00 -> 2026-10-07 00:00:00 | Max open trades : 6
+Backtested 2026-08-09 00:00:00 -> 2026-10-08 00:00:00 | Max open trades : 6
                                                             STRATEGY SUMMARY                                                            
 ┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
 ┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
 │  DC55v35 │     60 │        -0.78 │        -867.670 │        -8.68 │ 1 day, 22:46:00 │   12     0    48  20.0 │ 1082.819 USDT  10.83% │
 └──────────┴────────┴──────────────┴─────────────────┴──────────────┴─────────────────┴────────────────────────┴───────────────────────┘
-2026-10-07 12:34:44,677 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-10-07 12:34:44,677 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-10-08 12:43:47,351 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-10-08 12:43:47,351 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
 
 === trade/profit lines ===
 ┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃
@@ -107,7 +107,7 @@ Backtested 2026-08-08 00:00:00 -> 2026-10-07 00:00:00 | Max open trades : 6
 │ Profit at drawdown end                 │ -1082.819 USDT                            │
 │ Profit at drawdown start               │ 0 USDT                                    │
 │ Profit at drawdown end                 │ -1082.819 USDT                            │
-Backtested 2026-08-08 00:00:00 -> 2026-10-07 00:00:00 | Max open trades : 6
+Backtested 2026-08-09 00:00:00 -> 2026-10-08 00:00:00 | Max open trades : 6
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃    Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
-2026-10-07 12:34:44,677 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-10-07 12:34:44,677 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-10-08 12:43:47,351 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-10-08 12:43:47,351 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
