@@ -1,6 +1,6 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-10-11 20:32 UTC
+**อัปเดต:** 2026-10-12 05:55 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
@@ -8,10 +8,14 @@
 | Closed trades | 65 |
 | Total P&L | -1748.48 USDT |
 | Win Rate (recent) | 20.0% |
-| Open positions | 0 / 6 |
+| Open positions | 3 / 6 |
 
-## Open Positions (0)
-*ไม่มี open position*
+## Open Positions (3)
+| Pair | Side | Opened | Entry Price |
+|------|------|--------|-------------|
+| ETH/USDT:USDT | LONG | 2026-10-12 05:32 | 2553.990000 |
+| SOL/USDT:USDT | LONG | 2026-10-12 05:32 | 112.430000 |
+| 1INCH/USDT:USDT | LONG | 2026-10-12 05:32 | 0.099120 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
