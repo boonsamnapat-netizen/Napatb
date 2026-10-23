@@ -1,24 +1,24 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-10-23 13:41 UTC
+**อัปเดต:** 2026-10-23 20:18 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 74 |
-| Total P&L | -2300.17 USDT |
+| Closed trades | 75 |
+| Total P&L | -2371.22 USDT |
 | Win Rate (recent) | 10.0% |
-| Open positions | 2 / 6 |
+| Open positions | 1 / 6 |
 
-## Open Positions (2)
+## Open Positions (1)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
 | SAND/USDT:USDT | SHORT | 2026-10-23 13:18 | 0.052250 |
-| PEPE/USDT:USDT | LONG | 2026-10-23 13:18 | 0.000005 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| PEPE/USDT:USDT | LONG | -7.13% | -71.05 | trailing_stop_loss |
 | GRT/USDT:USDT | LONG | -5.11% | -72.79 | exit_signal |
 | XRP/USDT:USDT | LONG | -2.51% | -23.72 | trailing_stop_loss |
 | 1INCH/USDT:USDT | LONG | -1.49% | -0.06 | trailing_stop_loss |
@@ -38,4 +38,3 @@
 | BTC/USDT:USDT | LONG | -1.84% | -45.92 | exit_signal |
 | BNB/USDT:USDT | LONG | +2.11% | +68.61 | exit_signal |
 | ETH/USDT:USDT | LONG | -2.44% | -49.29 | exit_signal |
-| SOL/USDT:USDT | LONG | -3.31% | -16.85 | exit_signal |
