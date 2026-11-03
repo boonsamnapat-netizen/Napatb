@@ -1,20 +1,19 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-11-03 06:37 UTC
+**อัปเดต:** 2026-11-03 16:27 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 78 |
-| Total P&L | -2473.70 USDT |
-| Win Rate (recent) | 5.0% |
-| Open positions | 5 / 6 |
+| Closed trades | 79 |
+| Total P&L | -2526.26 USDT |
+| Win Rate (recent) | 0.0% |
+| Open positions | 4 / 6 |
 
-## Open Positions (5)
+## Open Positions (4)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
 | SAND/USDT:USDT | SHORT | 2026-10-23 13:18 | 0.052250 |
-| XRP/USDT:USDT | SHORT | 2026-10-29 21:00 | 1.238400 |
 | AXS/USDT:USDT | SHORT | 2026-10-29 21:00 | 0.872400 |
 | DOGE/USDT:USDT | SHORT | 2026-11-02 18:08 | 0.074260 |
 | ADA/USDT:USDT | SHORT | 2026-11-02 18:08 | 0.188700 |
@@ -22,6 +21,7 @@
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| XRP/USDT:USDT | SHORT | -3.29% | -52.56 | exit_signal |
 | PEPE/USDT:USDT | LONG | -2.55% | -22.17 | exit_signal |
 | MANA/USDT:USDT | SHORT | -3.88% | -41.57 | trailing_stop_loss |
 | DOT/USDT:USDT | SHORT | -4.62% | -38.74 | trailing_stop_loss |
@@ -41,4 +41,3 @@
 | BNB/USDT:USDT | LONG | -1.94% | -24.84 | trailing_stop_loss |
 | BTC/USDT:USDT | LONG | -1.26% | -45.13 | trailing_stop_loss |
 | PEPE/USDT:USDT | LONG | -4.63% | -0.21 | trailing_stop_loss |
-| LINK/USDT:USDT | LONG | +6.86% | +81.75 | exit_signal |
