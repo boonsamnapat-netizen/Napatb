@@ -1,26 +1,32 @@
 # DC55v24 Dry-Run Status
 
-**อัปเดต:** 2026-11-05 06:34 UTC
+**อัปเดต:** 2026-11-05 16:46 UTC
 
 ## ภาพรวม
 | ตัวชี้วัด | ค่า |
 |---|---|
-| Closed trades | 84 |
-| Total P&L | -2514.05 USDT |
+| Closed trades | 88 |
+| Total P&L | -2815.91 USDT |
 | Win Rate (recent) | 5.0% |
-| Open positions | 4 / 6 |
+| Open positions | 6 / 6 |
 
-## Open Positions (4)
+## Open Positions (6)
 | Pair | Side | Opened | Entry Price |
 |------|------|--------|-------------|
-| BTC/USDT:USDT | LONG | 2026-11-04 16:09 | 80520.600000 |
-| ETH/USDT:USDT | LONG | 2026-11-04 16:09 | 2439.830000 |
-| SOL/USDT:USDT | LONG | 2026-11-04 16:09 | 96.890000 |
-| GRT/USDT:USDT | LONG | 2026-11-04 16:09 | 0.020780 |
+| DOGE/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.072780 |
+| ADA/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.185800 |
+| DOT/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.917800 |
+| APE/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.108680 |
+| MANA/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.071000 |
+| SAND/USDT:USDT | SHORT | 2026-11-05 16:23 | 0.042310 |
 
 ## Closed Trades ล่าสุด (20 รายการ)
 | Pair | Side | P&L% | P&L USDT | Exit |
 |------|------|------|----------|------|
+| GRT/USDT:USDT | LONG | -7.80% | -93.24 | trailing_stop_loss |
+| SOL/USDT:USDT | LONG | -5.69% | -0.06 | trailing_stop_loss |
+| ETH/USDT:USDT | LONG | -6.81% | -97.93 | trailing_stop_loss |
+| BTC/USDT:USDT | LONG | -4.66% | -110.64 | trailing_stop_loss |
 | AXS/USDT:USDT | SHORT | -0.75% | -8.01 | exit_signal |
 | BCH/USDT:USDT | SHORT | -3.06% | -55.05 | trailing_stop_loss |
 | ADA/USDT:USDT | SHORT | -5.65% | -47.89 | trailing_stop_loss |
@@ -37,7 +43,3 @@
 | BTC/USDT:USDT | LONG | -1.16% | -49.55 | trailing_stop_loss |
 | LDO/USDT:USDT | LONG | -3.76% | -44.47 | trailing_stop_loss |
 | SAND/USDT:USDT | SHORT | -7.89% | -122.18 | trailing_stop_loss |
-| SOL/USDT:USDT | LONG | -4.72% | -129.18 | exit_signal |
-| 1INCH/USDT:USDT | LONG | -2.16% | -30.53 | trailing_stop_loss |
-| ETH/USDT:USDT | LONG | -1.97% | -79.20 | trailing_stop_loss |
-| AVAX/USDT:USDT | LONG | -2.06% | -47.95 | trailing_stop_loss |
