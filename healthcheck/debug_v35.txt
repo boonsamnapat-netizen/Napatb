@@ -1,46 +1,46 @@
 === DC55v35 backtest tail (last 80 lines) ===
-│           │         force_exit │      5 │         7.25 │         542.991 │         5.43 │ 2 days, 13:24:00 │    5     0     0   100 │
+│           │         force_exit │      5 │         8.61 │         630.471 │          6.3 │ 3 days, 13:24:00 │    5     0     0   100 │
 │           │ trailing_stop_loss │     57 │        -2.34 │       -2468.250 │       -24.68 │          9:11:00 │    0     0    57     0 │
-│     TOTAL │                    │     75 │        -0.79 │       -1059.651 │        -10.6 │   1 day, 5:58:00 │   15     0    60  20.0 │
+│     TOTAL │                    │     75 │         -0.7 │        -972.171 │        -9.72 │   1 day, 7:34:00 │   15     0    60  20.0 │
 └───────────┴────────────────────┴────────┴──────────────┴─────────────────┴──────────────┴──────────────────┴────────────────────────┘
                                    SUMMARY METRICS                                    
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Metric                                 ┃ Value                                     ┃
 ┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
-│ Backtesting from                       │ 2026-09-17 00:00:00                       │
-│ Backtesting to                         │ 2026-11-16 00:00:00                       │
+│ Backtesting from                       │ 2026-09-18 00:00:00                       │
+│ Backtesting to                         │ 2026-11-17 00:00:00                       │
 │ Trading Mode                           │ Isolated Futures                          │
 │ Max open trades                        │ 6                                         │
 │                                        │                                           │
 │ Total/Daily Avg Trades                 │ 75 / 1.25                                 │
 │ Starting balance                       │ 10000 USDT                                │
-│ Final balance                          │ 8940.349 USDT                             │
-│ Absolute profit                        │ -1059.651 USDT                            │
-│ Total profit %                         │ -10.60%                                   │
-│ CAGR %                                 │ -49.41%                                   │
-│ Sharpe (closed trades)                 │ -5.07                                     │
-│ Sortino (closed trades)                │ -18.46                                    │
-│ Calmar (closed trades)                 │ -16.37                                    │
-│ SQN                                    │ -1.83                                     │
-│ Profit factor                          │ 0.58                                      │
-│ Expectancy (Ratio)                     │ -14.13 (-0.33)                            │
-│ Avg. daily profit                      │ -17.661 USDT                              │
+│ Final balance                          │ 9027.829 USDT                             │
+│ Absolute profit                        │ -972.171 USDT                             │
+│ Total profit %                         │ -9.72%                                    │
+│ CAGR %                                 │ -46.32%                                   │
+│ Sharpe (closed trades)                 │ -4.47                                     │
+│ Sortino (closed trades)                │ -16.94                                    │
+│ Calmar (closed trades)                 │ -15.02                                    │
+│ SQN                                    │ -1.61                                     │
+│ Profit factor                          │ 0.62                                      │
+│ Expectancy (Ratio)                     │ -12.96 (-0.31)                            │
+│ Avg. daily profit                      │ -16.203 USDT                              │
 │ Avg. stake amount                      │ 2288.938 USDT                             │
-│ Market change                          │ -18.11%                                   │
-│ Total trade volume                     │ 342446.989 USDT                           │
+│ Market change                          │ -21.20%                                   │
+│ Total trade volume                     │ 342357.347 USDT                           │
 │                                        │                                           │
 │ Long / Short trades                    │ 46 / 29                                   │
-│ Long / Short profit %                  │ -10.93% / 0.33%                           │
-│ Long / Short profit USDT               │ -1092.981 / 33.330                        │
+│ Long / Short profit %                  │ -10.93% / 1.21%                           │
+│ Long / Short profit USDT               │ -1092.981 / 120.810                       │
 │                                        │                                           │
-│ Best Pair                              │ APE/USDT:USDT 1.35%                       │
+│ Best Pair                              │ APE/USDT:USDT 1.66%                       │
 │ Worst Pair                             │ ETH/USDT:USDT -2.42%                      │
-│ Best trade                             │ APE/USDT:USDT 15.80%                      │
+│ Best trade                             │ APE/USDT:USDT 17.93%                      │
 │ Worst trade                            │ SAND/USDT:USDT -4.81%                     │
-│ Best day                               │ 577.452 USDT                              │
+│ Best day                               │ 630.471 USDT                              │
 │ Worst day                              │ -213.668 USDT                             │
-│ Days win/draw/lose                     │ 5 / 25 / 28                               │
-│ Min/Max/Avg. Duration Winners          │ 1d 15:00 / 7d 00:00 / 4d 07:44            │
+│ Days win/draw/lose                     │ 5 / 26 / 28                               │
+│ Min/Max/Avg. Duration Winners          │ 2d 15:00 / 7d 00:00 / 4d 15:44            │
 │ Min/Max/Avg. Duration Losers           │ 0d 00:00 / 2d 15:00 / 0d 11:32            │
 │ Max Consecutive Wins / Loss            │ 5 / 16                                    │
 │ Rejected Entry signals                 │ 0                                         │
@@ -70,44 +70,44 @@
 │ Calmar (daily wallet balance)          │ -25.18                                    │
 └────────────────────────────────────────┴───────────────────────────────────────────┘
 
-Backtested 2026-09-17 00:00:00 -> 2026-11-16 00:00:00 | Max open trades : 6
+Backtested 2026-09-18 00:00:00 -> 2026-11-17 00:00:00 | Max open trades : 6
                                                            STRATEGY SUMMARY                                                            
 ┏━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃   Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
 ┡━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
-│  DC55v35 │     75 │        -0.79 │       -1059.651 │        -10.6 │ 1 day, 5:58:00 │   15     0    60  20.0 │ 2180.085 USDT  20.61% │
+│  DC55v35 │     75 │        -0.70 │        -972.171 │        -9.72 │ 1 day, 7:34:00 │   15     0    60  20.0 │ 2180.085 USDT  20.61% │
 └──────────┴────────┴──────────────┴─────────────────┴──────────────┴────────────────┴────────────────────────┴───────────────────────┘
-2026-11-16 14:36:03,391 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-11-16 14:36:03,392 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-11-17 15:26:57,214 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-11-17 15:26:57,214 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
 
 === trade/profit lines ===
 ┃ Enter Tag ┃ Entries ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃   Avg Duration ┃  Win  Draw  Loss  Win% ┃
-│     TOTAL │      75 │        -0.79 │       -1059.651 │        -10.6 │ 1 day, 5:58:00 │   15     0    60  20.0 │
+│     TOTAL │      75 │         -0.7 │        -972.171 │        -9.72 │ 1 day, 7:34:00 │   15     0    60  20.0 │
 ┃        Exit Reason ┃ Exits ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
-│              TOTAL │    75 │        -0.79 │       -1059.651 │        -10.6 │   1 day, 5:58:00 │   15     0    60  20.0 │
+│              TOTAL │    75 │         -0.7 │        -972.171 │        -9.72 │   1 day, 7:34:00 │   15     0    60  20.0 │
 ┃ Enter Tag ┃        Exit Reason ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃     Avg Duration ┃  Win  Draw  Loss  Win% ┃
-│     TOTAL │                    │     75 │        -0.79 │       -1059.651 │        -10.6 │   1 day, 5:58:00 │   15     0    60  20.0 │
+│     TOTAL │                    │     75 │         -0.7 │        -972.171 │        -9.72 │   1 day, 7:34:00 │   15     0    60  20.0 │
 │ Max open trades                        │ 6                                         │
 │ Total/Daily Avg Trades                 │ 75 / 1.25                                 │
-│ Absolute profit                        │ -1059.651 USDT                            │
-│ Total profit %                         │ -10.60%                                   │
-│ Sharpe (closed trades)                 │ -5.07                                     │
-│ Sortino (closed trades)                │ -18.46                                    │
-│ Calmar (closed trades)                 │ -16.37                                    │
-│ Profit factor                          │ 0.58                                      │
-│ Avg. daily profit                      │ -17.661 USDT                              │
-│ Total trade volume                     │ 342446.989 USDT                           │
+│ Absolute profit                        │ -972.171 USDT                             │
+│ Total profit %                         │ -9.72%                                    │
+│ Sharpe (closed trades)                 │ -4.47                                     │
+│ Sortino (closed trades)                │ -16.94                                    │
+│ Calmar (closed trades)                 │ -15.02                                    │
+│ Profit factor                          │ 0.62                                      │
+│ Avg. daily profit                      │ -16.203 USDT                              │
+│ Total trade volume                     │ 342357.347 USDT                           │
 │ Long / Short trades                    │ 46 / 29                                   │
-│ Long / Short profit %                  │ -10.93% / 0.33%                           │
-│ Long / Short profit USDT               │ -1092.981 / 33.330                        │
-│ Best trade                             │ APE/USDT:USDT 15.80%                      │
+│ Long / Short profit %                  │ -10.93% / 1.21%                           │
+│ Long / Short profit USDT               │ -1092.981 / 120.810                       │
+│ Best trade                             │ APE/USDT:USDT 17.93%                      │
 │ Worst trade                            │ SAND/USDT:USDT -4.81%                     │
 │ Min/Max balance (closed trades)        │ 8397.358 USDT / 10577.443 USDT            │
 │ Profit at drawdown start               │ 577.443 USDT                              │
 │ Profit at drawdown end                 │ -1602.642 USDT                            │
 │ Profit at drawdown start               │ 577.443 USDT                              │
 │ Profit at drawdown end                 │ -1602.642 USDT                            │
-Backtested 2026-09-17 00:00:00 -> 2026-11-16 00:00:00 | Max open trades : 6
+Backtested 2026-09-18 00:00:00 -> 2026-11-17 00:00:00 | Max open trades : 6
 ┃ Strategy ┃ Trades ┃ Avg Profit % ┃ Tot Profit USDT ┃ Tot Profit % ┃   Avg Duration ┃  Win  Draw  Loss  Win% ┃              Drawdown ┃
-2026-11-16 14:36:03,391 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
-2026-11-16 14:36:03,392 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
+2026-11-17 15:26:57,214 - freqtrade.exchange.exchange - DEBUG - Exchange object destroyed, closing async loop
+2026-11-17 15:26:57,214 - freqtrade.exchange.exchange - DEBUG - Closing async ccxt session.
